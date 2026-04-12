@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Enterprise API Comparison Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface-hover: #fafaf8;
+    --border: #e2e0da;
+    --border-light: #eceae4;
+    --text: #1a1a1a;
+    --text-muted: #6b6860;
+    --text-dim: #9b978e;
+    --accent-analytics: #2b6cb0;
+    --accent-analytics-bg: rgba(43, 108, 176, 0.06);
+    --accent-compliance: #7c3aed;
+    --accent-compliance-bg: rgba(124, 58, 237, 0.05);
+    --yes: #16794a;
+    --yes-bg: rgba(22, 121, 74, 0.07);
+    --no: #b53b2c;
+    --no-bg: rgba(181, 59, 44, 0.05);
+    --partial: #92690d;
+    --partial-bg: rgba(146, 105, 13, 0.07);
+    --na-color: #8a8780;
+    --na-bg: rgba(0,0,0,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 24px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .header {
+    margin-bottom: 40px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 620px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.analytics { background: var(--accent-analytics); }
+  .legend-dot.compliance { background: var(--accent-compliance); }
+
+  .matrix-wrapper {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 680px;
+  }
+
+  thead th {
+    padding: 18px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+  }
+
+  thead th:first-child {
+    width: 44%;
+    padding-left: 24px;
+  }
+
+  thead th.col-api {
+    width: 28%;
+    text-align: center;
+  }
+
+  thead th.col-api .col-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  thead th.col-analytics .col-label {
+    background: var(--accent-analytics-bg);
+    color: var(--accent-analytics);
+    border: 1px solid rgba(43, 108, 176, 0.15);
+  }
+
+  thead th.col-compliance .col-label {
+    background: var(--accent-compliance-bg);
+    color: var(--accent-compliance);
+    border: 1px solid rgba(124, 58, 237, 0.15);
+  }
+
+  tbody tr {
+    transition: background 0.12s ease;
+  }
+
+  tbody tr:hover {
+    background: var(--surface-hover);
+  }
+
+  tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 14px;
+    vertical-align: top;
+  }
+
+  tbody td:first-child {
+    padding-left: 24px;
+  }
+
+  tbody td:not(:first-child) {
+    text-align: center;
+  }
+
+  .section-row td {
+    padding: 11px 24px !important;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+  }
+
+  .feature-name {
+    display: block;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .feature-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .badge.yes {
+    background: var(--yes-bg);
+    color: var(--yes);
+    border: 1px solid rgba(22, 121, 74, 0.12);
+  }
+
+  .badge.no {
+    background: var(--no-bg);
+    color: var(--no);
+    border: 1px solid rgba(181, 59, 44, 0.08);
+    opacity: 0.65;
+  }
+
+  .badge.partial {
+    background: var(--partial-bg);
+    color: var(--partial);
+    border: 1px solid rgba(146, 105, 13, 0.12);
+  }
+
+  .badge.na {
+    background: var(--na-bg);
+    color: var(--na-color);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .cell-note {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+  }
+
+  .footer {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .footer-card {
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+
+  .footer-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .footer-card.fc-analytics h4 { color: var(--accent-analytics); }
+  .footer-card.fc-compliance h4 { color: var(--accent-compliance); }
+
+  .footer-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .stamp {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  /* Important Notice */
+  .notice-box {
+    margin-top: 28px;
+    padding: 20px 24px;
+    border-radius: 10px;
+    background: #fef7ed;
+    border: 1px solid #f0d9b5;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .notice-icon {
+    flex-shrink: 0;
+    color: #b45309;
+    margin-top: 1px;
+  }
+
+  .notice-content {
+    flex: 1;
+  }
+
+  .notice-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 6px;
+    letter-spacing: -0.1px;
+  }
+
+  .notice-text {
+    font-size: 13px;
+    color: #78572a;
+    line-height: 1.6;
+  }
+
+  /* Endpoints Section */
+  .endpoints-section {
+    margin-top: 28px;
+  }
+
+  .endpoints-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    letter-spacing: -0.2px;
+  }
+
+  .endpoints-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .endpoint-group {
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+
+  .endpoint-group h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .ep-analytics h4 { color: var(--accent-analytics); }
+  .ep-compliance h4 { color: var(--accent-compliance); }
+
+  .endpoint-base, .endpoint-auth {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .endpoint-base code, .endpoint-auth code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--na-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--text);
+    border: 1px solid var(--border-light);
+  }
+
+  .endpoint-auth {
+    margin-bottom: 16px;
+  }
+
+  .endpoint-item {
+    padding: 14px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+  }
+
+  .endpoint-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .endpoint-method {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .ep-analytics .endpoint-method {
+    background: var(--accent-analytics-bg);
+    color: var(--accent-analytics);
+    border: 1px solid rgba(43, 108, 176, 0.15);
+  }
+
+  .ep-compliance .endpoint-method {
+    background: var(--accent-compliance-bg);
+    color: var(--accent-compliance);
+    border: 1px solid rgba(124, 58, 237, 0.15);
+  }
+
+  .endpoint-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    vertical-align: middle;
+    word-break: break-all;
+  }
+
+  .endpoint-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-top: 8px;
+  }
+
+  .endpoint-params {
+    display: block;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .ep-event-list {
+    padding: 12px 14px;
+  }
+
+  .endpoint-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .endpoint-events {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .ep-note {
+    background: transparent;
+    border: 1px dashed var(--border);
+  }
+
+  a.ext-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.15s ease;
+  }
+
+  a.ext-link:hover {
+    text-decoration-color: var(--text-muted);
+  }
+
+  .endpoint-path-link {
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px dashed var(--border);
+    transition: border-color 0.15s ease;
+  }
+
+  .endpoint-path-link:hover {
+    border-bottom-color: var(--text-muted);
+  }
+
+  .endpoint-path-link code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  /* Hidden signature */
+  .sig { font-size: 0; line-height: 0; color: transparent; user-select: none; position: absolute; }
+
+  @media (max-width: 768px) {
+    body { padding: 20px 12px; }
+    .header h1 { font-size: 21px; }
+    .footer { grid-template-columns: 1fr; }
+    .endpoints-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Claude Enterprise: API Comparison Matrix</h1>
+    <p>Comparing the Analytics API and Compliance API for security, compliance, and governance use cases.</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot analytics"></div><a class="ext-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank">Analytics API</a></div>
+    <div class="legend-item"><div class="legend-dot compliance"></div><a class="ext-link" href="https://trust.anthropic.com/resources?s=tob70gqyan60x3dwb7nkap&name=anthropic-compliance-api" target="_blank">Compliance API</a></div>
+  </div>
+
+  <div class="matrix-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability / Dimension</th>
+          <th class="col-api col-analytics"><span class="col-label">Analytics API</span></th>
+          <th class="col-api col-compliance"><span class="col-label">Compliance API</span></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- ACCESS & SETUP -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Access & Setup</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">NDA required</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Via <a class="ext-link" href="https://trust.anthropic.com/" target="_blank">Anthropic Trust Center</a></span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">API key type</span></td>
+          <td><span class="badge na">read:analytics</span><span class="cell-note">Scoped analytics key</span></td>
+          <td><span class="badge na">read:security</span><span class="cell-note">Scoped security key</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Who can enable</span></td>
+          <td><span class="badge na">Primary Owner</span></td>
+          <td><span class="badge na">Primary Owner</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Setup effort</span></td>
+          <td><span class="badge yes">Minutes</span><span class="cell-note">Toggle + create key</span></td>
+          <td><span class="badge partial">Half day</span><span class="cell-note">NDA + integration</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Additional cost</span></td>
+          <td><span class="badge yes">Included</span><span class="cell-note">With Enterprise plan</span></td>
+          <td><span class="badge yes">Included</span><span class="cell-note">With Enterprise plan</span></td>
+        </tr>
+
+        <!-- USAGE & ADOPTION -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Usage & Adoption Insights</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">DAU / WAU / MAU tracking</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Seat utilization</span><span class="feature-desc">Assigned vs. active vs. pending invites</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Project-level breakdown</span><span class="feature-desc">Per-project users, conversations, messages</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Claude Code metrics</span><span class="feature-desc">Commits, PRs, LOC, sessions, tool actions</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">MCP connector usage</span><span class="feature-desc">Which connectors, by whom, frequency</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Connection events only</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Skill usage tracking</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Web search invocation count</span></td>
+          <td><span class="badge yes">Yes</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+
+        <!-- SECURITY & AUDIT -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Security & Audit Logging</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">Login / logout events</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">API key lifecycle</span><span class="feature-desc">Creation, modification, deletion</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Workspace membership changes</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Account setting changes</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Permission / access changes</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">File operations</span><span class="feature-desc">Upload, download, deletion events</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span></td>
+        </tr>
+
+        <!-- COMPLIANCE FRAMEWORKS -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Compliance Framework Support</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">SOC 2 Type II evidence</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Usage data only</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Full audit trail</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">EU AI Act</span><span class="feature-desc">High-risk AI system transparency and logging</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Usage metrics only</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Audit trail for AI oversight</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">NIS2</span><span class="feature-desc">Network and information security directive</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Access pattern visibility</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Incident detection and logging</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">PCI-DSS</span><span class="feature-desc">Payment card industry data security standard</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Access and change logging</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">ISO 27001</span><span class="feature-desc">Information security management systems</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Asset and usage inventory</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">A.12 operations security evidence</span></td>
+        </tr>
+
+        <!-- OPERATIONAL -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Operational Characteristics</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">Data freshness</span></td>
+          <td><span class="badge partial">3-day delay</span></td>
+          <td><span class="badge yes">Near real-time</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Historical data availability</span></td>
+          <td><span class="badge partial">90 days</span><span class="cell-note">From Jan 1, 2026</span></td>
+          <td><span class="badge partial">From enablement</span><span class="cell-note">No retroactive data</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Rate limits</span></td>
+          <td><span class="badge na">60 req/min</span><span class="cell-note">Adjustable via CSM</span></td>
+          <td><span class="badge na">Per NDA docs</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Unified org view</span><span class="feature-desc">Enterprise + API org in single feed</span></td>
+          <td><span class="badge no">No</span><span class="cell-note">Enterprise org only</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Parent org consolidation</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">SIEM export capability</span></td>
+          <td><span class="badge partial">Manual</span><span class="cell-note">Build your own pipeline</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Designed for SIEM ingestion</span></td>
+        </tr>
+
+        <!-- USE CASES -->
+        <tr class="section-row"><td colspan="3"><span class="section-label">Security, Monitoring & Compliance Use Cases</span></td></tr>
+
+        <tr>
+          <td><span class="feature-name">Shadow AI detection</span><span class="feature-desc">Identify unapproved connector or skill usage across the org</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Connector + skill endpoints</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Connection events only</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Dormant account identification</span><span class="feature-desc">Find assigned seats with zero activity for deprovisioning</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Seat vs. active user delta</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Privilege escalation detection</span><span class="feature-desc">Alert on unexpected permission or role changes</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Permission change events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">API key hygiene monitoring</span><span class="feature-desc">Track key creation, unused keys, and rotation compliance</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Key lifecycle events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Insider threat indicators</span><span class="feature-desc">Unusual file download patterns or off-hours access</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">File ops + login events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Cost attribution and chargeback</span><span class="feature-desc">Allocate usage-based billing to teams or departments</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Per-user + per-project data</span></td>
+          <td><span class="badge no">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">AI adoption governance reporting</span><span class="feature-desc">Board-level reporting on AI rollout scope and velocity</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">DAU/WAU/MAU + trends</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Event volume as proxy</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Unauthorized workspace access</span><span class="feature-desc">Detect members added to restricted workspaces</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Membership change events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Configuration drift detection</span><span class="feature-desc">Monitor for unexpected org or account setting changes</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Setting change events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Third-party integration audit</span><span class="feature-desc">Verify only approved MCP connectors are active</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Normalized connector list</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Connection events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Data exfiltration signal</span><span class="feature-desc">Abnormal file download volume or pattern per user</span></td>
+          <td><span class="badge no">No</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">File download events</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Periodic access review</span><span class="feature-desc">Quarterly attestation of who has access and what they used</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">User activity + seat data</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Access and login history</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Incident response support</span><span class="feature-desc">Reconstruct timeline of actions during a security event</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Daily aggregates only</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Event-level granularity</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Regulatory audit evidence package</span><span class="feature-desc">Generate exportable evidence for external auditors</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Usage stats only</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Full audit trail export</span></td>
+        </tr>
+        <tr>
+          <td><span class="feature-name">Offboarding verification</span><span class="feature-desc">Confirm revoked access and no residual activity post-departure</span></td>
+          <td><span class="badge partial">Partial</span><span class="cell-note">Check for zero activity</span></td>
+          <td><span class="badge yes">Yes</span><span class="cell-note">Login + access removal events</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- API ENDPOINTS REFERENCE -->
+  <div class="endpoints-section">
+    <h3 class="endpoints-title">API Endpoint Reference</h3>
+
+    <div class="endpoints-grid">
+      <div class="endpoint-group ep-analytics">
+        <h4>Analytics API</h4>
+        <p class="endpoint-base">Base URL: <code>https://api.anthropic.com/v1/organizations/analytics/</code></p>
+        <p class="endpoint-auth">Auth: <code>x-api-key</code> header with <code>read:analytics</code> scoped key</p>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank"><code>/v1/organizations/analytics/users</code></a>
+          <span class="endpoint-desc">Per-user engagement metrics for a single day. Includes chat metrics, Claude Code metrics (commits, PRs, LOC, sessions, tool actions), connector usage, and web search counts.</span>
+          <span class="endpoint-params">Params: date (required), limit, page</span>
+        </div>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank"><code>/v1/organizations/analytics/summaries</code></a>
+          <span class="endpoint-desc">High-level org engagement summary per day. DAU, WAU, MAU counts, assigned seats, and pending invites. Max 31-day range per request.</span>
+          <span class="endpoint-params">Params: starting_date (required), ending_date</span>
+        </div>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank"><code>/v1/organizations/analytics/apps/chat/projects</code></a>
+          <span class="endpoint-desc">Usage broken down by chat project. Unique users, conversations, messages, creation date, and creator info per project.</span>
+          <span class="endpoint-params">Params: date (required), limit, page</span>
+        </div>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank"><code>/v1/organizations/analytics/skills</code></a>
+          <span class="endpoint-desc">Skill usage across Claude chat and Claude Code. Unique users per skill, conversation counts, and remote session counts.</span>
+          <span class="endpoint-params">Params: date (required), limit, page</span>
+        </div>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide" target="_blank"><code>/v1/organizations/analytics/connectors</code></a>
+          <span class="endpoint-desc">MCP connector usage across Claude chat and Claude Code. Normalized connector names, unique users, conversation and session counts.</span>
+          <span class="endpoint-params">Params: date (required), limit, page</span>
+        </div>
+      </div>
+
+      <div class="endpoint-group ep-compliance">
+        <h4>Compliance API</h4>
+        <p class="endpoint-base">Documentation: <a class="ext-link" href="https://trust.anthropic.com/resources?s=tob70gqyan60x3dwb7nkap&name=anthropic-compliance-api" target="_blank"><code>trust.anthropic.com</code></a> (NDA required)</p>
+        <p class="endpoint-auth">Auth: <code>x-api-key</code> header with admin API key</p>
+
+        <div class="endpoint-item">
+          <span class="endpoint-method">GET</span>
+          <a class="endpoint-path-link" href="https://trust.anthropic.com/resources?s=tob70gqyan60x3dwb7nkap&name=anthropic-compliance-api" target="_blank"><code>/v1/organizations/activity</code></a>
+          <span class="endpoint-desc">Activity feed of security-relevant events. Filterable by time range, specific users, or API keys. Returns admin/system events and resource events.</span>
+          <span class="endpoint-params">Filters: time range, user, API key</span>
+        </div>
+
+        <div class="endpoint-item ep-event-list">
+          <span class="endpoint-label">Tracked admin/system events include:</span>
+          <span class="endpoint-events">Workspace membership additions and removals, API key creation / modification / deletion, account and org setting changes, permission and access control modifications, SSO and authentication events</span>
+        </div>
+
+        <div class="endpoint-item ep-event-list">
+          <span class="endpoint-label">Tracked resource events include:</span>
+          <span class="endpoint-events">File uploads, downloads, and deletions, skill creation and deletion, resource access modifications, entity access changes</span>
+        </div>
+
+        <div class="endpoint-item ep-note">
+          <span class="endpoint-desc">Full endpoint schemas, event type enumerations, pagination details, and response formats are available in the Compliance API documentation on the <a class="ext-link" href="https://trust.anthropic.com/resources?s=tob70gqyan60x3dwb7nkap&name=anthropic-compliance-api" target="_blank">Anthropic Trust Center</a> after NDA signature. Organizations with both Claude Enterprise and Claude API tenancies can consolidate under a single parent org for unified monitoring.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORTANT NOTICE -->
+  <div class="notice-box">
+    <div class="notice-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="10" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="11" y1="6" x2="11" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="11" cy="16" r="1.1" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="notice-content">
+      <h4 class="notice-title">Neither API provides access to conversation content</h4>
+      <p class="notice-text">
+        The Analytics API returns aggregated usage counts only (number of conversations, messages, sessions, etc.). The Compliance API logs administrative actions and resource events but explicitly excludes inference activities. Neither API exposes, exports, or provides access to user prompts, model responses, conversation threads, or any other interaction content. All data available through both APIs is limited to metadata and event-level telemetry.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-card fc-analytics">
+      <h4>Analytics API</h4>
+      <p>Best for FinOps, IT admins, and team leads who need usage visibility, seat optimization, cost attribution, and adoption reporting. Quick to enable, no NDA required. Five public endpoints covering users, summaries, projects, skills, and connectors.</p>
+    </div>
+    <div class="footer-card fc-compliance">
+      <h4>Compliance API</h4>
+      <p>Best for security, legal, and compliance teams in regulated industries who need audit trails for access events, configuration changes, and file operations. Requires NDA via <a class="ext-link" href="https://trust.anthropic.com/" target="_blank">Anthropic Trust Center</a>.</p>
+    </div>
+  </div>
+
+  <div class="stamp">Data sourced from Anthropic public documentation and Trust Center as of April 2026<!-- Ishaq Bukhari --></div>
+
+</div>
+</body>
+</html>
