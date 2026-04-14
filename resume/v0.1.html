@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --accent: #1a5276;
+    --accent-light: #d6e4f0;
+    --text: #1c1c1c;
+    --muted: #555;
+    --border: #d0d7de;
+    --sidebar-bg: #f4f7fb;
+    --page-w: 210mm;
+    --page-h: 297mm;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5pt;
+    color: var(--text);
+    background: #e8edf2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0 40px;
+    gap: 24px;
+  }
+
+  .page-label {
+    font-size: 10px;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+    align-self: flex-start;
+    margin-left: calc(50% - var(--page-w)/2 + 0px);
+    margin-bottom: -18px;
+  }
+
+  .page {
+    width: var(--page-w);
+    min-height: var(--page-h);
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    display: grid;
+    grid-template-columns: 62mm 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--sidebar-bg);
+    padding: 22px 16px 22px 18px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-section h3 {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent-light);
+    padding-bottom: 4px;
+    margin-bottom: 9px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .contact-item .icon {
+    color: var(--accent);
+    font-size: 10pt;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .contact-item a, .contact-item span {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 8.5pt;
+    word-break: break-all;
+  }
+
+  .contact-item a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* Skills tags */
+  .skill-group { margin-bottom: 8px; }
+  .skill-group-label {
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .skill-tag {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 7.5pt;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* Education */
+  .edu-item { margin-bottom: 10px; }
+  .edu-degree {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .edu-school {
+    font-size: 8pt;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .edu-meta {
+    font-size: 7.5pt;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .edu-note {
+    font-size: 7.5pt;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 1px;
+  }
+
+  /* Languages */
+  .lang-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    margin-bottom: 5px;
+    align-items: center;
+  }
+  .lang-name { font-weight: 500; }
+  .lang-level {
+    font-size: 7.5pt;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .lang-dots { display: flex; gap: 3px; margin-top: 2px; }
+  .lang-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+  }
+  .lang-dot.filled { background: var(--accent); }
+
+  /* Interests */
+  .interest-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .interest-tag {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 7.5pt;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    padding: 0 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Header */
+  .header {
+    padding: 20px 0 14px 0;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .header-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22pt;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .header-title {
+    font-size: 10pt;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 8.5pt;
+  }
+
+  /* Section */
+  .section { margin-bottom: 16px; }
+  .section-title {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent-light);
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
+
+  /* Summary */
+  .summary-text {
+    font-size: 8.5pt;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Experience */
+  .exp-item { margin-bottom: 13px; }
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .exp-role {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .exp-company {
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .exp-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .exp-dates {
+    font-size: 7.5pt;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .exp-duration {
+    font-size: 7pt;
+    color: var(--accent);
+    font-weight: 500;
+    background: var(--accent-light);
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .exp-location {
+    font-size: 7.5pt;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 3px;
+    margin-bottom: 5px;
+  }
+  .badge {
+    font-size: 7pt;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge-remote { background: #eafaf1; color: #1e8449; }
+  .badge-hybrid { background: #fef9e7; color: #b7950b; }
+  .badge-onsite { background: #fdf2f8; color: #76448a; }
+
+  .exp-achievements {
+    margin-top: 4px;
+    padding-left: 12px;
+  }
+  .exp-achievements li {
+    font-size: 8.5pt;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 3px;
+    position: relative;
+  }
+  .exp-achievements li::marker { color: var(--accent); }
+
+  /* Certs & Publications */
+  .cert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cert-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .cert-name {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cert-name a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .cert-name a:hover { text-decoration: underline; }
+  .cert-issuer {
+    font-size: 7.5pt;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .cert-date {
+    font-size: 7.5pt;
+    color: var(--muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Projects */
+  .project-item {
+    margin-bottom: 11px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--border);
+  }
+  .project-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .project-name {
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .project-name a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .project-name a:hover { text-decoration: underline; }
+  .project-year {
+    font-size: 7.5pt;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .project-desc {
+    font-size: 8.5pt;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 3px 0 5px;
+  }
+  .tech-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tech-tag {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 7pt;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Page 2 sidebar continuation */
+  .sidebar-cont {
+    background: var(--sidebar-bg);
+    padding: 22px 16px 22px 18px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .page-label { display: none; }
+    .page {
+      box-shadow: none;
+      page-break-after: always;
+      min-height: var(--page-h);
+    }
+    .page:last-child { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ PAGE 1 ═══════════════════════════ -->
+<div class="page-label">Page 1 of 2</div>
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="sidebar-section">
+      <h3>Contact</h3>
+      <div class="contact-item">
+        <span class="icon">✉</span>
+        <a href="mailto:your.email@example.com">your.email@example.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">☎</span>
+        <span>+49 123 456 7890</span>
+      </div>
+      <div class="contact-item">
+        <span class="icon">📍</span>
+        <span>Berlin, Germany</span>
+      </div>
+      <div class="contact-item">
+        <span class="icon">in</span>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">⌥</span>
+        <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">✍</span>
+        <a href="https://yourblog.com" target="_blank">yourblog.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">🔗</span>
+        <a href="https://yourportfolio.com" target="_blank">yourportfolio.com</a>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Technical Skills</h3>
+      <div class="skill-group">
+        <div class="skill-group-label">Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Rust</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Frameworks</div>
+        <div class="skill-tags">
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">PyTorch</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Platforms & Tools</div>
+        <div class="skill-tags">
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Linux</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Soft Skills</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Leadership</span>
+          <span class="skill-tag">Mentoring</span>
+          <span class="skill-tag">Agile</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Languages</h3>
+      <div class="lang-item">
+        <div>
+          <div class="lang-name">English</div>
+          <div class="lang-dots">
+            <div class="lang-dot filled"></div><div class="lang-dot filled"></div>
+            <div class="lang-dot filled"></div><div class="lang-dot filled"></div>
+            <div class="lang-dot filled"></div>
+          </div>
+        </div>
+        <div class="lang-level">Native</div>
+      </div>
+      <div class="lang-item">
+        <div>
+          <div class="lang-name">German</div>
+          <div class="lang-dots">
+            <div class="lang-dot filled"></div><div class="lang-dot filled"></div>
+            <div class="lang-dot filled"></div><div class="lang-dot filled"></div>
+            <div class="lang-dot"></div>
+          </div>
+        </div>
+        <div class="lang-level">C1 — Advanced</div>
+      </div>
+      <div class="lang-item">
+        <div>
+          <div class="lang-name">French</div>
+          <div class="lang-dots">
+            <div class="lang-dot filled"></div><div class="lang-dot filled"></div>
+            <div class="lang-dot"></div><div class="lang-dot"></div>
+            <div class="lang-dot"></div>
+          </div>
+        </div>
+        <div class="lang-level">B1 — Intermediate</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Interests</h3>
+      <div class="interest-tags">
+        <span class="interest-tag">Open Source</span>
+        <span class="interest-tag">AI Ethics</span>
+        <span class="interest-tag">Rock Climbing</span>
+        <span class="interest-tag">Technical Writing</span>
+        <span class="interest-tag">Chess</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="header">
+      <div class="header-name">Alexandra J. Mueller</div>
+      <div class="header-title">Senior Software Engineer &amp; Machine Learning Specialist</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Professional Summary</div>
+      <p class="summary-text">
+        Results-driven software engineer with 8+ years of experience building scalable distributed systems and ML pipelines. Proven track record of leading cross-functional teams, shipping production-grade AI products, and mentoring junior engineers. Passionate about combining engineering rigor with applied research to solve real-world problems.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Work Experience</div>
+
+      <!-- Job 1 -->
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-role">Senior Machine Learning Engineer</div>
+            <div class="exp-company">TechCorp GmbH — Berlin, DE</div>
+          </div>
+          <div class="exp-meta">
+            <div class="exp-dates">Mar 2022 — Present</div>
+            <div class="exp-duration">2 yrs 10 mos</div>
+          </div>
+        </div>
+        <div class="exp-location">
+          <span class="badge badge-hybrid">Hybrid</span>
+          <span>Berlin, Germany (3 days on-site)</span>
+        </div>
+        <ul class="exp-achievements">
+          <li>Designed and deployed a real-time recommendation engine serving 5M+ daily users, reducing latency by 40%.</li>
+          <li>Led a team of 6 engineers to migrate legacy ML infrastructure to Kubernetes, cutting cloud costs by €120k/year.</li>
+          <li>Authored internal ML platform documentation adopted across 3 product teams; reduced onboarding time by 30%.</li>
+          <li>Mentored 4 junior engineers; 2 subsequently promoted to mid-level within 12 months.</li>
+        </ul>
+      </div>
+
+      <!-- Job 2 -->
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-role">Software Engineer — Backend & Data</div>
+            <div class="exp-company">DataStream AG — Munich, DE</div>
+          </div>
+          <div class="exp-meta">
+            <div class="exp-dates">Jul 2019 — Feb 2022</div>
+            <div class="exp-duration">2 yrs 7 mos</div>
+          </div>
+        </div>
+        <div class="exp-location">
+          <span class="badge badge-onsite">On-site</span>
+          <span>Munich, Germany</span>
+        </div>
+        <ul class="exp-achievements">
+          <li>Built high-throughput ETL pipelines processing 2TB/day using Apache Kafka and Apache Spark.</li>
+          <li>Refactored monolithic API into microservices, improving uptime from 97.2% to 99.8% SLA.</li>
+          <li>Collaborated with data science team to productionise 5 predictive models under strict GDPR constraints.</li>
+        </ul>
+      </div>
+
+      <!-- Job 3 -->
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-role">Junior Software Developer</div>
+            <div class="exp-company">WebLaunch Studio — Remote</div>
+          </div>
+          <div class="exp-meta">
+            <div class="exp-dates">Sep 2017 — Jun 2019</div>
+            <div class="exp-duration">1 yr 9 mos</div>
+          </div>
+        </div>
+        <div class="exp-location">
+          <span class="badge badge-remote">Remote</span>
+        </div>
+        <ul class="exp-achievements">
+          <li>Developed and maintained 12 client-facing React web applications with TypeScript and Node.js.</li>
+          <li>Implemented CI/CD pipelines using GitHub Actions, reducing deployment time by 60%.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════ PAGE 2 ═══════════════════════════ -->
+<div class="page-label">Page 2 of 2</div>
+<div class="page">
+
+  <!-- SIDEBAR CONTINUATION -->
+  <div class="sidebar-cont">
+
+    <div class="sidebar-section">
+      <h3>Education</h3>
+
+      <div class="edu-item">
+        <div class="edu-degree">M.Sc. Computer Science</div>
+        <div class="edu-school">Technical University of Munich</div>
+        <div class="edu-meta">2015 — 2017</div>
+        <div class="edu-note">Thesis: Neural Architectures for Time-Series Forecasting</div>
+      </div>
+
+      <div class="edu-item">
+        <div class="edu-degree">B.Sc. Software Engineering</div>
+        <div class="edu-school">RWTH Aachen University</div>
+        <div class="edu-meta">2012 — 2015 · Grade: 1.4</div>
+        <div class="edu-note">Graduated with Honours</div>
+      </div>
+
+    </div>
+
+    <div style="flex:1"></div><!-- spacer -->
+
+  </div>
+
+  <!-- MAIN PAGE 2 -->
+  <div class="main">
+
+    <div style="padding-top: 20px;"></div>
+
+    <div class="section">
+      <div class="section-title">Certifications &amp; Publications</div>
+
+      <div class="cert-item">
+        <div>
+          <div class="cert-name">
+            <a href="https://aws.amazon.com/certification/certified-machine-learning-specialty/" target="_blank">AWS Certified Machine Learning – Specialty</a>
+          </div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
+        <div class="cert-date">Jan 2024</div>
+      </div>
+
+      <div class="cert-item">
+        <div>
+          <div class="cert-name">
+            <a href="https://www.credly.com/badges/example" target="_blank">Google Professional Data Engineer</a>
+          </div>
+          <div class="cert-issuer">Google Cloud</div>
+        </div>
+        <div class="cert-date">Aug 2022</div>
+      </div>
+
+      <div class="cert-item">
+        <div>
+          <div class="cert-name">
+            <a href="https://arxiv.org/abs/example" target="_blank">Efficient Attention Mechanisms for Long-Horizon Forecasting</a>
+          </div>
+          <div class="cert-issuer">Published in NeurIPS 2023 Workshop on Time-Series</div>
+        </div>
+        <div class="cert-date">Dec 2023</div>
+      </div>
+
+      <div class="cert-item">
+        <div>
+          <div class="cert-name">
+            <a href="https://arxiv.org/abs/example2" target="_blank">Scalable Feature Stores for Real-Time ML Serving</a>
+          </div>
+          <div class="cert-issuer">ICML 2022 — MLOps Workshop</div>
+        </div>
+        <div class="cert-date">Jul 2022</div>
+      </div>
+
+    </div>
+
+    <div class="section">
+      <div class="section-title">Projects &amp; Open Source</div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name"><a href="https://github.com/yourusername/tsforecast" target="_blank">⌥ TSForecast</a></div>
+          <div class="project-year">2023 — Present</div>
+        </div>
+        <div class="project-desc">
+          An open-source Python library for multivariate time-series forecasting using transformer architectures. Over 1.2k GitHub stars and 40+ contributors. Features AutoML-style hyperparameter tuning and native support for probabilistic forecasts.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">PyTorch</span>
+          <span class="tech-tag">Transformers</span>
+          <span class="tech-tag">CI/CD</span>
+          <span class="tech-tag">PyPI</span>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name"><a href="https://github.com/yourusername/mlops-infra" target="_blank">⌥ MLOps Infrastructure Toolkit</a></div>
+          <div class="project-year">2022</div>
+        </div>
+        <div class="project-desc">
+          A set of Terraform modules and Helm charts for bootstrapping production ML infrastructure on AWS/EKS. Supports model versioning, A/B traffic splitting, and automated rollback. Used internally at TechCorp and open-sourced.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Terraform</span>
+          <span class="tech-tag">Kubernetes</span>
+          <span class="tech-tag">Helm</span>
+          <span class="tech-tag">AWS</span>
+          <span class="tech-tag">MLflow</span>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name"><a href="https://yourblog.com/dataviz-dashboard" target="_blank">⌥ Real-Time Analytics Dashboard</a></div>
+          <div class="project-year">2021</div>
+        </div>
+        <div class="project-desc">
+          A full-stack web app for visualising streaming business metrics with sub-second refresh. Features custom React charting components, WebSocket data ingestion, and a FastAPI backend with Redis caching.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">FastAPI</span>
+          <span class="tech-tag">Redis</span>
+          <span class="tech-tag">WebSockets</span>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name"><a href="https://github.com/yourusername/gpt-cli" target="_blank">⌥ GPT-CLI</a></div>
+          <div class="project-year">2020</div>
+        </div>
+        <div class="project-desc">
+          Lightweight terminal tool for querying LLM APIs with conversation memory, prompt templating, and output piping. 500+ GitHub stars. Published on Homebrew.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Rust</span>
+          <span class="tech-tag">CLI</span>
+          <span class="tech-tag">OpenAI API</span>
+          <span class="tech-tag">Homebrew</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

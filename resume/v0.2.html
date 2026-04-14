@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --accent: #1a5276;
+    --accent-light: #d4e6f1;
+    --accent-bg: #eaf2f8;
+    --text: #1a1a2e;
+    --text-secondary: #555;
+    --text-light: #777;
+    --border: #dce1e6;
+    --bg-sidebar: #f5f7fa;
+    --tag-remote: #27ae60;
+    --tag-hybrid: #e67e22;
+    --tag-onsite: #3498db;
+    --tag-bg-remote: #eafaf1;
+    --tag-bg-hybrid: #fef5e7;
+    --tag-bg-onsite: #ebf5fb;
+    --page-width: 210mm;
+    --page-height: 297mm;
+    --sidebar-width: 62mm;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    color: var(--text);
+    background: #e0e0e0;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page {
+    width: var(--page-width);
+    height: var(--page-height);
+    margin: 10mm auto;
+    background: #fff;
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    position: relative;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--bg-sidebar);
+    padding: 0 5mm;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .page:first-child .sidebar { padding-top: 28mm; }
+  .page:nth-child(2) .sidebar { padding-top: 8mm; }
+
+  .sidebar-section { margin-bottom: 5mm; }
+  .sidebar-title {
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 1.5mm;
+    margin-bottom: 2.5mm;
+  }
+
+  .skill-category { margin-bottom: 2.5mm; }
+  .skill-category-name { font-weight: 600; font-size: 7.5pt; color: var(--text); margin-bottom: 1mm; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 1.5mm; }
+  .skill-tag {
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-size: 6.5pt;
+    font-weight: 500;
+    padding: 0.8mm 2mm;
+    border-radius: 2px;
+  }
+
+  .lang-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5mm; }
+  .lang-name { font-size: 7.5pt; font-weight: 500; }
+  .lang-level { font-size: 6.5pt; color: var(--text-light); }
+  .lang-dots { display: flex; gap: 1mm; }
+  .lang-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--border);
+  }
+  .lang-dot.filled { background: var(--accent); }
+
+  .interest-tag {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--border);
+    font-size: 6.5pt;
+    padding: 0.8mm 2mm;
+    border-radius: 2px;
+    margin: 0 1mm 1.5mm 0;
+  }
+
+  .edu-item { margin-bottom: 3mm; }
+  .edu-degree { font-weight: 600; font-size: 7.5pt; color: var(--text); }
+  .edu-school { font-size: 7pt; color: var(--text-secondary); }
+  .edu-date { font-size: 6.5pt; color: var(--text-light); margin-top: 0.5mm; }
+  .edu-detail { font-size: 6.5pt; color: var(--text-secondary); margin-top: 0.5mm; font-style: italic; }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    padding: 0 6mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER (spans full width on page 1) ── */
+  .header-band {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: var(--accent);
+    color: #fff;
+    padding: 5mm 6mm 5mm calc(var(--sidebar-width) + 6mm);
+    z-index: 2;
+  }
+  .header-name {
+    font-size: 18pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .header-title {
+    font-size: 9pt;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-top: 1mm;
+    letter-spacing: 0.3px;
+  }
+  .header-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3mm;
+    margin-top: 2.5mm;
+  }
+  .header-contact-item {
+    font-size: 7pt;
+    display: flex;
+    align-items: center;
+    gap: 1.2mm;
+    opacity: 0.92;
+  }
+  .header-contact-item a { color: #fff; }
+  .header-contact-item svg { width: 10px; height: 10px; fill: #fff; flex-shrink: 0; }
+
+  .page:first-child .main { padding-top: 28mm; }
+  .page:nth-child(2) .main { padding-top: 8mm; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4mm; }
+  .section-title {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 1.5mm;
+    margin-bottom: 3mm;
+  }
+
+  /* ── SUMMARY ── */
+  .summary-text {
+    font-size: 8pt;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .summary-text strong { color: var(--text); }
+
+  /* ── WORK EXPERIENCE ── */
+  .job { margin-bottom: 4mm; }
+  .job:last-child { margin-bottom: 0; }
+
+  .job-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 1mm;
+  }
+  .job-role { font-size: 8.5pt; font-weight: 700; color: var(--text); }
+  .job-date-line {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    font-size: 7pt;
+    color: var(--text-light);
+  }
+  .job-company {
+    font-size: 7.5pt;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .duration-badge {
+    font-size: 6pt;
+    font-weight: 600;
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 0.5mm 1.8mm;
+    border-radius: 2px;
+  }
+  .location-tag {
+    font-size: 6pt;
+    font-weight: 600;
+    padding: 0.5mm 1.8mm;
+    border-radius: 2px;
+  }
+  .location-tag.remote { background: var(--tag-bg-remote); color: var(--tag-remote); }
+  .location-tag.hybrid { background: var(--tag-bg-hybrid); color: var(--tag-hybrid); }
+  .location-tag.onsite { background: var(--tag-bg-onsite); color: var(--tag-onsite); }
+
+  .career-stats {
+    display: flex;
+    gap: 2.5mm;
+    margin-top: 1mm;
+    flex-wrap: wrap;
+  }
+  .career-stat {
+    font-size: 6.5pt;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-bg);
+    padding: 0.5mm 2mm;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 1mm;
+  }
+  .career-stat svg { width: 8px; height: 8px; fill: var(--accent); }
+
+  .job-achievements {
+    margin: 1.5mm 0 0 0;
+    padding-left: 3.5mm;
+    list-style: none;
+  }
+  .job-achievements li {
+    position: relative;
+    padding-left: 2mm;
+    margin-bottom: 1mm;
+    font-size: 7.5pt;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .job-achievements li::before {
+    content: '▸';
+    position: absolute;
+    left: -3mm;
+    color: var(--accent);
+    font-size: 7pt;
+  }
+
+  .references-box {
+    margin-top: 1.5mm;
+    padding: 1.5mm 2.5mm;
+    background: var(--bg-sidebar);
+    border-left: 2px solid var(--accent-light);
+    border-radius: 0 2px 2px 0;
+  }
+  .ref-label {
+    font-size: 6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent);
+    margin-bottom: 0.8mm;
+  }
+  .ref-item {
+    font-size: 6.8pt;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .ref-item strong { color: var(--text); font-weight: 600; }
+
+  /* ── PROJECTS ── */
+  .project-item { margin-bottom: 3mm; }
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .project-name {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .project-name a { color: var(--accent); }
+  .project-name svg { width: 9px; height: 9px; fill: var(--accent); vertical-align: middle; margin-left: 1mm; }
+  .project-year { font-size: 6.5pt; color: var(--text-light); }
+  .project-desc {
+    font-size: 7pt;
+    color: var(--text-secondary);
+    margin-top: 0.5mm;
+    line-height: 1.5;
+  }
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5mm;
+    margin-top: 1mm;
+  }
+  .tech-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6pt;
+    font-weight: 500;
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 0.5mm 1.8mm;
+    border-radius: 2px;
+  }
+
+  /* ── CERTS / RESEARCH ── */
+  .cert-item, .research-item { margin-bottom: 2.5mm; }
+  .cert-name, .research-title {
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cert-name a, .research-title a { color: var(--accent); }
+  .cert-meta, .research-meta {
+    font-size: 6.5pt;
+    color: var(--text-light);
+    margin-top: 0.3mm;
+  }
+  .cert-meta strong, .research-meta strong { color: var(--text-secondary); font-weight: 600; }
+
+  /* ── GenAI PROFICIENCY ── */
+  .genai-bar {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    margin-bottom: 1.5mm;
+  }
+  .genai-label { font-size: 7pt; font-weight: 500; width: 28mm; }
+  .genai-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .genai-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* ── PAGE 2 CONT LABEL ── */
+  .page-cont-label {
+    font-size: 6pt;
+    color: var(--text-light);
+    text-align: right;
+    margin-bottom: 2mm;
+    font-style: italic;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ PAGE 1 ════════════════════════ -->
+<div class="page">
+
+  <!-- HEADER BAND -->
+  <div class="header-band">
+    <div class="header-name">Your Full Name</div>
+    <div class="header-title">Senior Security Engineer · Cloud & Application Security</div>
+    <div class="header-contacts">
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <a href="mailto:you@email.com">you@email.com</a>
+      </span>
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.2 2.2z"/></svg>
+        +49 170 000 0000
+      </span>
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 7a2.5 2.5 0 010 4.5z"/></svg>
+        Berlin, Germany
+      </span>
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 11.27h-3v-5.6c0-3.37-4-3.12-4 0v5.6h-3v-10h3v1.77c1.4-2.59 7-2.78 7 2.48v5.75z"/></svg>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+      </span>
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.12.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 011.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+      </span>
+      <span class="header-contact-item">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/><style>svg { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }</style></svg>
+        <a href="https://yourblog.dev" target="_blank">Blog</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- SIDEBAR PAGE 1 -->
+  <div class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Education</div>
+      <div class="edu-item">
+        <div class="edu-degree">M.Sc. Computer Science</div>
+        <div class="edu-school">Technical University Berlin</div>
+        <div class="edu-date">Oct 2014 – Mar 2017</div>
+        <div class="edu-detail">Thesis: Automated Threat Detection in Cloud Environments</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-degree">B.Sc. Information Technology</div>
+        <div class="edu-school">University of Example</div>
+        <div class="edu-date">Aug 2010 – Jun 2014</div>
+        <div class="edu-detail">First Class Honours</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Core Skills</div>
+      <div class="skill-category">
+        <div class="skill-category-name">Security</div>
+        <div class="skill-tags">
+          <span class="skill-tag">SIEM/SOAR</span>
+          <span class="skill-tag">AppSec</span>
+          <span class="skill-tag">Pen Testing</span>
+          <span class="skill-tag">Threat Modelling</span>
+          <span class="skill-tag">D&R</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-name">Cloud & Infra</div>
+        <div class="skill-tags">
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">GCP</span>
+          <span class="skill-tag">Terraform</span>
+          <span class="skill-tag">K8s</span>
+          <span class="skill-tag">Docker</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-name">Languages</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Go</span>
+          <span class="skill-tag">Bash</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">GenAI Proficiency</div>
+      <div class="genai-bar">
+        <span class="genai-label">Prompt Eng.</span>
+        <div class="genai-track"><div class="genai-fill" style="width:92%"></div></div>
+      </div>
+      <div class="genai-bar">
+        <span class="genai-label">LLM Ops</span>
+        <div class="genai-track"><div class="genai-fill" style="width:80%"></div></div>
+      </div>
+      <div class="genai-bar">
+        <span class="genai-label">RAG / Agents</span>
+        <div class="genai-track"><div class="genai-fill" style="width:75%"></div></div>
+      </div>
+      <div class="genai-bar">
+        <span class="genai-label">AI Security</span>
+        <div class="genai-track"><div class="genai-fill" style="width:85%"></div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Languages</div>
+      <div class="lang-item">
+        <span class="lang-name">English</span>
+        <div class="lang-dots">
+          <span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span>
+        </div>
+      </div>
+      <div class="lang-item">
+        <span class="lang-name">German</span>
+        <div class="lang-dots">
+          <span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot"></span>
+        </div>
+      </div>
+      <div class="lang-item">
+        <span class="lang-name">Urdu / Hindi</span>
+        <div class="lang-dots">
+          <span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span><span class="lang-dot filled"></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT PAGE 1 -->
+  <div class="main">
+
+    <div class="section">
+      <div class="section-title">Professional Summary</div>
+      <div class="summary-text">
+        <strong>Security engineer with 8+ years</strong> of experience across application security, cloud infrastructure, and detection & response. Proven track record of building security programmes from the ground up, leading cross-functional teams, and reducing organisational risk through automation, threat modelling, and DevSecOps integration. Passionate about <strong>AI-augmented security</strong> and open-source tooling.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Work Experience</div>
+
+      <!-- JOB 1 -->
+      <div class="job">
+        <div class="job-header-row">
+          <span class="job-role">Senior Security Engineer</span>
+          <span class="job-date-line">
+            Jan 2022 – Present
+            <span class="duration-badge">3 yr 3 mo</span>
+            <span class="location-tag hybrid">Hybrid</span>
+          </span>
+        </div>
+        <div class="job-company">Delivery Hero SE, Berlin</div>
+        <div class="career-stats">
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+            1 Promotion
+          </span>
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1a3 3 0 00-5.17-2.07L12 4.16l-1.01-1.23A3 3 0 005.82 5c0 .35.07.69.18 1H4a2 2 0 00-2 2v2h20V8a2 2 0 00-2-2zm-7-1a1 1 0 111 1h-1V5zm-5 0a1 1 0 112 0v1H8a1 1 0 01-1-1zM2 12v8a2 2 0 002 2h16a2 2 0 002-2v-8H2z"/></svg>
+            2 Awards
+          </span>
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05C16.19 13.89 17 15.02 17 16.5V19h6v-2.5C23 14.17 18.33 13 16 13z"/></svg>
+            6 Hires Made
+          </span>
+        </div>
+        <ul class="job-achievements">
+          <li>Led the D&R programme, reducing mean-time-to-detect (MTTD) by 40% through SIEM tuning and automated playbooks</li>
+          <li>Built and managed the AppSec pipeline — SAST, DAST, SCA — for 200+ microservices across 15 squads</li>
+          <li>Drove NIS2 compliance readiness; authored risk assessments adopted company-wide</li>
+          <li>Hired, onboarded, and mentored 6 security engineers across 3 sub-teams</li>
+        </ul>
+        <div class="references-box">
+          <div class="ref-label">References</div>
+          <div class="ref-item"><strong>Jane Doe</strong> — VP of Engineering · jane.doe@email.com · +49 170 000 0000</div>
+          <div class="ref-item"><strong>John Smith</strong> — CISO · john.smith@email.com · +49 170 000 0000</div>
+        </div>
+      </div>
+
+      <!-- JOB 2 -->
+      <div class="job">
+        <div class="job-header-row">
+          <span class="job-role">Security Engineer</span>
+          <span class="job-date-line">
+            Mar 2019 – Dec 2021
+            <span class="duration-badge">2 yr 10 mo</span>
+            <span class="location-tag remote">Remote</span>
+          </span>
+        </div>
+        <div class="job-company">FinTech Startup GmbH, Munich</div>
+        <div class="career-stats">
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+            1 Promotion
+          </span>
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            ISO 27001 Certified
+          </span>
+        </div>
+        <ul class="job-achievements">
+          <li>Designed and implemented cloud security architecture on AWS (VPC, IAM, GuardDuty, CloudTrail) for PCI-DSS environment</li>
+          <li>Established the first bug bounty programme, triaging 120+ reports in Year 1 with zero critical misses</li>
+          <li>Automated infrastructure compliance checks using Terraform Sentinel and OPA, reducing audit prep from 4 weeks to 3 days</li>
+        </ul>
+        <div class="references-box">
+          <div class="ref-label">References</div>
+          <div class="ref-item"><strong>Alice Kumar</strong> — Engineering Manager · alice.kumar@email.com</div>
+          <div class="ref-item"><strong>Bob Chen</strong> — CTO · bob.chen@email.com</div>
+        </div>
+      </div>
+
+      <!-- JOB 3 -->
+      <div class="job">
+        <div class="job-header-row">
+          <span class="job-role">Junior Security Analyst</span>
+          <span class="job-date-line">
+            Jun 2017 – Feb 2019
+            <span class="duration-badge">1 yr 9 mo</span>
+            <span class="location-tag onsite">On-site</span>
+          </span>
+        </div>
+        <div class="job-company">Big Consulting AG, Frankfurt</div>
+        <div class="career-stats">
+          <span class="career-stat">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+            Top Performer Q3 2018
+          </span>
+        </div>
+        <ul class="job-achievements">
+          <li>Conducted 30+ penetration tests for financial and healthcare clients; authored executive-level reports</li>
+          <li>Developed internal Python tooling for automated vulnerability scanning, reducing manual effort by 60%</li>
+        </ul>
+        <div class="references-box">
+          <div class="ref-label">References</div>
+          <div class="ref-item"><strong>Maria Schmidt</strong> — Senior Consultant · maria.schmidt@email.com</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ PAGE 2 ════════════════════════ -->
+<div class="page">
+
+  <!-- SIDEBAR PAGE 2 -->
+  <div class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Interests</div>
+      <span class="interest-tag">Open Source</span>
+      <span class="interest-tag">CTF Competitions</span>
+      <span class="interest-tag">Travel</span>
+      <span class="interest-tag">Photography</span>
+      <span class="interest-tag">Board Games</span>
+      <span class="interest-tag">Running</span>
+      <span class="interest-tag">Home Automation</span>
+      <span class="interest-tag">Coffee</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Volunteering</div>
+      <div class="edu-item">
+        <div class="edu-degree">OWASP Berlin Chapter</div>
+        <div class="edu-school">Co-organiser</div>
+        <div class="edu-date">2020 – Present</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-degree">CoderDojo Berlin</div>
+        <div class="edu-school">Mentor (Youth Coding)</div>
+        <div class="edu-date">2018 – 2020</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Awards</div>
+      <div class="edu-item">
+        <div class="edu-degree">Security Champion 2023</div>
+        <div class="edu-school">Delivery Hero SE</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-degree">Hack the Box Top 1%</div>
+        <div class="edu-school">Global Ranking 2022</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT PAGE 2 -->
+  <div class="main">
+    <div class="page-cont-label">Page 2 · Your Full Name</div>
+
+    <div class="section">
+      <div class="section-title">Projects & Open Source</div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name">
+            <a href="https://github.com/yourusername/cloud-sentinel" target="_blank">Cloud Sentinel</a>
+            <svg viewBox="0 0 24 24" style="fill:var(--accent)"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.12.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 011.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
+          </div>
+          <div class="project-year">2023</div>
+        </div>
+        <div class="project-desc">
+          Open-source multi-cloud security posture management tool. Scans AWS, GCP, and Azure for misconfigurations against CIS benchmarks. 1.2k GitHub stars, used by 50+ orgs.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Go</span>
+          <span class="tech-tag">AWS SDK</span>
+          <span class="tech-tag">GCP API</span>
+          <span class="tech-tag">Terraform</span>
+          <span class="tech-tag">CIS Benchmarks</span>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name">
+            <a href="https://github.com/yourusername/threat-hunt-notebook" target="_blank">Threat Hunt Notebooks</a>
+            <svg viewBox="0 0 24 24" style="fill:var(--accent)"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.12.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 011.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
+          </div>
+          <div class="project-year">2022</div>
+        </div>
+        <div class="project-desc">
+          A curated collection of Jupyter notebooks for threat hunting across cloud environments. Includes MITRE ATT&CK mapping, KQL/SPL query templates, and visualisation dashboards.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">Jupyter</span>
+          <span class="tech-tag">KQL</span>
+          <span class="tech-tag">MITRE ATT&CK</span>
+          <span class="tech-tag">Pandas</span>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <div class="project-header">
+          <div class="project-name">
+            <a href="https://yourusername.dev/devsecops-pipeline" target="_blank">DevSecOps Pipeline Starter</a>
+            <svg viewBox="0 0 24 24" style="fill:var(--accent)"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 000 10h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 000-10z"/></svg>
+          </div>
+          <div class="project-year">2021</div>
+        </div>
+        <div class="project-desc">
+          Boilerplate GitHub Actions & GitLab CI templates integrating SAST (Semgrep), DAST (ZAP), SCA (Trivy), and secret scanning into a single pipeline with Slack alerting.
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">GitHub Actions</span>
+          <span class="tech-tag">Semgrep</span>
+          <span class="tech-tag">ZAP</span>
+          <span class="tech-tag">Trivy</span>
+          <span class="tech-tag">YAML</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section">
+      <div class="section-title">Trainings & Certifications</div>
+
+      <div class="cert-item">
+        <div class="cert-name"><a href="https://www.credential.net/xxx" target="_blank">Offensive Security Certified Professional (OSCP)</a></div>
+        <div class="cert-meta"><strong>Institute:</strong> Offensive Security · Issued Dec 2020</div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-name"><a href="https://www.credly.com/xxx" target="_blank">AWS Certified Security – Specialty</a></div>
+        <div class="cert-meta"><strong>Institute:</strong> Amazon Web Services · Issued Jun 2021</div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-name"><a href="https://www.credly.com/xxx" target="_blank">Certified Kubernetes Security Specialist (CKS)</a></div>
+        <div class="cert-meta"><strong>Institute:</strong> The Linux Foundation · Issued Mar 2022</div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-name"><a href="#" target="_blank">AI Security Fundamentals</a></div>
+        <div class="cert-meta"><strong>Institute:</strong> SANS Institute · Issued Sep 2024</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Research & Keynotes</div>
+
+      <div class="research-item">
+        <div class="research-title"><a href="https://doi.org/xxx" target="_blank">Automated Threat Detection in Multi-Cloud Environments Using Graph-Based Anomaly Analysis</a></div>
+        <div class="research-meta"><strong>Conference:</strong> Black Hat Europe 2023 · Arsenal Track</div>
+      </div>
+      <div class="research-item">
+        <div class="research-title"><a href="https://yourusername.dev/talks/devsecops" target="_blank">Scaling DevSecOps in Hypergrowth: Lessons from 200 Microservices</a></div>
+        <div class="research-meta"><strong>Conference:</strong> OWASP Global AppSec 2022 · Keynote</div>
+      </div>
+      <div class="research-item">
+        <div class="research-title"><a href="https://doi.org/xxx" target="_blank">LLM-Powered Security Copilots: Opportunities and Risks for SOC Teams</a></div>
+        <div class="research-meta"><strong>Conference:</strong> BSides Berlin 2024 · Main Stage</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
