@@ -2,6 +2,8 @@
 
 vibe coded infographics, interactive artifacts etc.
 
+https://keyboardmonkey.github.io/vibe-artifacts/ 
+
 ## Projects
 
 - [Claude APIs](./claude-apis) - Analytics and Compliance API for Security auditing.
