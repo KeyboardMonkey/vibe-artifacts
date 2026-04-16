@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Field Manual to Claude Usage and Length Limits &mdash; Team and Enterprise Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f3ece0;
+    --paper-dark: #e8dfce;
+    --ink: #1a1814;
+    --ink-soft: #3d362c;
+    --ink-faint: #6b6456;
+    --vermilion: #c3341f;
+    --vermilion-soft: #e8553d;
+    --ochre: #c8923a;
+    --moss: #4a6140;
+    --rule: #2a2520;
+    --line: rgba(26, 24, 20, 0.12);
+    --danger-bg: #f5e1db;
+    --good-bg: #e1ead9;
+    --neutral-bg: #ecdfbf;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(195, 52, 31, 0.04), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(200, 146, 58, 0.05), transparent 40%);
+  }
+
+  /* Paper texture */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 2;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* =========== MASTHEAD =========== */
+  header.masthead {
+    padding: 40px 0 24px;
+    border-bottom: 3px double var(--rule);
+    position: relative;
+  }
+
+  .eyebrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .eyebrow span { display: flex; align-items: center; gap: 8px; }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--vermilion); }
+
+  h1.title {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(42px, 6vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-variation-settings: 'opsz' 144;
+    margin-bottom: 20px;
+  }
+
+  h1.title em {
+    font-style: italic;
+    color: var(--vermilion);
+    font-weight: 400;
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 680px;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .meta-grid > div {
+    background: var(--paper);
+    padding: 14px 16px;
+  }
+  .meta-grid .label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 4px;
+  }
+  .meta-grid .value { color: var(--ink); font-weight: 500; }
+
+  /* =========== TOC =========== */
+  nav.toc {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+  nav.toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 4px 32px;
+    counter-reset: toc;
+  }
+  nav.toc li {
+    counter-increment: toc;
+    border-bottom: 1px dotted var(--line);
+    padding: 10px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    transition: all 0.2s;
+  }
+  nav.toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--vermilion);
+    font-weight: 500;
+  }
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+  nav.toc li:hover a { color: var(--vermilion); }
+
+  /* =========== SECTIONS =========== */
+  section {
+    margin-bottom: 96px;
+    scroll-margin-top: 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--vermilion);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  h2.section-title em { font-style: italic; color: var(--ink-soft); font-weight: 300; }
+
+  .lede {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.5;
+    font-weight: 300;
+    color: var(--ink-soft);
+    max-width: 820px;
+    margin-bottom: 40px;
+    border-left: 3px solid var(--vermilion);
+    padding-left: 24px;
+  }
+  .lede::first-letter {
+    font-family: 'Fraunces', serif;
+    font-size: 3.5em;
+    float: left;
+    line-height: 0.9;
+    font-weight: 400;
+    padding-right: 10px;
+    margin-top: 6px;
+    color: var(--vermilion);
+  }
+
+  /* =========== SECTION 1: DICHOTOMY =========== */
+  .dichotomy {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 48px;
+  }
+  .dich-card {
+    padding: 36px 32px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    position: relative;
+    transition: transform 0.3s;
+  }
+  .dich-card:hover { transform: translateY(-4px); }
+  .dich-card .kind {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--vermilion);
+    margin-bottom: 16px;
+  }
+  .dich-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .dich-card h3 em { font-style: italic; color: var(--vermilion); }
+  .dich-card .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .dich-card p { margin-bottom: 14px; color: var(--ink-soft); }
+  .dich-card .metaphor {
+    background: var(--neutral-bg);
+    padding: 16px 18px;
+    margin-top: 20px;
+    border-left: 3px solid var(--ochre);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .dich-card .metaphor strong { font-family: 'Fraunces', serif; font-style: italic; }
+
+  .vs-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 42px;
+    color: var(--vermilion);
+    font-weight: 300;
+  }
+  .vs-divider::before, .vs-divider::after {
+    content: "";
+    width: 1px;
+    background: var(--line);
+    flex: 1;
+  }
+  .vs-divider span { padding: 20px 0; }
+
+  /* Comparison matrix */
+  .matrix {
+    margin-top: 48px;
+    border: 1px solid var(--ink);
+  }
+  .matrix-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 1fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .matrix-row:last-child { border-bottom: none; }
+  .matrix-row.head {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .matrix-row.head > div {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+  }
+  .matrix-row > div {
+    padding: 18px 20px;
+    border-right: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .matrix-row > div:last-child { border-right: none; }
+  .matrix-row .aspect {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-soft);
+    background: var(--paper-dark);
+  }
+
+  /* =========== CONTEXT WINDOW VISUALIZER =========== */
+  .cw-visualizer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 48px 40px;
+    margin: 48px 0;
+    border-radius: 2px;
+  }
+  .cw-visualizer h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .cw-visualizer .helper {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: rgba(243, 236, 224, 0.6);
+    margin-bottom: 32px;
+    font-size: 15px;
+  }
+  .cw-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+  }
+  @media (max-width: 860px) { .cw-layout { grid-template-columns: 1fr; } }
+
+  .cw-bar-wrap {
+    background: rgba(243, 236, 224, 0.08);
+    border: 1px solid rgba(243, 236, 224, 0.2);
+    height: 72px;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .cw-segment {
+    transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    overflow: hidden;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .cw-segment.free { background: transparent; border-left: 1px dashed rgba(243,236,224,0.3); }
+  .cw-segment.sys { background: #7a6d52; color: var(--paper); }
+  .cw-segment.tools { background: var(--ochre); }
+  .cw-segment.files { background: var(--moss); color: var(--paper); }
+  .cw-segment.think { background: var(--vermilion-soft); color: var(--paper); }
+  .cw-segment.history { background: var(--vermilion); color: var(--paper); }
+
+  .cw-stats {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 32px;
+  }
+  .cw-stats .used { color: var(--vermilion-soft); }
+  .cw-stats .free-lbl { color: rgba(243, 236, 224, 0.7); }
+
+  .cw-controls { display: flex; flex-direction: column; gap: 14px; }
+  .cw-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(243, 236, 224, 0.05);
+    border: 1px solid rgba(243, 236, 224, 0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cw-toggle:hover { background: rgba(243, 236, 224, 0.1); }
+  .cw-toggle.active { border-color: var(--vermilion-soft); background: rgba(195, 52, 31, 0.12); }
+  .cw-toggle-label { display: flex; align-items: center; gap: 12px; }
+  .cw-toggle-swatch { width: 12px; height: 12px; border-radius: 2px; }
+  .cw-toggle-name { font-family: 'Fraunces', serif; font-size: 16px; }
+  .cw-toggle-cost { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(243,236,224,0.6); }
+  .cw-switch {
+    width: 34px; height: 18px; background: rgba(243,236,224,0.15);
+    border-radius: 18px; position: relative; transition: background 0.2s;
+  }
+  .cw-switch::after {
+    content: "";
+    position: absolute;
+    width: 14px; height: 14px; background: var(--paper);
+    border-radius: 50%; top: 2px; left: 2px;
+    transition: transform 0.2s;
+  }
+  .cw-toggle.active .cw-switch { background: var(--vermilion-soft); }
+  .cw-toggle.active .cw-switch::after { transform: translateX(16px); }
+
+  .cw-verdict {
+    margin-top: 28px;
+    padding: 20px 24px;
+    border-top: 1px solid rgba(243, 236, 224, 0.2);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.5;
+    min-height: 80px;
+  }
+  .cw-verdict.warn { color: var(--vermilion-soft); }
+  .cw-verdict.ok { color: #a5c48a; }
+
+  /* =========== PLAN COMPARE TABLE =========== */
+  .plan-compare {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+  }
+  @media (max-width: 720px) { .plan-compare { grid-template-columns: 1fr; } }
+  .plan-card {
+    border: 1px solid var(--ink);
+    padding: 28px;
+    background: var(--paper);
+    position: relative;
+  }
+  .plan-card.highlight {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .plan-card .plan-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--vermilion);
+  }
+  .plan-card.highlight .plan-name { color: var(--vermilion-soft); }
+  .plan-card h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+  .plan-card .metric { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dotted var(--line); }
+  .plan-card .metric:last-child { border: none; padding-bottom: 0; margin-bottom: 0; }
+  .plan-card .metric-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .plan-card.highlight .metric-label { color: rgba(243,236,224,0.5); }
+  .plan-card .metric-value {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .plan-card .metric-note {
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .plan-card.highlight .metric-note { color: rgba(243,236,224,0.6); }
+
+  /* =========== TACTICS (section 3) =========== */
+  .tactics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    counter-reset: tactic;
+  }
+  .tactic {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 28px 26px;
+    counter-increment: tactic;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .tactic:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 var(--ink); }
+  .tactic::before {
+    content: counter(tactic, decimal-leading-zero);
+    position: absolute;
+    top: 20px; right: 24px;
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    color: var(--paper-dark);
+    font-weight: 300;
+    line-height: 1;
+  }
+  .tactic h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    max-width: calc(100% - 50px);
+    line-height: 1.15;
+  }
+  .tactic h4 em { font-style: italic; color: var(--vermilion); }
+  .tactic .tactic-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+  .tactic p { font-size: 14.5px; margin-bottom: 14px; color: var(--ink-soft); }
+  .tactic .example {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--paper-dark);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    border-left: 2px solid var(--moss);
+  }
+  .tactic .example-label {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--moss);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* =========== GOOD vs BAD =========== */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--ink);
+    margin: 40px 0;
+    border: 1px solid var(--ink);
+  }
+  @media (max-width: 720px) { .comparison { grid-template-columns: 1fr; } }
+  .comp-col { padding: 28px; }
+  .comp-col.bad { background: var(--danger-bg); }
+  .comp-col.good { background: var(--good-bg); }
+  .comp-col .comp-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .comp-col.bad .comp-head { color: var(--vermilion); }
+  .comp-col.good .comp-head { color: var(--moss); }
+  .comp-col .comp-icon {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .comp-col h5 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .comp-col p { font-size: 14.5px; color: var(--ink-soft); line-height: 1.5; }
+  .comp-col .dialogue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: rgba(255,255,255,0.35);
+    padding: 12px 14px;
+    margin-top: 12px;
+    line-height: 1.55;
+  }
+
+  /* =========== ANTI-PATTERNS =========== */
+  .antipatterns {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .anti {
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .anti summary {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+  }
+  .anti summary::-webkit-details-marker { display: none; }
+  .anti summary::after {
+    content: "+";
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--vermilion);
+    margin-left: auto;
+    transition: transform 0.3s;
+    line-height: 1;
+  }
+  .anti[open] summary::after { content: "−"; }
+  .anti[open] { box-shadow: 4px 4px 0 var(--ink); }
+  .anti .anti-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--vermilion);
+    letter-spacing: 0.1em;
+    min-width: 30px;
+  }
+  .anti .anti-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  .anti .anti-title em { font-style: italic; }
+  .anti-body {
+    padding: 0 24px 24px 74px;
+  }
+  .anti-body p { margin-bottom: 12px; color: var(--ink-soft); }
+  .anti-body .fix {
+    background: var(--good-bg);
+    padding: 14px 18px;
+    border-left: 3px solid var(--moss);
+    margin-top: 14px;
+    font-size: 14.5px;
+  }
+  .anti-body .fix strong { font-family: 'Fraunces', serif; font-style: italic; color: var(--moss); }
+
+  /* =========== DECISION TREE =========== */
+  .tree {
+    margin-top: 40px;
+    padding: 40px;
+    background: var(--paper-dark);
+    border: 1px solid var(--ink);
+    position: relative;
+  }
+  .tree h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .tree .tree-sub {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-faint);
+    margin-bottom: 32px;
+  }
+  .tree-start {
+    display: inline-block;
+    padding: 14px 24px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .branches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 720px) { .branches { grid-template-columns: 1fr; } }
+  .branch {
+    border-top: 2px solid var(--ink);
+    padding-top: 20px;
+    position: relative;
+  }
+  .branch::before {
+    content: "";
+    position: absolute;
+    top: -2px; left: 50%;
+    width: 10px; height: 10px;
+    background: var(--vermilion);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .branch-label {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--vermilion);
+    margin-bottom: 16px;
+  }
+  .branch ol {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+  }
+  .branch ol li {
+    counter-increment: step;
+    padding: 12px 0 12px 42px;
+    border-bottom: 1px dotted var(--line);
+    position: relative;
+    font-size: 14.5px;
+  }
+  .branch ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 14px;
+    width: 26px; height: 26px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--paper);
+  }
+  .branch ol li:last-child { border: none; }
+  .branch ol li strong { font-family: 'Fraunces', serif; font-style: italic; color: var(--vermilion); font-weight: 500; }
+
+  /* =========== MONITORING =========== */
+  .monitor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 32px;
+  }
+  @media (max-width: 720px) { .monitor-grid { grid-template-columns: 1fr; } }
+  .monitor-card {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 28px;
+  }
+  .monitor-card h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .monitor-card .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: var(--vermilion);
+    color: var(--paper);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  .monitor-card p { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 14px; }
+
+  .session-viz {
+    background: var(--ink);
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .session-viz .bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(243, 236, 224, 0.7);
+    margin-bottom: 8px;
+  }
+  .session-viz .bar-label:not(:first-child) { margin-top: 18px; }
+  .session-viz .bar-label span:last-child { color: var(--paper); }
+  .session-bar {
+    height: 10px;
+    background: rgba(243, 236, 224, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .session-bar .fill {
+    height: 100%;
+    background: var(--vermilion-soft);
+    transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .session-bar .fill.weekly { background: var(--ochre); }
+  .session-bar .fill.opus { background: var(--vermilion); }
+
+  /* =========== FOOTER =========== */
+  footer {
+    margin-top: 80px;
+    padding: 48px 0 40px;
+    border-top: 3px double var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  footer a { color: var(--vermilion); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .colophon {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-soft);
+    max-width: 380px;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Small decorative ornaments */
+  .ornament {
+    text-align: center;
+    margin: 60px 0;
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    color: var(--ink-faint);
+    letter-spacing: 0.5em;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 860px) {
+    .dichotomy { grid-template-columns: 1fr; gap: 24px; }
+    .vs-divider { flex-direction: row; padding: 0; }
+    .vs-divider::before, .vs-divider::after { height: 1px; width: auto; flex: 1; }
+    .vs-divider span { padding: 0 20px; }
+    .matrix-row { grid-template-columns: 1fr; }
+    .matrix-row > div { border-right: none; border-bottom: 1px solid var(--line); }
+    .wrap { padding: 0 24px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    body::before { display: none; }
+    .cw-visualizer { background: #333; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="masthead">
+    <div class="eyebrow">
+      <span><span class="dot"></span>Edition for Team and Enterprise admins</span>
+      <span>Vol. 01 &middot; Apr 2026</span>
+    </div>
+    <h1 class="title">The Field Manual to <em>Usage</em> and <em>Length</em> Limits.</h1>
+    <p class="subtitle">Two different walls. Two different reasons you hit them. Two different doors out. A working guide for teams who want to stop hitting either.</p>
+    <div class="meta-grid">
+      <div>
+        <div class="label">Audience</div>
+        <div class="value">Team / Enterprise</div>
+      </div>
+      <div>
+        <div class="label">Context window</div>
+        <div class="value">200K &middot; 500K (Ent.)</div>
+      </div>
+      <div>
+        <div class="label">Reset cadence</div>
+        <div class="value">5h session / weekly</div>
+      </div>
+      <div>
+        <div class="label">Reading time</div>
+        <div class="value">~ 12 minutes</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== TOC ========== -->
+  <nav class="toc">
+    <ol>
+      <li><a href="#one">The two limits, side by side</a></li>
+      <li><a href="#two">Anatomy of a context window</a></li>
+      <li><a href="#three">Team and Enterprise specifics</a></li>
+      <li><a href="#four">Optimization tactics</a></li>
+      <li><a href="#five">Anti-patterns to unlearn</a></li>
+      <li><a href="#six">Monitoring consumption</a></li>
+      <li><a href="#seven">When the wall hits</a></li>
+    </ol>
+  </nav>
+
+  <!-- ========== SECTION 1: DICHOTOMY ========== -->
+  <section id="one">
+    <div class="section-header">
+      <div class="section-num">§ 01</div>
+      <h2 class="section-title">The two limits, <em>side by side</em></h2>
+    </div>
+
+    <p class="lede">Every limit conversation begins with a confusion. People say "I hit the limit" as if there were one wall, when there are two, and the fix for each is the opposite of the fix for the other. Get this distinction right and most of the rest follows.</p>
+
+    <div class="dichotomy">
+      <div class="dich-card">
+        <div class="kind">Limit &mdash; type A</div>
+        <h3>Usage <em>limits</em></h3>
+        <p class="tagline">Quantity over time. How much Claude you get to use before the meter resets.</p>
+        <p>A budget spanning all surfaces &mdash; claude.ai, Claude Code, Claude Desktop share one allowance. Counts are shaped by message length, attachment size, tool use, model choice, and artifact activity. Resets on a 5-hour session cadence plus a weekly ceiling.</p>
+        <div class="metaphor"><strong>Mental model:</strong> a prepaid fuel tank. When empty, you wait for the refill (session or weekly reset), top up with extra usage, or change plans.</div>
+      </div>
+
+      <div class="vs-divider"><span>vs.</span></div>
+
+      <div class="dich-card">
+        <div class="kind">Limit &mdash; type B</div>
+        <h3>Length <em>limits</em></h3>
+        <p class="tagline">Depth of one conversation. How much Claude can hold in mind at once.</p>
+        <p>The context window. 200K tokens on every paid plan; 500K on some Enterprise models. Includes everything in the conversation: your messages, Claude's replies, attached files, project knowledge, tool definitions, and extended thinking.</p>
+        <div class="metaphor"><strong>Mental model:</strong> a whiteboard of fixed size. When full, you wipe (new chat) or work smarter (projects, RAG) &mdash; you can't buy a bigger board.</div>
+      </div>
+    </div>
+
+    <div class="matrix">
+      <div class="matrix-row head">
+        <div>Dimension</div>
+        <div>Usage limit</div>
+        <div>Length limit</div>
+      </div>
+      <div class="matrix-row">
+        <div class="aspect">What it measures</div>
+        <div>Your total activity across a window of time</div>
+        <div>The size of a single conversation</div>
+      </div>
+      <div class="matrix-row">
+        <div class="aspect">Felt as</div>
+        <div>"You have reached your usage limit. Try again at 4:00 PM."</div>
+        <div>"This conversation is getting long." / truncation / slow replies</div>
+      </div>
+      <div class="matrix-row">
+        <div class="aspect">Remedy</div>
+        <div>Wait for reset, purchase extra usage, or upgrade plan</div>
+        <div>Start a new chat, use projects with RAG, or trim tools and files</div>
+      </div>
+      <div class="matrix-row">
+        <div class="aspect">Counts toward</div>
+        <div>Shared across claude.ai, Claude Code, and Claude Desktop</div>
+        <div>Per conversation; each new chat is a fresh window</div>
+      </div>
+      <div class="matrix-row">
+        <div class="aspect">Plan dependency</div>
+        <div>Scales up with Pro, Max, Team, Enterprise</div>
+        <div>Flat 200K tokens on paid plans; 500K on select Enterprise</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 2: CONTEXT WINDOW VISUALIZER ========== -->
+  <section id="two">
+    <div class="section-header">
+      <div class="section-num">§ 02</div>
+      <h2 class="section-title">Anatomy of <em>a context window</em></h2>
+    </div>
+
+    <p class="lede">The context window is not just "your messages so far." Every tool you enable, every file you attach, every project instruction, and every extended-thinking step consumes tokens from the same budget. Toggle features below to watch the window fill in real time.</p>
+
+    <div class="cw-visualizer">
+      <h3>Live budget simulator</h3>
+      <p class="helper">Toggle features on the right. Bar on the left reflects what's consumed before you've typed a single character.</p>
+
+      <div class="cw-layout">
+        <div>
+          <div class="cw-bar-wrap" id="cwBar">
+            <div class="cw-segment sys" data-seg="sys" style="width: 2%;"></div>
+            <div class="cw-segment history" data-seg="history" style="width: 0%;"></div>
+            <div class="cw-segment files" data-seg="files" style="width: 0%;"></div>
+            <div class="cw-segment tools" data-seg="tools" style="width: 0%;"></div>
+            <div class="cw-segment think" data-seg="think" style="width: 0%;"></div>
+            <div class="cw-segment free" style="width: 98%;"></div>
+          </div>
+          <div class="cw-stats">
+            <span class="used">USED: <span id="cwUsed">4,000</span> tokens</span>
+            <span class="free-lbl">FREE: <span id="cwFree">196,000</span> tokens</span>
+          </div>
+
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(243,236,224,0.5); margin-bottom: 14px;">BASELINE &middot; 200,000 TOKENS</div>
+
+          <div class="cw-verdict" id="cwVerdict">Empty slate. Claude has the full window to work with. Start adding context on the right.</div>
+        </div>
+
+        <div class="cw-controls">
+          <div class="cw-toggle" data-feat="history" data-cost="12000">
+            <div class="cw-toggle-label">
+              <div class="cw-toggle-swatch" style="background: var(--vermilion);"></div>
+              <div>
+                <div class="cw-toggle-name">Long chat history</div>
+                <div class="cw-toggle-cost">~12K tokens of prior turns</div>
+              </div>
+            </div>
+            <div class="cw-switch"></div>
+          </div>
+
+          <div class="cw-toggle" data-feat="files" data-cost="35000">
+            <div class="cw-toggle-label">
+              <div class="cw-toggle-swatch" style="background: var(--moss);"></div>
+              <div>
+                <div class="cw-toggle-name">Three attached PDFs</div>
+                <div class="cw-toggle-cost">~35K tokens of direct attachments</div>
+              </div>
+            </div>
+            <div class="cw-switch"></div>
+          </div>
+
+          <div class="cw-toggle" data-feat="tools" data-cost="18000">
+            <div class="cw-toggle-label">
+              <div class="cw-toggle-swatch" style="background: var(--ochre);"></div>
+              <div>
+                <div class="cw-toggle-name">Web search + connectors</div>
+                <div class="cw-toggle-cost">~18K tokens of tool definitions</div>
+              </div>
+            </div>
+            <div class="cw-switch"></div>
+          </div>
+
+          <div class="cw-toggle" data-feat="think" data-cost="22000">
+            <div class="cw-toggle-label">
+              <div class="cw-toggle-swatch" style="background: var(--vermilion-soft);"></div>
+              <div>
+                <div class="cw-toggle-name">Extended thinking</div>
+                <div class="cw-toggle-cost">~22K tokens of reasoning trace</div>
+              </div>
+            </div>
+            <div class="cw-switch"></div>
+          </div>
+
+          <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: rgba(243,236,224,0.5); padding-top: 10px; border-top: 1px solid rgba(243,236,224,0.15);">
+            Numbers are illustrative; actual token counts vary by content. The shape of the problem is what matters.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+      <div style="padding: 20px; border-left: 3px solid var(--vermilion); background: var(--paper-dark);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--vermilion); margin-bottom: 8px;">RULE OF THUMB</div>
+        <div style="font-family: 'Fraunces', serif; font-size: 16px; line-height: 1.4;">1,000 tokens is roughly 750 English words, or about a page and a half of dense prose.</div>
+      </div>
+      <div style="padding: 20px; border-left: 3px solid var(--ochre); background: var(--paper-dark);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--ochre); margin-bottom: 8px;">LEVERAGE</div>
+        <div style="font-family: 'Fraunces', serif; font-size: 16px; line-height: 1.4;">Content cached in a project doesn't count against your usage when reused. Projects are the strongest cost-saver you have.</div>
+      </div>
+      <div style="padding: 20px; border-left: 3px solid var(--moss); background: var(--paper-dark);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--moss); margin-bottom: 8px;">SAFETY NET</div>
+        <div style="font-family: 'Fraunces', serif; font-size: 16px; line-height: 1.4;">With code execution enabled, Claude auto-summarizes older turns as the window fills. You'll see "organizing thoughts" when it happens.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">&sect; &sect; &sect;</div>
+
+  <!-- ========== SECTION 3: TEAM / ENTERPRISE SPECIFICS ========== -->
+  <section id="three">
+    <div class="section-header">
+      <div class="section-num">§ 03</div>
+      <h2 class="section-title">Team and Enterprise, <em>by the numbers</em></h2>
+    </div>
+
+    <p class="lede">Most of what applies to individual plans still applies here, but a few things change. The context window is larger on some Enterprise tiers, billing shifts from flat allowance to consumption, and admins carry responsibility for per-seat usage shaping the whole org's spend.</p>
+
+    <div class="plan-compare">
+      <div class="plan-card">
+        <div class="plan-name">Team plan</div>
+        <h4>Per-seat allowance</h4>
+        <div class="metric">
+          <div class="metric-label">Context window</div>
+          <div class="metric-value">200,000 tokens</div>
+          <div class="metric-note">Same as Pro and Max</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Usage structure</div>
+          <div class="metric-value">Seat-based allowance</div>
+          <div class="metric-note">Each member has their own 5h session and weekly limits</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Extra usage</div>
+          <div class="metric-value">Available</div>
+          <div class="metric-note">Purchase top-ups when seats run dry mid-week</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Visibility</div>
+          <div class="metric-value">Settings &rsaquo; Usage</div>
+          <div class="metric-note">Progress bars for session, weekly, and Opus-specific caps</div>
+        </div>
+      </div>
+
+      <div class="plan-card highlight">
+        <div class="plan-name">Enterprise plan</div>
+        <h4>Scaled for organizations</h4>
+        <div class="metric">
+          <div class="metric-label">Context window</div>
+          <div class="metric-value">Up to 500,000 tokens</div>
+          <div class="metric-note">Available on select models; 200K on others</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Usage structure</div>
+          <div class="metric-value">Seat-based or usage-based</div>
+          <div class="metric-note">Seat-based gets allowances; usage-based pays per consumption</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Extra usage</div>
+          <div class="metric-value">Seat-based only</div>
+          <div class="metric-note">Usage-based plans simply bill more as consumption grows</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Visibility</div>
+          <div class="metric-value">Admin Usage dashboard</div>
+          <div class="metric-note">Org-wide consumption tracking for billing forecasting</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 28px; background: var(--paper-dark); border: 1px solid var(--ink);">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--vermilion); letter-spacing: 0.15em; margin-bottom: 12px;">FOR ADMINS &middot; READ TWICE</div>
+      <div style="font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; line-height: 1.4; margin-bottom: 16px;">On a usage-based Enterprise plan, there is no "limit" to hit &mdash; you're billed by consumption. That makes poor token hygiene across your org directly expensive.</div>
+      <p style="color: var(--ink-soft);">Token-intensive features (Research, web search, extended thinking, MCP connectors) are always on unless users disable them. If half your org leaves three connectors enabled for every conversation, that appears on the invoice. The optimization tactics in &sect; 04 become financial controls, not just productivity tips.</p>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 4: OPTIMIZATION TACTICS ========== -->
+  <section id="four">
+    <div class="section-header">
+      <div class="section-num">§ 04</div>
+      <h2 class="section-title">Optimization <em>tactics</em></h2>
+    </div>
+
+    <p class="lede">Eight things your team can do this week to stretch both the context window and the usage allowance. Each one is worth doing on its own. Together they're the difference between running out on Thursday and having slack to spare.</p>
+
+    <div class="tactics">
+      <div class="tactic">
+        <div class="tactic-kicker">Before typing</div>
+        <h4>Plan the <em>whole conversation</em> first</h4>
+        <p>Most over-spend is a thousand small clarifications. Decide what you need, what context Claude must have, and whether adjacent questions belong together &mdash; before sending turn one.</p>
+        <div class="example">
+          <div class="example-label">Instead of</div>
+          "Help me with this report." &#8594; then "oh also include regional data" &#8594; then "actually make it a memo"
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Per message</div>
+        <h4>Batch <em>related asks</em></h4>
+        <p>Three related questions in one message beats three separate messages. Caching handles the rest &mdash; similar prompts are partially cached across your use.</p>
+        <div class="example">
+          <div class="example-label">Good</div>
+          "Summarize this paper, list the three key counterarguments, and draft a 200-word response to the strongest one."
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Per message</div>
+        <h4>Be specific, <em>skip the vague</em></h4>
+        <p>Every clarifying round-trip burns through your allowance twice: your follow-up and Claude's reply. Front-load the specifics &mdash; audience, length, format, constraints &mdash; and it's one exchange, not four.</p>
+        <div class="example">
+          <div class="example-label">Front-load this</div>
+          "For a technical Slack audience, 150 words max, with one code example using Python 3.11..."
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Structure</div>
+        <h4>Put reference material <em>in a project</em></h4>
+        <p>Content in project knowledge is cached. Repeated references don't keep costing tokens. This is the single highest-leverage tactic for teams that work on the same materials regularly.</p>
+        <div class="example">
+          <div class="example-label">Pattern</div>
+          Upload your style guide, product spec, and onboarding docs once &#8594; every chat in that project gets them for free.
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Structure</div>
+        <h4>Use <em>RAG</em> for big knowledge bases</h4>
+        <p>Projects' RAG mode pulls only the relevant chunks into context instead of the whole corpus. Essential once project knowledge crosses the size where it wouldn't all fit in the window anyway.</p>
+        <div class="example">
+          <div class="example-label">When to flip it on</div>
+          200-page knowledge base. A dozen docs. Anything where you only ever need a slice at a time.
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Hygiene</div>
+        <h4>Keep project instructions <em>lean</em></h4>
+        <p>Project instructions load with every chat in that project. Pages of standing orders tax every conversation. Keep them to role, scope, and non-negotiable rules. Put task-specific detail in the chat itself.</p>
+        <div class="example">
+          <div class="example-label">Instructions</div>
+          role + domain + three hard rules. Not: every preference you've ever had.
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Hygiene</div>
+        <h4>Retire <em>unused</em> project files</h4>
+        <p>Old reference docs loiter. If you haven't touched a file in a project for two months, remove it. Every chat in that project is quietly carrying its weight.</p>
+        <div class="example">
+          <div class="example-label">Quarterly ritual</div>
+          Audit project files. Remove what no one references. Archive what's historical.
+        </div>
+      </div>
+
+      <div class="tactic">
+        <div class="tactic-kicker">Toggle discipline</div>
+        <h4>Turn off what you <em>don't need</em></h4>
+        <p>Web search, Research, extended thinking, and MCP connectors all consume tokens even when idle. For conversations that don't need them, flip them off under Search and tools.</p>
+        <div class="example">
+          <div class="example-label">Default posture</div>
+          On when the task demands it. Off otherwise. Don't leave them on "just in case."
+        </div>
+      </div>
+    </div>
+
+    <!-- Good vs Bad: prompt example -->
+    <div class="comparison" style="margin-top: 56px;">
+      <div class="comp-col bad">
+        <div class="comp-head">
+          <span class="comp-icon">&times;</span>
+          <span>Anti-example &middot; six messages</span>
+        </div>
+        <h5>The drip-feed</h5>
+        <p>Each follow-up costs tokens both ways and stretches the context window with junk turns that don't add information.</p>
+        <div class="dialogue">
+          &gt; help me write marketing copy<br>
+          &lt; sure, what product?<br>
+          &gt; our new analytics tool<br>
+          &lt; who's the audience?<br>
+          &gt; enterprise PMs<br>
+          &lt; what's the tone?<br>
+          &gt; professional but not stiff<br>
+          &lt; what channel?<br>
+          &gt; LinkedIn post<br>
+          &lt; great, how long?
+        </div>
+      </div>
+      <div class="comp-col good">
+        <div class="comp-head">
+          <span class="comp-icon">&#10003;</span>
+          <span>Pattern &middot; one message</span>
+        </div>
+        <h5>The loaded opener</h5>
+        <p>Specification density paid once. Claude does the work on turn one; you iterate on output, not on scope.</p>
+        <div class="dialogue">
+          &gt; Write a 180-word LinkedIn post<br>
+          &nbsp;&nbsp;for enterprise PMs about our<br>
+          &nbsp;&nbsp;new analytics tool [link]. Tone:<br>
+          &nbsp;&nbsp;professional, not stiff. Lead with<br>
+          &nbsp;&nbsp;a concrete pain point. End with a<br>
+          &nbsp;&nbsp;soft CTA to request a demo.<br>
+          &lt; [delivers usable copy]
+        </div>
+      </div>
+    </div>
+
+    <!-- Use-case specific -->
+    <div style="margin-top: 48px;">
+      <h3 style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 400; margin-bottom: 20px;">By use case</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+        <div style="background: var(--paper); border-top: 3px solid var(--vermilion); padding: 24px; border: 1px solid var(--line); border-top: 3px solid var(--vermilion);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--vermilion); margin-bottom: 10px;">CODING</div>
+          <p style="font-size: 14.5px; color: var(--ink-soft);">Give full environment context up front: language, framework, constraints. Paste the entire relevant file in one message instead of dribbling snippets across five turns.</p>
+        </div>
+        <div style="background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--ochre); padding: 24px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--ochre); margin-bottom: 10px;">WRITING</div>
+          <p style="font-size: 14.5px; color: var(--ink-soft);">Declare audience, length, tone, and key points in the opening message. Send the whole draft at once when asking for edits &mdash; chunking it loses cross-cutting feedback.</p>
+        </div>
+        <div style="background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--moss); padding: 24px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--moss); margin-bottom: 10px;">RESEARCH</div>
+          <p style="font-size: 14.5px; color: var(--ink-soft);">State the research question clearly. Provide all the relevant data in one well-structured message. Use projects to hold reference material across multiple research sessions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 5: ANTI-PATTERNS ========== -->
+  <section id="five">
+    <div class="section-header">
+      <div class="section-num">§ 05</div>
+      <h2 class="section-title">Anti-patterns <em>to unlearn</em></h2>
+    </div>
+
+    <p class="lede">Every pattern here burns either usage, context, or both &mdash; and every one is common. Most are habits from chat apps where tokens don't exist as a concept. Click each to expand the fix.</p>
+
+    <div class="antipatterns">
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.01</span>
+          <span class="anti-title">The <em>eternal chat</em></span>
+        </summary>
+        <div class="anti-body">
+          <p>Keeping one conversation running for weeks because it "remembers" your project. The older turns stay in every future request, dragging the window down and slowing responses. At some point you're paying tokens for pleasantries from last Tuesday.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Use a project for persistent context. Start new chats inside the project for each workstream. The project holds memory; the chats stay short.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.02</span>
+          <span class="anti-title">Leaving every <em>tool and connector enabled</em> "just in case"</span>
+        </summary>
+        <div class="anti-body">
+          <p>Web search, Research, and every connected MCP server each carry a tool-definition tax that loads into every request. Multiply that by your whole team, and on a usage-based Enterprise plan it's a line item on your invoice.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Default off. Turn on per-task. Make "check your tool toggles" part of onboarding.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.03</span>
+          <span class="anti-title">Uploading the same PDFs <em>into every new chat</em></span>
+        </summary>
+        <div class="anti-body">
+          <p>Attachments in a one-off chat are charged to that chat. The same three docs uploaded to forty chats costs you forty attachments' worth of tokens. This is the single most common waste in teams that haven't adopted projects.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Upload once to a project. The project caches them. Every future chat references them free.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.04</span>
+          <span class="anti-title">Kitchen-sink <em>project instructions</em></span>
+        </summary>
+        <div class="anti-body">
+          <p>Four pages of "always do this, never do that, here's how we name variables, here's a history of the project, here's my communication preferences..." loaded into every single chat in the project. Every turn pays for all of it.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Project instructions: role, scope, three non-negotiables. Everything else goes in the specific chat where it's relevant, or in a knowledge file you reference as needed.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.05</span>
+          <span class="anti-title">Extended thinking <em>left on for trivia</em></span>
+        </summary>
+        <div class="anti-body">
+          <p>Extended thinking is powerful for hard reasoning problems. Enabling it for "write a friendly reminder email" is pure overhead: reasoning tokens you never needed eating your context window.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Reserve extended thinking for genuinely hard tasks: multi-step analysis, complex code, ambiguous decisions. Turn it off for drafting, summarizing, and routine work.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.06</span>
+          <span class="anti-title">Copy-pasting <em>the whole document</em> when you need a paragraph</span>
+        </summary>
+        <div class="anti-body">
+          <p>"Here's our 80-page contract, can you check clause 14?" &mdash; pastes all 80 pages. Claude burns tokens reading 79 pages it doesn't need.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Paste the relevant clause plus a sentence of surrounding context. For anything larger, put the document in a project and use RAG to pull only the relevant sections.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.07</span>
+          <span class="anti-title">Retreating to a <em>weaker model</em> to save usage</span>
+        </summary>
+        <div class="anti-body">
+          <p>Intuitive but often false economy. A weaker model may take three tries to produce what a stronger one gets right first time. Three mediocre generations cost more total tokens than one good one.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Use the strongest model appropriate for the task. If you're rewriting responses more than once, you're probably saving the wrong thing.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.08</span>
+          <span class="anti-title">Hitting reset and <em>re-explaining your project</em> every chat</span>
+        </summary>
+        <div class="anti-body">
+          <p>Teams that don't use projects end up re-pasting context paragraphs into every new conversation. That's pure waste &mdash; the same tokens paid over and over across the week.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Paid plans can search past conversations. Phrases like "as we discussed earlier" or "continue from the auth flow chat" let Claude retrieve it rather than re-derive it from a pasted primer.</div>
+        </div>
+      </details>
+
+      <details class="anti">
+        <summary>
+          <span class="anti-num">A.09</span>
+          <span class="anti-title">No <em>team-level monitoring</em> until the surprise bill</span>
+        </summary>
+        <div class="anti-body">
+          <p>On usage-based Enterprise plans, consumption only gets attention after it spikes. By then you've taught the org habits that are hard to unwind. The dashboard exists for a reason.</p>
+          <div class="fix"><strong>Fix &middot;</strong> Check Settings &rsaquo; Usage weekly. Identify who consumes most and what they're doing. Share patterns and anti-patterns back to the team before they cement.</div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="ornament">&sect; &sect; &sect;</div>
+
+  <!-- ========== SECTION 6: MONITORING ========== -->
+  <section id="six">
+    <div class="section-header">
+      <div class="section-num">§ 06</div>
+      <h2 class="section-title">Monitoring <em>consumption</em></h2>
+    </div>
+
+    <p class="lede">Everything you can't see, you can't manage. The Usage settings panel is the single most-ignored surface in a Team or Enterprise account. Here's what lives there and what to watch.</p>
+
+    <div class="monitor-grid">
+      <div class="monitor-card">
+        <h4>Current session <span class="tag">5 HOURS</span></h4>
+        <p>Session limits renew on a rolling five-hour window. The bar shows what you've consumed this session and how much time remains before it resets.</p>
+        <p style="font-family: 'Fraunces', serif; font-style: italic;">A full session bar at hour one predicts hitting the weekly limit fast.</p>
+        <div class="session-viz">
+          <div class="bar-label"><span>SESSION USED</span><span>68%</span></div>
+          <div class="session-bar"><div class="fill" style="width: 68%;"></div></div>
+        </div>
+      </div>
+
+      <div class="monitor-card">
+        <h4>Weekly limits <span class="tag">WEEKLY</span></h4>
+        <p>Separate caps for Opus (power model) and all other models. When Opus runs out, other models often still have capacity &mdash; switch tasks accordingly rather than waiting for the weekly reset.</p>
+        <div class="session-viz">
+          <div class="bar-label"><span>OPUS WEEKLY</span><span>91%</span></div>
+          <div class="session-bar"><div class="fill opus" style="width: 91%;"></div></div>
+          <div class="bar-label"><span>OTHER MODELS</span><span>42%</span></div>
+          <div class="session-bar"><div class="fill weekly" style="width: 42%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; background: var(--paper); border: 1px solid var(--ink); padding: 28px 32px;">
+      <h3 style="font-family: 'Fraunces', serif; font-size: 24px; font-weight: 400; margin-bottom: 18px;">What to check, and how often</h3>
+      <div style="display: grid; grid-template-columns: 110px 1fr; gap: 12px 24px; font-size: 14.5px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--vermilion); padding-top: 4px;">DAILY</div>
+        <div style="border-bottom: 1px dotted var(--line); padding-bottom: 12px;">Glance at current session bar before starting heavy work. If it's above 50%, plan your session lean.</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--ochre); padding-top: 4px;">WEEKLY</div>
+        <div style="border-bottom: 1px dotted var(--line); padding-bottom: 12px;">Review weekly progress mid-week. If you're tracking past 60% by Wednesday, adjust &mdash; throttle, batch, or buy extra usage.</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--moss); padding-top: 4px;">MONTHLY</div>
+        <div style="border-bottom: 1px dotted var(--line); padding-bottom: 12px;">Admins: look at org-level consumption patterns. Who's high? What are they doing? Is it legitimate heavy use or an anti-pattern?</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: var(--ink-faint); padding-top: 4px;">QUARTERLY</div>
+        <div>Audit projects org-wide. Archive stale ones. Review project instructions for bloat. Revisit plan sizing.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 7: DECISION TREE ========== -->
+  <section id="seven">
+    <div class="section-header">
+      <div class="section-num">§ 07</div>
+      <h2 class="section-title">When the <em>wall hits</em></h2>
+    </div>
+
+    <p class="lede">A decision tree for the moment you can't send another message. The right move depends entirely on which wall you've hit &mdash; usage or length. Diagnose first, then act.</p>
+
+    <div class="tree">
+      <h3>You cannot continue. Which wall did you hit?</h3>
+      <p class="tree-sub">Read the error. If it mentions a reset time, it's usage. If it mentions conversation length, it's length.</p>
+
+      <div class="tree-start">&darr; Start here</div>
+
+      <div class="branches">
+        <div class="branch">
+          <div class="branch-label">If it's a usage limit</div>
+          <ol>
+            <li><strong>Check the reset.</strong> Settings &rsaquo; Usage shows how long until session or weekly reset. Sometimes it's 30 minutes and you can just wait.</li>
+            <li><strong>Switch model if Opus is capped.</strong> Other models may still have headroom. Non-Opus limits reset on the same weekly cycle but usually aren't exhausted at the same time.</li>
+            <li><strong>Buy extra usage.</strong> Pro, Max, Team, and seat-based Enterprise plans can purchase top-ups. Useful for crunch weeks; not for chronic shortage.</li>
+            <li><strong>Upgrade the plan</strong> if you're regularly running out. Max over Pro, Team over Max for collaboration, Enterprise for org-level needs.</li>
+            <li><strong>Look upstream.</strong> Chronic usage exhaustion often means anti-patterns in &sect; 05. Fix the habits, not just the plan.</li>
+          </ol>
+        </div>
+
+        <div class="branch">
+          <div class="branch-label">If it's a length limit</div>
+          <ol>
+            <li><strong>Start a new chat.</strong> Simplest fix. If the project already holds the context, you won't lose anything important.</li>
+            <li><strong>Enable code execution</strong> if it's off. That unlocks automatic context management; Claude summarizes older turns to keep going.</li>
+            <li><strong>Move the context into a project.</strong> Attachments and reference material that are currently in-chat can live in project knowledge instead &mdash; and then they're cached.</li>
+            <li><strong>Switch large attachments to RAG.</strong> If your project knowledge is big, RAG mode pulls only relevant chunks rather than the whole corpus.</li>
+            <li><strong>Trim the conversation.</strong> Disable unused tools and connectors. Turn off extended thinking if the task doesn't need it. Remove stale project files.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="padding: 20px 24px; background: var(--paper); border: 1px dashed var(--vermilion); font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; line-height: 1.5;">
+        <strong style="color: var(--vermilion); font-weight: 500;">One subtle trap:</strong> don't buy extra usage as a response to a length limit. They are different walls. Extra usage gives you more of the first and changes nothing about the second.
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div>
+      <div style="margin-bottom: 6px;">Sourced from Anthropic support documentation (Apr 2026)</div>
+      <div>
+        Primary: <a href="https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work" target="_blank">Usage and length limits</a> &middot;
+        <a href="https://support.claude.com/en/articles/9797557-usage-limit-best-practices" target="_blank">Best practices</a>
+      </div>
+    </div>
+    <div class="colophon">
+      Set in Fraunces and Inter Tight. A field manual, not a policy document &mdash; verify specifics against your plan.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Context window visualizer logic
+  (function() {
+    const TOTAL = 200000;
+    const BASE = 4000; // system overhead
+    const toggles = document.querySelectorAll('.cw-toggle');
+    const usedEl = document.getElementById('cwUsed');
+    const freeEl = document.getElementById('cwFree');
+    const verdict = document.getElementById('cwVerdict');
+    const bar = document.getElementById('cwBar');
+
+    const costs = {
+      history: { el: bar.querySelector('[data-seg="history"]'), cost: 0 },
+      files:   { el: bar.querySelector('[data-seg="files"]'),   cost: 0 },
+      tools:   { el: bar.querySelector('[data-seg="tools"]'),   cost: 0 },
+      think:   { el: bar.querySelector('[data-seg="think"]'),   cost: 0 },
+    };
+    const sysEl = bar.querySelector('[data-seg="sys"]');
+    const freeSeg = bar.querySelector('.cw-segment.free');
+
+    function fmt(n) { return n.toLocaleString('en-US'); }
+
+    function render() {
+      let total = BASE;
+      for (const key in costs) total += costs[key].cost;
+      const pct = (v) => (v / TOTAL * 100) + '%';
+
+      sysEl.style.width = pct(BASE);
+      for (const key in costs) costs[key].el.style.width = pct(costs[key].cost);
+      const freeTokens = Math.max(0, TOTAL - total);
+      freeSeg.style.width = pct(freeTokens);
+
+      usedEl.textContent = fmt(total);
+      freeEl.textContent = fmt(freeTokens);
+
+      verdict.classList.remove('warn', 'ok');
+      const frac = total / TOTAL;
+      if (frac < 0.1) {
+        verdict.textContent = 'Empty slate. Claude has the full window to work with. Start adding context on the right.';
+        verdict.classList.add('ok');
+      } else if (frac < 0.3) {
+        verdict.textContent = 'Healthy. Plenty of room for a long conversation. You\'ll feel no friction here.';
+        verdict.classList.add('ok');
+      } else if (frac < 0.6) {
+        verdict.textContent = 'Getting heavy. Long multi-turn work may bump the ceiling sooner than expected. Consider retiring a feature you\'re not actively using.';
+      } else if (frac < 0.85) {
+        verdict.textContent = 'Crowded. Responses may slow and older turns start getting summarized. Move reference material to a project if you haven\'t.';
+        verdict.classList.add('warn');
+      } else {
+        verdict.textContent = 'Nearly full before you\'ve said anything. This is where teams start hitting length limits mid-task. Something in here isn\'t pulling its weight.';
+        verdict.classList.add('warn');
+      }
+    }
+
+    toggles.forEach(t => {
+      t.addEventListener('click', () => {
+        const feat = t.dataset.feat;
+        const cost = parseInt(t.dataset.cost, 10);
+        const active = t.classList.toggle('active');
+        costs[feat].cost = active ? cost : 0;
+        render();
+      });
+    });
+
+    render();
+  })();
+
+  // Smooth-reveal sections as they scroll into view (subtle)
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('section').forEach(s => {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(20px)';
+    s.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    io.observe(s);
+  });
+</script>
+
+</body>
+</html>
