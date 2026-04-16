@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Privacy & Retention Guide 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0b0d;--surface:#111318;--surface2:#181b22;--surface3:#1f232c;
+--border:#262b36;--border2:#333a48;
+--text:#e4e7ed;--text2:#9aa0ae;--text3:#6b7280;
+--accent-claude:#d4845a;--accent-claude-bg:rgba(212,132,90,.08);
+--accent-gpt:#6bc89f;--accent-gpt-bg:rgba(107,200,159,.08);
+--accent-gemini:#7b9dec;--accent-gemini-bg:rgba(123,157,236,.08);
+--accent-bedrock:#e89b5a;--accent-bedrock-bg:rgba(232,155,90,.08);
+--warn:#e8c25a;--warn-bg:rgba(232,194,90,.07);
+--danger:#e85a6f;--danger-bg:rgba(232,90,111,.07);
+--success:#5ae88a;--success-bg:rgba(90,232,138,.07);
+--radius:10px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ── Header ── */
+.hero{padding:4rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(123,157,236,.06) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:.75rem}
+.hero h1 span{background:linear-gradient(135deg,var(--accent-claude),var(--accent-gemini));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--text2);max-width:640px;margin:0 auto;font-size:1.05rem}
+.hero .badge{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:.35rem 1rem;font-size:.78rem;color:var(--text2);margin-bottom:1.2rem;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+
+/* ── Layout ── */
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem 4rem}
+
+/* ── Nav Tabs ── */
+.tab-bar{display:flex;gap:.5rem;padding:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:2.5rem;overflow-x:auto;position:sticky;top:1rem;z-index:100;backdrop-filter:blur(12px)}
+.tab-btn{flex:1;min-width:120px;padding:.7rem 1rem;border:none;border-radius:var(--radius);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--text);background:var(--surface2)}
+.tab-btn.active{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tab-btn[data-tab="claude"].active{background:var(--accent-claude)}
+.tab-btn[data-tab="chatgpt"].active{background:var(--accent-gpt)}
+.tab-btn[data-tab="gemini"].active{background:var(--accent-gemini)}
+.tab-btn[data-tab="bedrock"].active{background:var(--accent-bedrock)}
+
+.tab-panel{display:none;animation:fadeIn .35s ease}
+.tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Section Headers ── */
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:.35rem .8rem;border-radius:999px;display:inline-block;margin-bottom:1.2rem}
+.section-label.consumer{color:var(--accent-gemini);background:var(--accent-gemini-bg);border:1px solid rgba(123,157,236,.15)}
+.section-label.business{color:var(--accent-gpt);background:var(--accent-gpt-bg);border:1px solid rgba(107,200,159,.15)}
+.section-label.api{color:var(--accent-bedrock);background:var(--accent-bedrock-bg);border:1px solid rgba(232,155,90,.15)}
+.section-label.warn{color:var(--warn);background:var(--warn-bg);border:1px solid rgba(232,194,90,.15)}
+
+.plan-title{font-family:'Fraunces',serif;font-size:1.65rem;font-weight:700;margin-bottom:.4rem;letter-spacing:-.02em}
+.plan-subtitle{color:var(--text2);margin-bottom:1.8rem;font-size:.95rem}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.6rem;margin-bottom:1.2rem;transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.card h3 .icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+
+/* ── Steps ── */
+.steps{counter-reset:step;margin:.8rem 0}
+.step{counter-increment:step;display:flex;gap:1rem;padding:.75rem 0;position:relative}
+.step::before{content:counter(step);font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.step p{font-size:.92rem;color:var(--text2);line-height:1.6}
+.step p strong{color:var(--text);font-weight:600}
+.step code{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--surface3);padding:.15rem .45rem;border-radius:4px;color:var(--text);border:1px solid var(--border)}
+
+/* step colors per provider */
+[data-tab="claude"] .step::before{background:var(--accent-claude-bg);color:var(--accent-claude);border:1px solid rgba(212,132,90,.2)}
+[data-tab="chatgpt"] .step::before{background:var(--accent-gpt-bg);color:var(--accent-gpt);border:1px solid rgba(107,200,159,.2)}
+[data-tab="gemini"] .step::before{background:var(--accent-gemini-bg);color:var(--accent-gemini);border:1px solid rgba(123,157,236,.2)}
+[data-tab="bedrock"] .step::before{background:var(--accent-bedrock-bg);color:var(--accent-bedrock);border:1px solid rgba(232,155,90,.2)}
+
+/* ── Callouts ── */
+.callout{border-radius:var(--radius);padding:1rem 1.2rem;margin:.8rem 0;font-size:.88rem;line-height:1.6;display:flex;gap:.75rem}
+.callout .callout-icon{flex-shrink:0;width:20px;text-align:center;font-size:.9rem;margin-top:.1rem}
+.callout.warn{background:var(--warn-bg);border:1px solid rgba(232,194,90,.15);color:var(--warn)}
+.callout.danger{background:var(--danger-bg);border:1px solid rgba(232,90,111,.15);color:var(--danger)}
+.callout.info{background:var(--accent-gemini-bg);border:1px solid rgba(123,157,236,.12);color:var(--accent-gemini)}
+.callout.success{background:var(--success-bg);border:1px solid rgba(90,232,138,.12);color:var(--success)}
+
+/* ── Comparison Table ── */
+.table-wrap{overflow-x:auto;margin:1.5rem 0;border:1px solid var(--border);border-radius:var(--radius-lg)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--surface2);font-weight:600;text-align:left;padding:.8rem 1rem;border-bottom:1px solid var(--border);white-space:nowrap;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+td{padding:.75rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:var(--text);font-weight:500;white-space:nowrap}
+.tag{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600;font-family:'JetBrains Mono',monospace}
+.tag.yes{background:var(--success-bg);color:var(--success);border:1px solid rgba(90,232,138,.15)}
+.tag.no{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(232,90,111,.15)}
+.tag.partial{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(232,194,90,.15)}
+.tag.na{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+
+/* ── Collapsible ── */
+details{margin:.6rem 0}
+details summary{cursor:pointer;padding:.7rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:.5rem;transition:all .2s}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:'▸';font-size:.7rem;transition:transform .2s;color:var(--text3)}
+details[open] summary::before{transform:rotate(90deg)}
+details[open] summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
+details .details-body{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1.2rem;background:var(--surface)}
+
+/* ── Platform chips ── */
+.platforms{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.chip{font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:.2rem .55rem;border-radius:4px;background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-weight:500}
+
+/* ── Divider ── */
+.divider{border:none;border-top:1px solid var(--border);margin:2.5rem 0}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:2rem;color:var(--text3);font-size:.78rem;border-top:1px solid var(--border)}
+.footer a{color:var(--text2);text-decoration:underline}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+ .tab-bar{flex-wrap:nowrap}
+ .tab-btn{min-width:100px;font-size:.8rem;padding:.6rem .7rem}
+ .card{padding:1.2rem}
+ .hero{padding:3rem 1.5rem 2rem}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+ <div class="badge">Last verified: April 2026</div>
+ <h1>AI Data Retention &<br><span>Training Opt-Out</span> Guide</h1>
+ <p>Step-by-step instructions for configuring retention policies and opting out of model training across Claude, ChatGPT, Gemini, and AWS Bedrock — for every plan type, interface, and surface.</p>
+</div>
+
+<div class="container">
+
+<!-- ═══════════ MASTER COMPARISON ═══════════ -->
+<div class="plan-title" style="margin-bottom:.3rem">Quick Comparison</div>
+<p class="plan-subtitle">Training defaults and retention across all four providers</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th></th><th>Claude</th><th>ChatGPT</th><th>Gemini</th><th>Bedrock</th></tr>
+</thead>
+<tbody>
+<tr><td>Consumer training default</td><td><span class="tag no">ON</span></td><td><span class="tag no">ON</span></td><td><span class="tag no">ON</span></td><td><span class="tag na">N/A</span></td></tr>
+<tr><td>Can opt out?</td><td><span class="tag yes">Yes</span></td><td><span class="tag yes">Yes</span></td><td><span class="tag yes">Yes</span></td><td><span class="tag na">N/A</span></td></tr>
+<tr><td>Keep history after opt-out?</td><td><span class="tag yes">Yes</span></td><td><span class="tag yes">Yes</span></td><td><span class="tag no">No</span></td><td><span class="tag na">N/A</span></td></tr>
+<tr><td>Business/Team trained on?</td><td><span class="tag yes">Never</span></td><td><span class="tag yes">Never</span></td><td><span class="tag yes">Never</span></td><td><span class="tag yes">Never</span></td></tr>
+<tr><td>Custom retention policies</td><td><span class="tag partial">Enterprise only</span></td><td><span class="tag partial">Enterprise only</span></td><td><span class="tag yes">Workspace admin</span></td><td><span class="tag yes">Customer-managed</span></td></tr>
+<tr><td>Zero Data Retention</td><td><span class="tag partial">API / Enterprise</span></td><td><span class="tag partial">API / Enterprise</span></td><td><span class="tag no">No</span></td><td><span class="tag yes">Default</span></td></tr>
+<tr><td>Feedback data retained?</td><td>Up to 5 years</td><td>Yes (training eligible)</td><td>Up to 72 hrs min</td><td>No</td></tr>
+<tr><td>Admin can export user chats?</td><td>Primary Owner</td><td>Enterprise (Compliance API)</td><td>Vault + Data Export</td><td>Customer owns all data</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout danger">
+ <div class="callout-icon">⚠</div>
+ <div>Paying for a "Pro" or "Plus" individual subscription does <strong>not</strong> protect your data from training on any platform. Only Team, Enterprise, or API plans provide contractual training exclusions by default.</div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════ TAB BAR ═══════════ -->
+<div class="tab-bar">
+ <button class="tab-btn active" data-tab="claude">Claude</button>
+ <button class="tab-btn" data-tab="chatgpt">ChatGPT</button>
+ <button class="tab-btn" data-tab="gemini">Gemini</button>
+ <button class="tab-btn" data-tab="bedrock">Bedrock</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ════════════ CLAUDE ══════════════════ -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel active" data-tab="claude">
+
+<!-- CONSUMER -->
+<span class="section-label consumer">Consumer Plans</span>
+<div class="plan-title">Free · Pro · Max</div>
+<div class="plan-subtitle">Applies to claude.ai (web), Claude Desktop app, Claude Mobile app, and Claude Code when used with these plans.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-claude-bg);color:var(--accent-claude)">1</div> Opt Out of Model Training</h3>
+ <div class="platforms"><span class="chip">Web</span><span class="chip">Desktop</span><span class="chip">Mobile</span></div>
+ <div class="steps">
+  <div class="step"><p>Open <strong>claude.ai</strong> (or the Claude Desktop/Mobile app) and sign in.</p></div>
+  <div class="step"><p>Click your <strong>profile icon</strong> (bottom-left on web/desktop, top-right on mobile).</p></div>
+  <div class="step"><p>Select <strong>Settings → Privacy</strong> (may appear as "Data Privacy Controls").</p></div>
+  <div class="step"><p>Find <strong>"Help improve Claude"</strong> (or "Model Improvement") and <strong>toggle it OFF</strong>.</p></div>
+  <div class="step"><p>Confirm the change. It takes effect immediately for <strong>new and resumed chats only</strong>.</p></div>
+ </div>
+ <div class="callout warn">
+  <div class="callout-icon">⚡</div>
+  <div>Opting out only affects future conversations. Data already submitted for training (while the toggle was on) cannot be retroactively removed from models that have already been trained.</div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-claude-bg);color:var(--accent-claude)">2</div> Use Incognito Mode for Sensitive Chats</h3>
+ <div class="platforms"><span class="chip">Web</span><span class="chip">Desktop</span><span class="chip">Mobile</span></div>
+ <div class="steps">
+  <div class="step"><p>Start a new chat and click the <strong>ghost icon</strong> (top-right of the chat area).</p></div>
+  <div class="step"><p>The chat is now <strong>Incognito</strong> — it will not be saved to history, memory, or used for training, even if you have Model Improvement enabled.</p></div>
+  <div class="step"><p>Close the incognito chat when done. Normal chats resume saving afterwards.</p></div>
+ </div>
+ <div class="callout danger">
+  <div class="callout-icon">⚠</div>
+  <div>On Team and Enterprise plans, incognito chats <strong>are still included in admin data exports</strong> and follow organizational retention policies. Incognito only prevents memory and training use — not admin visibility.</div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-claude-bg);color:var(--accent-claude)">3</div> Delete Conversations</h3>
+ <div class="steps">
+  <div class="step"><p>In the sidebar, hover over a conversation and click the <strong>trash icon</strong>, or open the conversation and select <strong>Delete</strong> from the menu.</p></div>
+  <div class="step"><p>Deleted conversations are purged from back-end logs within <strong>30 days</strong>.</p></div>
+  <div class="step"><p>Deleted chats are <strong>not used for future model training</strong>, regardless of your privacy setting.</p></div>
+ </div>
+</div>
+
+<details>
+ <summary>Caveats & Risks — Consumer Plans</summary>
+ <div class="details-body">
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>Thumbs up/down feedback:</strong> When you submit feedback via the 👍/👎 buttons, the <em>entire related conversation</em> is stored for up to <strong>5 years</strong> — even if you've opted out of training. Avoid using the feedback buttons on sensitive chats.</div></div>
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>Retention differences:</strong> Opted-in users → 5-year retention. Opted-out users → 30-day back-end retention. Neither is zero.</div></div>
+  <div class="callout info"><div class="callout-icon">ℹ</div><div><strong>Connectors are excluded:</strong> Raw content pulled from Google Drive, MCP servers, and other connectors is not included in training data. However, if you paste that content directly into the chat, it <em>is</em> included.</div></div>
+  <div class="callout info"><div class="callout-icon">ℹ</div><div><strong>Claude for Chrome:</strong> Data collected when using the Claude in Chrome browser extension follows the same consumer privacy settings. It is training-eligible if Model Improvement is on.</div></div>
+  <div class="callout danger"><div class="callout-icon">⚠</div><div><strong>Safety flags:</strong> Conversations flagged by trust and safety classifiers may be retained for up to <strong>2 years</strong> regardless of your settings. Safety classification scores can be retained for <strong>7 years</strong>.</div></div>
+ </div>
+</details>
+
+<hr class="divider">
+
+<!-- BUSINESS -->
+<span class="section-label business">Business Plans</span>
+<div class="plan-title">Team · Enterprise</div>
+<div class="plan-subtitle">Governed by Commercial Terms. Data is never used for model training by default — no opt-out needed.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">✓</div> Training Status: Automatically Excluded</h3>
+ <p style="color:var(--text2);font-size:.92rem">No action required. Team and Enterprise conversations, projects, and Claude Code sessions are <strong>never used for training</strong> under Commercial Terms unless the org admin explicitly opts in via the Development Partner Program.</p>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-claude-bg);color:var(--accent-claude)">⚙</div> Configure Retention Policies (Enterprise Only)</h3>
+ <div class="platforms"><span class="chip">Web</span><span class="chip">Desktop</span><span class="chip">Enterprise only</span></div>
+ <div class="steps">
+  <div class="step"><p><strong>Pre-requisite:</strong> You must be a <strong>Primary Owner</strong> or <strong>Owner</strong> on the Enterprise plan.</p></div>
+  <div class="step"><p>Navigate to <strong>Organization Settings → Data and Privacy</strong>.</p></div>
+  <div class="step"><p>Set your desired <strong>retention period</strong>. The minimum is <strong>30 days</strong> (each month = 30 days).</p></div>
+  <div class="step"><p>Click <strong>Save</strong>. All data that already falls outside the new window will be <strong>deleted immediately</strong>.</p></div>
+ </div>
+ <div class="callout danger">
+  <div class="callout-icon">⚠</div>
+  <div><strong>Irreversible on save:</strong> When you first set a retention window (e.g. 90 days), all conversations older than 90 days are deleted the moment you save. This cannot be undone. Plan carefully before enabling.</div>
+ </div>
+ <div class="callout info">
+  <div class="callout-icon">ℹ</div>
+  <div><strong>How it works:</strong> Chat retention starts from the last message. Project retention starts from the last update. Deletion happens at midnight UTC. All changes are tracked in audit logs. Default is indefinite retention if no policy is set.</div>
+ </div>
+</div>
+
+<details>
+ <summary>Team Plan Limitations</summary>
+ <div class="details-body">
+  <p style="color:var(--text2);font-size:.9rem;margin-bottom:.6rem">The <strong>Team plan</strong> does not have custom retention controls. Data is retained <strong>indefinitely</strong> unless individual users manually delete their conversations. Retention policy configuration requires upgrading to Enterprise.</p>
+  <p style="color:var(--text2);font-size:.9rem">However, the Primary Owner of a Team plan <strong>can</strong> export all user conversation data via <strong>Organization Settings → Data and Privacy → Export Data</strong>.</p>
+ </div>
+</details>
+
+<hr class="divider">
+
+<!-- API -->
+<span class="section-label api">API</span>
+<div class="plan-title">Anthropic API · Claude Code (Commercial)</div>
+<div class="plan-subtitle">Data is never used for training. Additional ZDR options available.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-bedrock-bg);color:var(--accent-bedrock)">⚙</div> Zero Data Retention (ZDR)</h3>
+ <div class="steps">
+  <div class="step"><p><strong>Pre-requisite:</strong> A signed ZDR contract/addendum with Anthropic.</p></div>
+  <div class="step"><p>Contact the <strong>Anthropic sales team</strong> to enable ZDR on your organization.</p></div>
+  <div class="step"><p>Once enabled, prompts and responses are <strong>not stored at rest</strong> after the API response is returned.</p></div>
+  <div class="step"><p>ZDR must be enabled <strong>per-organization</strong> — each new org needs separate setup.</p></div>
+ </div>
+ <div class="callout warn">
+  <div class="callout-icon">⚡</div>
+  <div><strong>ZDR limitations:</strong> Some features (like Message Batches, prompt caching beyond a session) may have qualified ZDR eligibility — meaning narrow, performance-required data may still be retained briefly. Check the feature eligibility table in Anthropic's docs. Standard (non-ZDR) API retention is 30 days.</div>
+ </div>
+ <div class="callout info">
+  <div class="callout-icon">ℹ</div>
+  <div><strong>Claude Code on Enterprise:</strong> ZDR applies to Claude Code when used through Claude Enterprise with ZDR enabled. Local session transcripts are cached in <code>~/.claude/projects/</code> for 30 days by default (configurable via <code>cleanupPeriodDays</code>).</div>
+ </div>
+</div>
+
+</div><!-- /claude panel -->
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ════════════ CHATGPT ════════════════ -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel" data-tab="chatgpt">
+
+<!-- CONSUMER -->
+<span class="section-label consumer">Consumer Plans</span>
+<div class="plan-title">Free · Plus · Pro</div>
+<div class="plan-subtitle">Applies to chatgpt.com (web), ChatGPT Desktop app, ChatGPT Mobile app, and ChatGPT in Chrome (browsing agent).</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">1</div> Opt Out of Model Training</h3>
+ <div class="platforms"><span class="chip">Web</span><span class="chip">Desktop</span><span class="chip">Mobile</span></div>
+ <div class="steps">
+  <div class="step"><p>Open <strong>chatgpt.com</strong> (or the ChatGPT app) and sign in.</p></div>
+  <div class="step"><p>Click your <strong>profile icon</strong> (bottom-left on web).</p></div>
+  <div class="step"><p>Select <strong>Settings → Data Controls</strong>.</p></div>
+  <div class="step"><p>Find <strong>"Improve the model for everyone"</strong> and <strong>toggle it OFF</strong>.</p></div>
+  <div class="step"><p>For voice mode, there's a separate toggle: <strong>"Voice mode audio"</strong> — turn that off too if applicable.</p></div>
+ </div>
+ <div class="callout success">
+  <div class="callout-icon">✓</div>
+  <div><strong>Unique advantage:</strong> ChatGPT is the only major provider that lets you keep full chat history indefinitely <em>without</em> consenting to model training. You don't have to sacrifice history for privacy.</div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">2</div> Use Temporary Chat for Sensitive Sessions</h3>
+ <div class="steps">
+  <div class="step"><p>Start a new chat and enable <strong>Temporary Chat</strong> (toggle in the top-right of the chat window).</p></div>
+  <div class="step"><p>Temporary chats are <strong>not saved to history</strong> and <strong>not used for training</strong>.</p></div>
+  <div class="step"><p>Content is still retained for <strong>30 days</strong> for abuse monitoring — it's not zero-retention.</p></div>
+ </div>
+</div>
+
+<details>
+ <summary>Caveats & Risks — Consumer Plans</summary>
+ <div class="details-body">
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>Thumbs up/down feedback</strong> may explicitly opt specific conversations into training, even if you've turned training off globally. Be cautious with the feedback buttons.</div></div>
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>30-day safety retention:</strong> Even with training off and Temporary Chat enabled, OpenAI retains data for 30 days for abuse detection. This is not configurable on consumer plans.</div></div>
+  <div class="callout info"><div class="callout-icon">ℹ</div><div><strong>ChatGPT in Chrome:</strong> The browsing agent extension follows the same privacy settings as your main ChatGPT account.</div></div>
+  <div class="callout danger"><div class="callout-icon">⚠</div><div><strong>Data export on consumer:</strong> You can export <em>your own</em> data via Settings → Data Controls → Export Data. This includes your chat history as a JSON zip file. The link expires in 24 hours.</div></div>
+ </div>
+</details>
+
+<hr class="divider">
+
+<!-- BUSINESS -->
+<span class="section-label business">Business Plans</span>
+<div class="plan-title">Business (formerly Team) · Enterprise</div>
+<div class="plan-subtitle">Governed by Business Terms / Enterprise Terms. Training is excluded by default.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">✓</div> Training Status: Automatically Excluded</h3>
+ <p style="color:var(--text2);font-size:.92rem">No action required. Workspace conversations are <strong>never used for training</strong> under the Business/Enterprise Terms. OpenAI does not train on your workspace data.</p>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">⚙</div> Data Retention & Admin Access</h3>
+ <div class="steps">
+  <div class="step"><p><strong>Business plan:</strong> Admins and owners <strong>cannot</strong> casually browse member chats. There is <strong>no org-wide data export</strong> available on the Business tier.</p></div>
+  <div class="step"><p><strong>Enterprise plan:</strong> Admins can access user data via the <strong>Compliance API</strong>, which provides audit logging of conversations.</p></div>
+  <div class="step"><p>Enterprise admins can configure <strong>data retention policies</strong> and may access, export, audit, retain, and delete data tied to managed accounts.</p></div>
+ </div>
+ <div class="callout warn">
+  <div class="callout-icon">⚡</div>
+  <div><strong>Business plan limitation:</strong> No built-in org-wide data export exists. If you need compliance exports, you'll need to upgrade to Enterprise for the Compliance API.</div>
+ </div>
+</div>
+
+<details>
+ <summary>Managed Account Notice</summary>
+ <div class="details-body">
+  <p style="color:var(--text2);font-size:.9rem">If you're on a managed Business or Enterprise account, your administrator may be able to: access prompts & outputs, export conversation data, configure retention, restrict features, suspend access, or delete accounts. OpenAI's standard consumer Privacy Policy does <strong>not</strong> apply while signed into a managed account.</p>
+ </div>
+</details>
+
+<hr class="divider">
+
+<!-- API -->
+<span class="section-label api">API</span>
+<div class="plan-title">OpenAI API Platform</div>
+<div class="plan-subtitle">API data is NOT used for training by default. Standard 30-day retention for abuse monitoring.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-bedrock-bg);color:var(--accent-bedrock)">⚙</div> Zero Data Retention (ZDR)</h3>
+ <div class="steps">
+  <div class="step"><p>API data is <strong>not used for training</strong> by default — no opt-out needed.</p></div>
+  <div class="step"><p>Standard retention: <strong>30 days</strong> for abuse monitoring.</p></div>
+  <div class="step"><p>For <strong>Zero Data Retention</strong>, contact OpenAI sales for an Enterprise API agreement. ZDR eliminates the 30-day safety retention window.</p></div>
+ </div>
+</div>
+
+</div><!-- /chatgpt panel -->
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ════════════ GEMINI ═════════════════ -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel" data-tab="gemini">
+
+<!-- CONSUMER -->
+<span class="section-label consumer">Consumer Plans</span>
+<div class="plan-title">Free · Gemini Advanced (Google One AI Premium)</div>
+<div class="plan-subtitle">Applies to gemini.google.com (web), Gemini Mobile app, and Gemini in Chrome.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gemini-bg);color:var(--accent-gemini)">1</div> Opt Out of Model Training (Turn Off Gemini Apps Activity)</h3>
+ <div class="platforms"><span class="chip">Web</span><span class="chip">Mobile</span><span class="chip">Chrome</span></div>
+ <div class="steps">
+  <div class="step"><p>Open <strong>gemini.google.com</strong> and sign in.</p></div>
+  <div class="step"><p>Click the <strong>hamburger menu</strong> (≡) in the top-left corner.</p></div>
+  <div class="step"><p>Select <strong>"Activity"</strong> from the menu.</p></div>
+  <div class="step"><p>Next to <strong>"Gemini Apps Activity"</strong>, click <strong>"Turn Off"</strong>.</p></div>
+  <div class="step"><p>Choose <strong>"Turn Off and Delete Activity"</strong> to also remove existing stored data. Click <strong>Next → Delete</strong>.</p></div>
+ </div>
+ <div class="callout danger">
+  <div class="callout-icon">⚠</div>
+  <div><strong>Critical trade-off:</strong> Turning off Gemini Apps Activity means you <strong>lose all conversation history</strong>. Once you leave a conversation, you cannot see it again. You cannot keep history while opting out — unlike Claude and ChatGPT. Google also states conversations may be reviewed by human reviewers when Activity is on.</div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gemini-bg);color:var(--accent-gemini)">2</div> Alternative: Disable Web & App Activity (Broader)</h3>
+ <div class="steps">
+  <div class="step"><p>Go to <strong>myaccount.google.com → Data & Privacy</strong>.</p></div>
+  <div class="step"><p>Under <strong>"Web & App Activity"</strong>, toggle it <strong>OFF</strong>.</p></div>
+  <div class="step"><p>This prevents Google from storing your activity across all Google services, including Gemini. Note: this affects Google Search, Maps, Assistant, etc.</p></div>
+ </div>
+</div>
+
+<details>
+ <summary>Caveats & Risks — Consumer Plans</summary>
+ <div class="details-body">
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>72-hour minimum retention:</strong> Even with Activity turned off, Google retains conversations for up to 72 hours to provide the service. This is not configurable.</div></div>
+  <div class="callout warn"><div class="callout-icon">⚡</div><div><strong>No bulk export:</strong> Gemini chat content is not available through Google Takeout. You can view activity at <code>myactivity.google.com/product/gemini</code> but cannot download it in bulk.</div></div>
+  <div class="callout info"><div class="callout-icon">ℹ</div><div><strong>Gemini in Chrome &amp; mobile:</strong> Usage across gemini.google.com, Gemini mobile app, and Gemini in Chrome all share the same Activity setting and count toward the same usage limits.</div></div>
+  <div class="callout danger"><div class="callout-icon">⚠</div><div><strong>Human review:</strong> When Gemini Apps Activity is ON, your conversations may be reviewed by human reviewers to improve Google's products. Avoid entering confidential or sensitive information while Activity is enabled.</div></div>
+ </div>
+</details>
+
+<hr class="divider">
+
+<!-- BUSINESS -->
+<span class="section-label business">Business Plans</span>
+<div class="plan-title">Google Workspace with Gemini (Business / Enterprise)</div>
+<div class="plan-subtitle">Governed by Google Workspace Terms of Service. Data is never used for model training.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">✓</div> Training Status: Automatically Excluded</h3>
+ <p style="color:var(--text2);font-size:.92rem">When you use Gemini through a paid Google Workspace account, your data is treated like any Workspace data (Gmail, Drive, etc.) — <strong>private and never used for training</strong>. No opt-out needed.</p>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gemini-bg);color:var(--accent-gemini)">⚙</div> Configure Retention Policies (Workspace Admin)</h3>
+ <div class="platforms"><span class="chip">Admin Console</span><span class="chip">Super Admin required</span></div>
+ <div class="steps">
+  <div class="step"><p><strong>Pre-requisite:</strong> You must be a <strong>Super Administrator</strong> with the <strong>Gemini Settings</strong> admin privilege.</p></div>
+  <div class="step"><p>Open the <strong>Google Admin Console</strong> → Menu → <strong>Generative AI → Gemini for Workspace</strong>.</p></div>
+  <div class="step"><p>Go to <strong>Conversation history &amp; deletion</strong>.</p></div>
+  <div class="step"><p><strong>Conversation history:</strong> Toggle ON or OFF for users/groups/OUs. When OFF, users cannot access past conversations.</p></div>
+  <div class="step"><p><strong>Auto-deletion:</strong> Choose retention: <strong>90 days</strong> (~3 months), <strong>540 days</strong> (~18 months), <strong>1080 days</strong> (~3 years), or <strong>indefinite</strong>. Default is 18 months.</p></div>
+  <div class="step"><p><strong>Manual deletion:</strong> Choose whether to allow users to delete their own conversations.</p></div>
+  <div class="step"><p>Apply settings per <strong>organizational unit</strong> or <strong>configuration group</strong> for granular control.</p></div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gemini-bg);color:var(--accent-gemini)">🔍</div> Admin Access: Google Vault (eDiscovery)</h3>
+ <div class="steps">
+  <div class="step"><p>Open <strong>Google Vault</strong> (vault.google.com).</p></div>
+  <div class="step"><p>Create a <strong>Matter</strong>, then use <strong>Search</strong> to find Gemini conversations by user, date range, or keyword.</p></div>
+  <div class="step"><p>Export relevant prompts and responses for compliance or legal review.</p></div>
+ </div>
+ <div class="callout warn">
+  <div class="callout-icon">⚡</div>
+  <div><strong>Most granular admin access:</strong> Google Vault lets admins <em>search specific conversations by keyword</em> — not just bulk export. This is significantly more powerful than Claude or ChatGPT's admin tools. Users should be aware their employer can search their Gemini prompts.</div>
+ </div>
+</div>
+
+<details>
+ <summary>Additional Admin Tools</summary>
+ <div class="details-body">
+  <p style="color:var(--text2);font-size:.9rem;margin-bottom:.6rem"><strong>Data Export Tool:</strong> Admins can export Gemini app and NotebookLM data for archive/backup from the Admin Console.</p>
+  <p style="color:var(--text2);font-size:.9rem;margin-bottom:.6rem"><strong>Usage Reports:</strong> Admin Console → Generative AI → Gemini Reports shows per-user usage levels, active users, and feature adoption.</p>
+  <p style="color:var(--text2);font-size:.9rem"><strong>Gemini as Additional Service:</strong> If Gemini is enabled as an "additional service" (not a core Workspace service), the Gemini Apps Privacy Notice applies — conversations may be reviewed by human reviewers. Admins should verify whether Gemini is running as a core or additional service.</p>
+ </div>
+</details>
+
+</div><!-- /gemini panel -->
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ════════════ BEDROCK ════════════════ -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel" data-tab="bedrock">
+
+<span class="section-label api">Infrastructure</span>
+<div class="plan-title">Amazon Bedrock (Claude on AWS)</div>
+<div class="plan-subtitle">AWS-managed infrastructure. No consumer plan exists — all usage is enterprise/API. Anthropic never receives or stores your data.</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-gpt-bg);color:var(--accent-gpt)">✓</div> Training Status: Never Trained On</h3>
+ <p style="color:var(--text2);font-size:.92rem">Anthropic <strong>does not</strong> use any data sent through Bedrock for model training — ever. Your prompts and outputs stay within your AWS account. AWS also does not use your content to train its own AI models (unless you explicitly opt in to specific AWS programs).</p>
+ <div class="callout success">
+  <div class="callout-icon">✓</div>
+  <div>Bedrock provides the strongest default privacy posture of any way to access Claude. No opt-out needed, no admin toggles, no risk of accidental training inclusion.</div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-bedrock-bg);color:var(--accent-bedrock)">⚙</div> Configure Retention & Logging</h3>
+ <div class="steps">
+  <div class="step"><p><strong>Default:</strong> Bedrock does <strong>not</strong> store your prompts or model outputs. Zero data retention is the default behavior.</p></div>
+  <div class="step"><p><strong>Optional logging:</strong> You can <em>opt in</em> to model invocation logging via the <strong>Bedrock Console → Settings → Model invocation logging</strong>.</p></div>
+  <div class="step"><p>If enabled, logs are sent to <strong>your own</strong> S3 bucket and/or CloudWatch — you own and control this data entirely.</p></div>
+  <div class="step"><p>Use <strong>AWS CloudTrail</strong> for API-level audit logging (who called what, when) separate from content logging.</p></div>
+  <div class="step"><p>Configure <strong>S3 lifecycle policies</strong> or <strong>CloudWatch retention settings</strong> to manage how long logged data is stored.</p></div>
+ </div>
+</div>
+
+<div class="card">
+ <h3><div class="icon" style="background:var(--accent-bedrock-bg);color:var(--accent-bedrock)">🔒</div> Additional Security Controls</h3>
+ <div class="steps">
+  <div class="step"><p><strong>VPC Endpoints:</strong> Use AWS PrivateLink to keep all Bedrock traffic within your VPC — no data crosses the public internet.</p></div>
+  <div class="step"><p><strong>IAM Policies:</strong> Control which users/roles can invoke specific models using fine-grained IAM permissions.</p></div>
+  <div class="step"><p><strong>Guardrails for Bedrock:</strong> Configure content filters, denied topics, PII redaction, and sensitive information filters at the API level.</p></div>
+  <div class="step"><p><strong>KMS Encryption:</strong> All data is encrypted at rest with AWS KMS. You can provide your own customer-managed keys (CMK) for additional control.</p></div>
+ </div>
+</div>
+
+<details>
+ <summary>Also applies to: Google Cloud Vertex AI</summary>
+ <div class="details-body">
+  <p style="color:var(--text2);font-size:.9rem;margin-bottom:.8rem">If you access Claude through <strong>Google Cloud Vertex AI</strong>, similar principles apply:</p>
+  <div class="callout success"><div class="callout-icon">✓</div><div>Anthropic does not use Vertex AI customer data for training. Google does not train foundation models on your Vertex AI inputs.</div></div>
+  <div class="callout info"><div class="callout-icon">ℹ</div><div>Logs are stored by Google Cloud for approximately 30 days by default. You can configure shorter periods using <strong>Google Cloud Logging</strong>. Both Bedrock and Vertex support Private Service Connect (PSC) / PrivateLink for regional data residency.</div></div>
+ </div>
+</details>
+
+<hr class="divider">
+
+<span class="section-label warn">Pre-Requisites & General Risks</span>
+<div class="plan-title">Cross-Platform Considerations</div>
+
+<div class="card">
+ <h3>🔑 Pre-Requisites Checklist</h3>
+ <div class="steps">
+  <div class="step"><p><strong>Know your plan type.</strong> "Pro" and "Plus" are consumer plans — they don't protect your data. Verify whether you're on a consumer or commercial plan in your account settings.</p></div>
+  <div class="step"><p><strong>Know your role.</strong> Retention policies require admin/owner privileges. Regular users cannot change organizational settings.</p></div>
+  <div class="step"><p><strong>Check before you save.</strong> On Claude Enterprise and Gemini Workspace, changing retention settings can trigger immediate, irreversible deletion of older data.</p></div>
+  <div class="step"><p><strong>Export before changing.</strong> Always run a data export before modifying retention policies. Once data is deleted, it's gone permanently.</p></div>
+  <div class="step"><p><strong>Audit your feedback.</strong> On both Claude and ChatGPT, using the 👍/👎 buttons may commit conversations to long-term storage or training — regardless of your other settings.</p></div>
+ </div>
+</div>
+
+<div class="card">
+ <h3>⚖ Risks & Caveats Summary</h3>
+ <div class="table-wrap">
+ <table>
+  <thead><tr><th>Risk</th><th>Affected</th><th>Mitigation</th></tr></thead>
+  <tbody>
+   <tr><td>Opting out doesn't remove data from already-trained models</td><td>All consumer</td><td>Opt out early; delete sensitive chats</td></tr>
+   <tr><td>Feedback buttons override privacy settings</td><td>Claude, ChatGPT</td><td>Avoid 👍/👎 on sensitive conversations</td></tr>
+   <tr><td>Incognito chats visible to Enterprise admins</td><td>Claude Team/Ent.</td><td>Treat incognito as memory-only protection</td></tr>
+   <tr><td>History lost when opting out of training</td><td>Gemini (consumer)</td><td>Export important chats before toggling</td></tr>
+   <tr><td>Retention changes delete data immediately</td><td>Claude Ent., Gemini WS</td><td>Export data before setting new policies</td></tr>
+   <tr><td>Safety-flagged content retained for years</td><td>All platforms</td><td>Unavoidable — by design for safety</td></tr>
+   <tr><td>Local caches on device (Claude Code, Desktop apps)</td><td>Claude Code, all desktops</td><td>Configure <code>cleanupPeriodDays</code>; clear app data</td></tr>
+   <tr><td>Connector data pasted into chat = training-eligible</td><td>Claude consumer</td><td>Don't paste raw connector data into chats</td></tr>
+   <tr><td>Google Vault enables keyword-level admin search</td><td>Gemini Workspace</td><td>Users should assume full visibility</td></tr>
+   <tr><td>No bulk export for consumer Gemini</td><td>Gemini Free/Advanced</td><td>Use extensions or manual copy</td></tr>
+  </tbody>
+ </table>
+ </div>
+</div>
+
+</div><!-- /bedrock panel -->
+
+</div><!-- /container -->
+
+<div class="footer">
+ <p>This guide is for informational purposes only. Always verify current policies at each provider's official documentation: <a href="https://privacy.claude.com">privacy.claude.com</a> · <a href="https://help.openai.com">help.openai.com</a> · <a href="https://support.google.com/a">support.google.com</a> · <a href="https://docs.aws.amazon.com/bedrock">docs.aws.amazon.com/bedrock</a></p>
+ <p style="margin-top:.4rem">Policies change frequently. Last verified April 2026.</p>
+</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelector(`.tab-panel[data-tab="${btn.dataset.tab}"]`).classList.add('active');
+ });
+});
+</script>
+</body>
+</html>
