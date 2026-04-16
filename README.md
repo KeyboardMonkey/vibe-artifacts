@@ -8,4 +8,4 @@ vibe coded infographics, interactive artifacts etc.
 - [Claude Usage](./claude-usage/claude-limits-infographic.html) - The Field Manual to Usage and Length Limits.
 - [KG Guide](./kg-guide/index.html) - Für die Eltern
 - [LLM Data Risks](./llm-data-risks/ai-privacy-retention-guide.html) - Model training, data rentention and other risks with big 3 LLMs
-- [Resume](./resume/) - A modern, sleak, 2 pager CV template
+- [Resume](./resume/v0.3.html) - A modern, sleak, 2 pager CV template
