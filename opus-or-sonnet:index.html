@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Claude Plans — Model & Plan Explorer</title>
+<meta name="description" content="An opinionated guide to picking the right Claude plan and model for the job. Compare Free, Pro, Max, Team and Enterprise side by side with real-world use cases and a cost calculator." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
+:root {
+  --bg:            #f4f1ea;
+  --bg-elev:       #fbf9f3;
+  --ink:           #1a1a1a;
+  --ink-soft:      #4a4a46;
+  --ink-mute:      #7c7a72;
+  --rule:          #2b2b2b;
+  --rule-soft:     #d9d3c4;
+  --accent:        #d4482b;    /* ochre-red */
+  --accent-soft:   #f5e6dc;
+  --highlight:     #e8dcc4;
+  --positive:      #3d6b4a;
+  --warning:       #a86a1f;
+  --ok-bg:         #e4ecdf;
+  --warn-bg:       #f3e7d0;
+
+  --radius:        2px;
+  --shadow-sm:     0 1px 0 rgba(0,0,0,0.04);
+  --shadow-md:     0 2px 0 rgba(0,0,0,0.08), 0 6px 20px -8px rgba(0,0,0,0.12);
+
+  --font-display:  'Fraunces', Georgia, serif;
+  --font-body:     'Inter', system-ui, sans-serif;
+  --font-mono:     'IBM Plex Mono', ui-monospace, monospace;
+}
+
+[data-theme="dark"] {
+  --bg:            #0f1012;
+  --bg-elev:       #17191c;
+  --ink:           #ece6d9;
+  --ink-soft:      #b8b2a5;
+  --ink-mute:      #7e7a72;
+  --rule:          #ece6d9;
+  --rule-soft:     #2d2f33;
+  --accent:        #ff6b47;
+  --accent-soft:   #2a1813;
+  --highlight:     #2a2518;
+  --positive:      #8bb292;
+  --warning:       #d9a05b;
+  --ok-bg:         #1d2a1f;
+  --warn-bg:       #2a2214;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Subtle paper grain */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.03 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+[data-theme="dark"] body::before { mix-blend-mode: screen; opacity: 0.4; }
+
+::selection { background: var(--accent); color: var(--bg); }
+
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   LAYOUT
+============================================================ */
+.shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================================
+   TOP BAR
+============================================================ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--rule);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 50;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.brand span.mark {
+  display: inline-block;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translateY(-2px);
+}
+.brand small {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-mute);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  width: 118px; height: 36px;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.2s;
+  overflow: hidden;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+.theme-toggle .track {
+  position: absolute; inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  z-index: 2;
+  pointer-events: none;
+}
+.theme-toggle .track span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  transition: color 0.25s;
+}
+.theme-toggle .track span.active { color: var(--bg); }
+[data-theme="dark"] .theme-toggle .track span.active { color: var(--ink); }
+
+.theme-toggle .thumb {
+  position: absolute;
+  top: 3px; bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  background: var(--ink);
+  border-radius: var(--radius);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s;
+  z-index: 1;
+}
+[data-theme="dark"] .theme-toggle .thumb {
+  transform: translateX(calc(100% + 0px));
+  background: var(--accent);
+}
+
+/* ============================================================
+   HERO
+============================================================ */
+.hero {
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 48px;
+  align-items: end;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before {
+  content: ""; display: inline-block;
+  width: 24px; height: 1px; background: var(--accent);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 300;
+}
+
+.hero p.lede {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 42ch;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-soft);
+  margin-top: 0;
+}
+
+/* ============================================================
+   SECTION HEADINGS
+============================================================ */
+.section { padding: 64px 0; border-bottom: 1px solid var(--rule); }
+
+.section-head {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 32px;
+  align-items: baseline;
+  margin-bottom: 40px;
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.12em;
+  border-top: 2px solid var(--rule);
+  padding-top: 8px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(28px, 3.5vw, 44px);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+.section-title em { font-style: italic; font-weight: 300; }
+.section-sub {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  max-width: 65ch;
+}
+
+/* ============================================================
+   CONTROL BAR (filters)
+============================================================ */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 14px 16px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius);
+}
+.controls-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-mute);
+  margin-right: 8px;
+}
+.chip {
+  padding: 6px 14px;
+  border: 1px solid var(--rule-soft);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: var(--radius);
+}
+.chip:hover { border-color: var(--ink); }
+.chip.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chip.tier-indiv.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.tier-corp.active  { background: #2c4a6b; border-color: #2c4a6b; color: #fff; }
+[data-theme="dark"] .chip.tier-corp.active { background: #6b94c2; border-color: #6b94c2; color: #0f1012;}
+
+/* ============================================================
+   PLAN GRID
+============================================================ */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0;
+  border-left: 1px solid var(--rule-soft);
+  border-top: 1px solid var(--rule-soft);
+}
+
+.plan {
+  background: var(--bg-elev);
+  border-right: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  position: relative;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.plan:hover { background: var(--highlight); }
+.plan.selected {
+  background: var(--ink);
+  color: var(--bg);
+}
+.plan.selected .plan-meta,
+.plan.selected .plan-features li,
+.plan.selected .plan-footnote { color: var(--bg); opacity: 0.9; }
+.plan.selected .plan-price-unit { color: var(--bg); opacity: 0.7; }
+.plan.selected .check { color: var(--accent); }
+
+.plan-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-mute);
+  margin-bottom: 8px;
+}
+.plan.selected .plan-tag { color: var(--accent); }
+
+.plan-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.plan-tagline {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+  font-style: italic;
+  font-family: var(--font-display);
+}
+.plan.selected .plan-tagline { color: var(--bg); opacity: 0.8; }
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.plan-price-main {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.plan-price-unit {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.plan-price-note {
+  font-size: 11px;
+  color: var(--ink-mute);
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+}
+.plan.selected .plan-price-note { color: var(--bg); opacity: 0.7; }
+
+.plan-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 0;
+  margin: 0 0 16px;
+  border-top: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.plan.selected .plan-meta { border-color: rgba(255,255,255,0.2); }
+.plan-meta dt { color: var(--ink-mute); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
+.plan-meta dd { color: var(--ink); font-weight: 500; margin-top: 2px; }
+.plan.selected .plan-meta dd { color: var(--bg); }
+
+.plan-features {
+  list-style: none;
+  font-size: 13px;
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+.plan-features li {
+  padding: 5px 0;
+  display: flex; gap: 8px;
+  color: var(--ink-soft);
+}
+.plan-features li .check {
+  color: var(--positive);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.plan-cta {
+  padding: 12px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: var(--radius);
+  text-align: center;
+}
+.plan-cta:hover { background: var(--accent); }
+.plan.selected .plan-cta { background: var(--accent); }
+.plan.selected .plan-cta:hover { background: #fff; color: var(--ink); }
+
+.plan-footnote {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   MODEL ROW
+============================================================ */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.model-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule-soft);
+  padding: 28px 24px;
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+.model-card::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+}
+.model-card[data-model="opus"]::before   { background: var(--accent); }
+.model-card[data-model="sonnet"]::before { background: #2c4a6b; }
+.model-card[data-model="haiku"]::before  { background: var(--positive); }
+[data-theme="dark"] .model-card[data-model="sonnet"]::before { background: #6b94c2; }
+
+.model-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.model-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+.model-version {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  padding: 3px 8px;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius);
+}
+
+.model-tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+}
+
+.bar-row {
+  margin-bottom: 12px;
+}
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+  margin-bottom: 4px;
+}
+.bar-label strong { color: var(--ink); }
+.bar-track {
+  height: 6px;
+  background: var(--rule-soft);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--ink);
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bar-fill.accent   { background: var(--accent); }
+.bar-fill.positive { background: var(--positive); }
+.bar-fill.neutral  { background: #2c4a6b; }
+[data-theme="dark"] .bar-fill.neutral { background: #6b94c2; }
+
+.model-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.model-specs .label { color: var(--ink-mute); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+.model-specs .value { color: var(--ink); font-weight: 500; }
+
+.best-for {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule-soft);
+}
+.best-for h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+}
+.best-for ul { list-style: none; font-size: 13px; }
+.best-for li { padding: 4px 0 4px 14px; position: relative; color: var(--ink-soft); }
+.best-for li::before {
+  content: "→"; position: absolute; left: 0; color: var(--accent); font-family: var(--font-mono);
+}
+
+/* ============================================================
+   USE CASE SHOWCASE
+============================================================ */
+.usecase-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+}
+
+.usecase-list {
+  list-style: none;
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+.usecase-list li {
+  padding: 14px 16px;
+  border-left: 2px solid var(--rule-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.usecase-list li:hover { border-left-color: var(--ink); background: var(--bg-elev); }
+.usecase-list li.active {
+  border-left-color: var(--accent);
+  background: var(--bg-elev);
+  font-weight: 600;
+}
+.usecase-list li .uc-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  margin-right: 8px;
+  letter-spacing: 0.1em;
+}
+
+.usecase-detail {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule-soft);
+  padding: 40px;
+  border-radius: var(--radius);
+  min-height: 520px;
+}
+
+.uc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule-soft);
+  gap: 20px;
+}
+.uc-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 32px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.uc-persona {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-top: 6px;
+}
+
+.uc-recommend {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+}
+.uc-recommend strong { display: block; font-size: 12px; }
+
+.uc-prompt {
+  background: var(--highlight);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+  position: relative;
+}
+.uc-prompt::before {
+  content: "PROMPT";
+  position: absolute;
+  top: -8px; left: 16px;
+  background: var(--bg-elev);
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.uc-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.uc-model {
+  padding: 16px;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius);
+  background: var(--bg);
+  position: relative;
+}
+.uc-model.recommended {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+.uc-model.recommended::before {
+  content: "RECOMMENDED";
+  position: absolute;
+  top: -8px; left: 12px;
+  background: var(--accent);
+  color: #fff;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  border-radius: var(--radius);
+}
+.uc-model h5 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.uc-model p {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.uc-metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule-soft);
+  color: var(--ink-mute);
+}
+.uc-metric-row span strong { color: var(--ink); }
+
+/* ============================================================
+   CALCULATOR
+============================================================ */
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+}
+
+.calc-controls {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule-soft);
+  padding: 32px;
+  border-radius: var(--radius);
+}
+
+.calc-group { margin-bottom: 28px; }
+.calc-group:last-child { margin-bottom: 0; }
+
+.calc-group-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-mute);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+.calc-group-label strong {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--rule-soft);
+  outline: none;
+  border-radius: 1px;
+  margin-bottom: 6px;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid var(--bg-elev);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.slider::-moz-range-thumb {
+  width: 18px; height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid var(--bg-elev);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.slider-range {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.radio-group input { display: none; }
+.radio-group label {
+  padding: 10px 8px;
+  border: 1px solid var(--rule-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+  border-radius: var(--radius);
+}
+.radio-group label:hover { border-color: var(--ink); }
+.radio-group input:checked + label {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.calc-result {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+}
+[data-theme="dark"] .calc-result { background: var(--bg-elev); color: var(--ink); border: 1px solid var(--rule-soft); }
+
+.calc-scenario {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+.calc-headline {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .calc-headline { border-color: var(--rule-soft); }
+.calc-headline em { color: var(--accent); font-style: italic; font-weight: 400; }
+
+.calc-breakdown { margin-bottom: 24px; }
+
+.calc-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+[data-theme="dark"] .calc-row { border-color: var(--rule-soft); }
+.calc-row .plan-nm { text-transform: uppercase; letter-spacing: 0.08em; }
+.calc-row .plan-coverage { font-size: 10px; opacity: 0.6; }
+.calc-row .plan-cost { text-align: right; font-size: 14px; font-weight: 500; }
+.calc-row.best { color: var(--accent); }
+.calc-row.best .plan-nm::before {
+  content: "★ ";
+  color: var(--accent);
+}
+
+.calc-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  opacity: 0.6;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   FAQ / FOOTNOTES
+============================================================ */
+.footnotes {
+  padding: 48px 0 64px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mute);
+  line-height: 1.7;
+}
+.footnotes h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.footnotes ol { padding-left: 20px; }
+.footnotes li { margin-bottom: 6px; }
+.footnotes a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+.footnotes a:hover { background: var(--accent-soft); }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 900px) {
+  .shell { padding: 0 20px; }
+  .hero { grid-template-columns: 1fr; gap: 24px; padding: 40px 0 32px; }
+  .section { padding: 40px 0; }
+  .section-head { grid-template-columns: 1fr; gap: 8px; }
+  .model-grid { grid-template-columns: 1fr; }
+  .usecase-layout { grid-template-columns: 1fr; }
+  .usecase-list { position: static; display: flex; overflow-x: auto; padding-bottom: 8px; gap: 6px; }
+  .usecase-list li { flex-shrink: 0; border-left: none; border-bottom: 2px solid var(--rule-soft); }
+  .usecase-list li.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+  .calc-layout { grid-template-columns: 1fr; }
+  .uc-compare { grid-template-columns: 1fr; }
+  .usecase-detail { padding: 24px; }
+}
+
+/* animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade { animation: fadeUp 0.4s ease both; }
+
+</style>
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <div class="shell" style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 32px;">
+    <div class="brand">
+      <span class="mark"></span>
+      Claude Plans <small>/ Model Explorer</small>
+    </div>
+    <div class="topbar-right">
+      <span class="meta">v. 04 / 2026</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="thumb"></span>
+        <span class="track">
+          <span class="label-sun active">Sun</span>
+          <span class="label-moon">Moon</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div>
+    <div class="eyebrow">A field guide to Claude</div>
+    <h1>Which Claude <em>fits</em><br/>the job at hand?</h1>
+  </div>
+  <p class="lede">
+    Five plans, three models, one decision. An opinionated map of what each tier of Claude is actually good for — with real use cases, performance trade-offs, and a calculator that tells you the honest answer.
+  </p>
+</section>
+
+<!-- ========== PLANS ========== -->
+<section class="section" id="plans">
+  <div class="section-head">
+    <div class="section-num">§ 01 / Plans</div>
+    <div>
+      <div class="section-title">The <em>five</em> plans, compared</div>
+      <p class="section-sub">
+        Filter by audience. Click any card to highlight it; scroll down to see which one the calculator recommends for your workload. Prices below Anthropic's public list rates as of April 2026, annual billing where applicable.
+      </p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span class="controls-label">Filter:</span>
+    <button class="chip active" data-filter="all">All Plans</button>
+    <button class="chip tier-indiv" data-filter="individual">Individual</button>
+    <button class="chip tier-corp" data-filter="corporate">Team & Enterprise</button>
+  </div>
+
+  <div class="plan-grid" id="planGrid"></div>
+</section>
+
+<!-- ========== MODELS ========== -->
+<section class="section" id="models">
+  <div class="section-head">
+    <div class="section-num">§ 02 / Models</div>
+    <div>
+      <div class="section-title">Opus, Sonnet, Haiku <em>— three sizes, three jobs</em></div>
+      <p class="section-sub">
+        All three current-generation models ship inside paid Claude plans. The differences are real but not absolute: Haiku handles most daily prompts fine, Sonnet is the workhorse, and Opus earns its keep on the hard stuff. Relative performance bars are calibrated from Anthropic's public benchmark positioning.
+      </p>
+    </div>
+  </div>
+
+  <div class="model-grid" id="modelGrid"></div>
+</section>
+
+<!-- ========== USE CASES ========== -->
+<section class="section" id="usecases">
+  <div class="section-head">
+    <div class="section-num">§ 03 / Use cases</div>
+    <div>
+      <div class="section-title">Ten real jobs, <em>matched</em> to a model</div>
+      <p class="section-sub">
+        Pick a task on the left. The right panel shows the prompt, the recommended model, and a frank comparison of how each model would handle it — quality, speed, and whether the cost delta is justified.
+      </p>
+    </div>
+  </div>
+
+  <div class="usecase-layout">
+    <ul class="usecase-list" id="usecaseList"></ul>
+    <div class="usecase-detail" id="usecaseDetail"></div>
+  </div>
+</section>
+
+<!-- ========== CALCULATOR ========== -->
+<section class="section" id="calculator">
+  <div class="section-head">
+    <div class="section-num">§ 04 / Calculator</div>
+    <div>
+      <div class="section-title">What <em>should</em> you be paying?</div>
+      <p class="section-sub">
+        A rough model, because Anthropic describes usage in relative terms (Max is 5x or 20x Pro, etc.) rather than exact message counts. Adjust your daily volume and task mix; the calculator estimates monthly cost per plan and flags the best fit. Treat the output as directional, not contractual.
+      </p>
+    </div>
+  </div>
+
+  <div class="calc-layout">
+    <div class="calc-controls">
+
+      <div class="calc-group">
+        <div class="calc-group-label">
+          <span>Daily active users</span>
+          <strong id="usersVal">1</strong>
+        </div>
+        <input type="range" class="slider" id="usersSlider" min="1" max="500" value="1" />
+        <div class="slider-range"><span>1</span><span>500</span></div>
+      </div>
+
+      <div class="calc-group">
+        <div class="calc-group-label">
+          <span>Messages per user per day</span>
+          <strong id="msgsVal">20</strong>
+        </div>
+        <input type="range" class="slider" id="msgsSlider" min="5" max="300" value="20" />
+        <div class="slider-range"><span>5 / light</span><span>300 / power</span></div>
+      </div>
+
+      <div class="calc-group">
+        <div class="calc-group-label"><span>Task mix</span></div>
+        <div class="radio-group">
+          <input type="radio" name="mix" id="mixCasual" value="casual" checked>
+          <label for="mixCasual">Casual</label>
+          <input type="radio" name="mix" id="mixBalanced" value="balanced">
+          <label for="mixBalanced">Balanced</label>
+          <input type="radio" name="mix" id="mixHeavy" value="heavy">
+          <label for="mixHeavy">Heavy</label>
+        </div>
+        <div class="slider-range" style="margin-top: 4px;">
+          <span id="mixDesc">Casual: short prompts, mostly Haiku-class work.</span>
+        </div>
+      </div>
+
+      <div class="calc-group">
+        <div class="calc-group-label"><span>Features you need</span></div>
+        <div class="radio-group">
+          <input type="radio" name="needs" id="needsBasic" value="basic" checked>
+          <label for="needsBasic">Basic</label>
+          <input type="radio" name="needs" id="needsPower" value="power">
+          <label for="needsPower">Power</label>
+          <input type="radio" name="needs" id="needsEnt" value="enterprise">
+          <label for="needsEnt">Enterprise</label>
+        </div>
+        <div class="slider-range" style="margin-top: 4px;">
+          <span id="needsDesc">Basic: chat, web, file upload.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="calc-result">
+      <div class="calc-scenario">Estimated monthly cost</div>
+      <div class="calc-headline" id="calcHeadline">
+        For 1 user doing 20 casual messages/day, <em>Free</em> covers it.
+      </div>
+
+      <div class="calc-breakdown" id="calcBreakdown"></div>
+
+      <div class="calc-footer">
+        Usage limits reset every 5 hours on Individual plans; Team/Enterprise limits reset daily.
+        Estimates assume annual billing and average task volume. Actual mileage varies with long-context work, research runs, and Claude Code usage. See Anthropic's <a href="https://support.anthropic.com/en/articles/9797557-usage-limit-best-practices" target="_blank" rel="noopener">usage-limit guidance</a> for specifics.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTNOTES ========== -->
+<section class="footnotes">
+  <div class="section-head" style="margin-bottom: 24px;">
+    <div class="section-num">§ 05 / Sources & caveats</div>
+    <div>
+      <h3>What this page is and isn't</h3>
+    </div>
+  </div>
+  <ol>
+    <li>Plan pricing: <a href="https://claude.com/pricing" target="_blank" rel="noopener">claude.com/pricing</a>. Pro $17/mo annual ($20 monthly), Max from $100/mo, Team $20/seat standard ($25 monthly) and $100/seat premium, Enterprise $20/seat + usage.</li>
+    <li>Model availability: All paid plans include Opus, Sonnet, and Haiku. Free includes Sonnet only per Anthropic's current plan sheet.</li>
+    <li>Usage multipliers (Max 5x/20x, Team premium 5x standard) are Anthropic's published relational figures. Exact message counts vary by model and task and are not officially pinned.</li>
+    <li>Performance bars are relative, calibrated from Anthropic's own positioning of each model. Not independent benchmark scores.</li>
+    <li>The calculator is directional. It assumes a rational user won't exceed their plan's soft caps. Real-world pricing for Enterprise is negotiated.</li>
+    <li>Last verified against <a href="https://claude.com/pricing" target="_blank" rel="noopener">Anthropic's public pricing page</a> in April 2026. Plans and prices change; if you're making a procurement decision, check the source.</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const PLANS = [
+  {
+    id: 'free',
+    tier: 'individual',
+    tag: 'Starter',
+    name: 'Free',
+    tagline: 'For the curious.',
+    price: '$0',
+    priceUnit: '/ month',
+    priceNote: 'No credit card',
+    usage: '1x baseline',
+    models: 'Sonnet',
+    features: [
+      'Chat on web, iOS, Android, desktop',
+      'Generate code & visualise data',
+      'Web search',
+      'Memory across conversations',
+      'File creation & code execution',
+      'Extended thinking',
+      'Slack + Google Workspace connectors',
+    ],
+    footnote: 'Usage caps hit fast on long sessions. Fine for trying Claude, too thin for daily work.',
+    monthly: 0,
+  },
+  {
+    id: 'pro',
+    tier: 'individual',
+    tag: 'Most popular',
+    name: 'Pro',
+    tagline: 'For everyday productivity.',
+    price: '$17',
+    priceUnit: '/ mo, annual',
+    priceNote: '$20 if billed monthly',
+    usage: '~5x Free',
+    models: 'All three',
+    features: [
+      'Everything in Free',
+      'More usage (approx. 5x Free)',
+      'Claude Code included',
+      'Claude Cowork included',
+      'Unlimited projects',
+      'Research mode',
+      'Claude for Excel & PowerPoint (beta)',
+    ],
+    footnote: 'The sensible default for a solo knowledge worker. Covers 80% of individual use.',
+    monthly: 17,
+  },
+  {
+    id: 'max',
+    tier: 'individual',
+    tag: 'Power user',
+    name: 'Max',
+    tagline: 'Get the most out of Claude.',
+    price: 'from $100',
+    priceUnit: '/ month',
+    priceNote: '5x or 20x Pro usage',
+    usage: '5x–20x Pro',
+    models: 'All three',
+    features: [
+      'Everything in Pro',
+      '5x or 20x more usage than Pro',
+      'Higher output limits on all tasks',
+      'Early access to advanced features',
+      'Priority access at peak times',
+    ],
+    footnote: 'For people who live in Claude: heavy Claude Code users, researchers, solo builders shipping every day.',
+    monthly: 100,
+  },
+  {
+    id: 'team',
+    tier: 'corporate',
+    tag: 'Small orgs',
+    name: 'Team',
+    tagline: 'For teams of 5 to 150.',
+    price: '$20',
+    priceUnit: '/ seat, annual',
+    priceNote: '$25 monthly · $100 premium seat',
+    usage: 'Pro-level or 5x premium',
+    models: 'All three',
+    features: [
+      'All paid features + more usage than Pro',
+      'Mix standard ($20) and premium ($100) seats',
+      'Central billing & admin',
+      'SSO + domain verification',
+      'Enterprise search across your org',
+      'Microsoft 365 & Slack connectors',
+      'No training on your content by default',
+    ],
+    footnote: 'Good fit for startups and teams where you want a shared billing surface without the enterprise paperwork.',
+    monthly: 20,  // per seat
+  },
+  {
+    id: 'enterprise',
+    tier: 'corporate',
+    tag: 'Regulated / scale',
+    name: 'Enterprise',
+    tagline: 'For large businesses at scale.',
+    price: '$20+',
+    priceUnit: '/ seat + usage',
+    priceNote: 'API-rate metered usage',
+    usage: 'Metered at API rates',
+    models: 'All + Mythos preview',
+    features: [
+      'Everything in Team',
+      'Role-based access (fine-grained)',
+      'SCIM provisioning',
+      'Audit logs + Compliance API',
+      'Custom data retention',
+      'Network-level access control & IP allowlist',
+      'HIPAA-ready offering',
+      'Google Docs cataloguing',
+    ],
+    footnote: 'For when procurement, security, and legal need to sign off. Usage billed at API rates so costs scale with work, not headcount.',
+    monthly: 20,  // per seat minimum, plus usage
+  },
+];
+
+const MODELS = [
+  {
+    id: 'opus',
+    name: 'Opus',
+    version: '4.7',
+    tagline: 'The one you call when it matters.',
+    bars: { quality: 98, speed: 45, cost: 100 },   // cost = relative output-token cost
+    costLabel: '$5 / $25 per MTok',
+    specs: [
+      { label: 'Context', value: '1M tokens' },
+      { label: 'Max output', value: '64K tokens' },
+      { label: 'Best at', value: 'Agentic coding' },
+      { label: 'Tokenizer', value: 'New (v4.7)' },
+    ],
+    bestFor: [
+      'Complex multi-step agentic coding',
+      'Long-running research with synthesis',
+      'Hard reasoning, math, analysis',
+      'Mission-critical production output',
+    ],
+  },
+  {
+    id: 'sonnet',
+    name: 'Sonnet',
+    version: '4.6',
+    tagline: 'The workhorse you actually use all day.',
+    bars: { quality: 88, speed: 75, cost: 60 },
+    costLabel: '$3 / $15 per MTok',
+    specs: [
+      { label: 'Context', value: '1M tokens' },
+      { label: 'Max output', value: '128K tokens' },
+      { label: 'Best at', value: 'Everything, mostly' },
+      { label: 'Role', value: 'Recommended default' },
+    ],
+    bestFor: [
+      'Daily coding, writing, analysis',
+      'Customer-facing apps and RAG',
+      'Long-document work (1M context)',
+      'Balanced quality-to-cost workloads',
+    ],
+  },
+  {
+    id: 'haiku',
+    name: 'Haiku',
+    version: '4.5',
+    tagline: 'Fast, cheap, surprisingly capable.',
+    bars: { quality: 72, speed: 95, cost: 20 },
+    costLabel: '$1 / $5 per MTok',
+    specs: [
+      { label: 'Context', value: '200K tokens' },
+      { label: 'Max output', value: '64K tokens' },
+      { label: 'Best at', value: 'Speed at scale' },
+      { label: 'Latency', value: 'Sub-second' },
+    ],
+    bestFor: [
+      'Classification, routing, extraction',
+      'High-volume chat and moderation',
+      'Quick drafts and summaries',
+      'Latency-sensitive user-facing tools',
+    ],
+  },
+];
+
+const USECASES = [
+  {
+    id: 'uc-code',
+    title: 'Refactor a 40-file legacy codebase',
+    persona: 'Developer / solo engineer',
+    recommend: { plan: 'Max or Pro', model: 'Opus 4.7' },
+    prompt: 'Walk through this Django 3 project, identify dead code and deprecated patterns, and produce a migration plan to Django 5 with file-by-file diffs.',
+    variants: [
+      { model: 'Opus', note: 'Handles the whole repo in context, catches subtle deprecations, produces correct diffs on first pass.', quality: 'Excellent', speed: 'Slow', verdict: 'RECOMMENDED' },
+      { model: 'Sonnet', note: 'Strong results, may need 2-3 rounds of correction on trickier files. 40% cheaper per run.', quality: 'Very good', speed: 'Moderate', verdict: 'Solid fallback' },
+      { model: 'Haiku', note: 'Not equipped for cross-file reasoning at this scale. Will miss things.', quality: 'Weak', speed: 'Fast', verdict: 'Skip' },
+    ],
+  },
+  {
+    id: 'uc-email',
+    title: 'Rewrite a cold outreach email',
+    persona: 'Founder, marketer, anyone selling',
+    recommend: { plan: 'Free or Pro', model: 'Haiku 4.5' },
+    prompt: "Rewrite this email to a VP of Engineering to sound more direct and less AI-generated. Keep it under 90 words.",
+    variants: [
+      { model: 'Opus', note: 'Overkill. You are paying Opus rates for a two-paragraph rewrite.', quality: 'Excellent', speed: 'Slow', verdict: 'Waste' },
+      { model: 'Sonnet', note: 'Produces polished output, natural tone. Good default if you do these in bulk.', quality: 'Excellent', speed: 'Fast', verdict: 'Good' },
+      { model: 'Haiku', note: 'Fast, tight, almost indistinguishable from Sonnet on short rewrites. Free tier covers this.', quality: 'Very good', speed: 'Very fast', verdict: 'RECOMMENDED' },
+    ],
+  },
+  {
+    id: 'uc-research',
+    title: 'Synthesise 30 PDFs into a market brief',
+    persona: 'Analyst, strategist, consultant',
+    recommend: { plan: 'Pro or Max', model: 'Sonnet 4.6' },
+    prompt: "I've uploaded 30 competitor PDFs. Extract their pricing models, target segments, and positioning claims. Produce a 2-page brief with a comparison table.",
+    variants: [
+      { model: 'Opus', note: 'Best synthesis, slightly sharper positioning insights. Worth it only if brief is client-facing.', quality: 'Outstanding', speed: 'Slow', verdict: 'Upgrade path' },
+      { model: 'Sonnet', note: '1M context handles all 30 PDFs in one shot. Quality is publication-ready.', quality: 'Excellent', speed: 'Moderate', verdict: 'RECOMMENDED' },
+      { model: 'Haiku', note: '200K context forces chunking. Synthesis quality drops noticeably at this scale.', quality: 'Fair', speed: 'Fast', verdict: 'Too thin' },
+    ],
+  },
+  {
+    id: 'uc-student',
+    title: 'Explain a concept for an exam',
+    persona: 'Student, self-learner',
+    recommend: { plan: 'Free', model: 'Sonnet 4.6' },
+    prompt: "I have a midterm on thermodynamics tomorrow. Walk me through the second law with three worked examples I can show my professor.",
+    variants: [
+      { model: 'Opus', note: 'Beautiful explanations but not meaningfully better than Sonnet for undergrad material.', quality: 'Excellent', speed: 'Slow', verdict: 'Not needed' },
+      { model: 'Sonnet', note: 'Clear, patient, accurate. Included in Free tier.', quality: 'Excellent', speed: 'Fast', verdict: 'RECOMMENDED' },
+      { model: 'Haiku', note: 'Hit-or-miss on derivations. Will occasionally skip steps you need to see.', quality: 'Good', speed: 'Very fast', verdict: 'Risky' },
+    ],
+  },
+  {
+    id: 'uc-writing',
+    title: 'Ghost-write a long-form essay',
+    persona: 'Writer, content creator',
+    recommend: { plan: 'Pro', model: 'Opus 4.7' },
+    prompt: "Write a 3,000-word essay on why 'engineering culture' is mostly vibes, in the voice of Paul Graham. Include three original anecdotes.",
+    variants: [
+      { model: 'Opus', note: 'Voice mimicry and structural coherence over 3K words is Opus territory. Cadence lands.', quality: 'Outstanding', speed: 'Slow', verdict: 'RECOMMENDED' },
+      { model: 'Sonnet', note: 'Very readable, but the voice wobbles in the middle third. Needs one editing pass.', quality: 'Very good', speed: 'Fast', verdict: 'If budget-bound' },
+      { model: 'Haiku', note: 'Tonally generic. Produces competent content but not essayistic voice.', quality: 'Fair', speed: 'Very fast', verdict: 'Skip' },
+    ],
+  },
+  {
+    id: 'uc-triage',
+    title: 'Classify 10,000 support tickets',
+    persona: 'Ops, support lead',
+    recommend: { plan: 'Enterprise or API', model: 'Haiku 4.5' },
+    prompt: "Given this ticket text, label it as [billing | bug | feature-request | account | other] and extract any product names mentioned. Return JSON.",
+    variants: [
+      { model: 'Opus', note: 'Would be absurd. You are paying 5x Sonnet for classification the smallest model nails.', quality: 'Excellent', speed: 'Slow', verdict: 'Waste' },
+      { model: 'Sonnet', note: 'Reliable but 3x the cost of Haiku for no measurable accuracy gain on this task.', quality: 'Excellent', speed: 'Fast', verdict: 'Overkill' },
+      { model: 'Haiku', note: 'Purpose-built for this. Structured output, sub-second latency, one-fifth the Sonnet cost.', quality: 'Very good', speed: 'Very fast', verdict: 'RECOMMENDED' },
+    ],
+  },
+  {
+    id: 'uc-agent',
+    title: 'Build an autonomous research agent',
+    persona: 'Builder, engineer',
+    recommend: { plan: 'Max or Enterprise', model: 'Opus 4.7' },
+    prompt: "Design an agent that browses, takes notes, files issues in Jira, and produces a weekly briefing. It should run unattended for 8 hours at a time.",
+    variants: [
+      { model: 'Opus', note: 'Agentic coding is where 4.7 is a real step-change. Handles tool orchestration and error recovery reliably.', quality: 'Outstanding', speed: 'Slow', verdict: 'RECOMMENDED' },
+      { model: 'Sonnet', note: 'Workable for simpler agents. Longer chains start compounding errors vs Opus.', quality: 'Good', speed: 'Fast', verdict: 'Prototype tier' },
+      { model: 'Haiku', note: 'Use as a fast sub-agent for well-scoped steps, not as the primary reasoner.', quality: 'Situational', speed: 'Very fast', verdict: 'Inner loop' },
+    ],
+  },
+  {
+    id: 'uc-team',
+    title: 'Roll out Claude across a 50-person team',
+    persona: 'Ops / IT / security lead',
+    recommend: { plan: 'Team (with 5-10 premium seats)', model: 'All three' },
+    prompt: "Stand up Claude for 50 people. We need SSO, no training on our data, shared billing, and admins able to see usage. Some power users need more headroom.",
+    variants: [
+      { model: 'Free seats', note: 'No central billing, no SSO, no admin visibility. Non-starter for anything regulated.', quality: 'N/A', speed: 'N/A', verdict: 'No' },
+      { model: 'Team plan', note: 'Standard seats $20/mo + premium seats $100/mo for the 5-10 power users. SSO, admin, no training by default.', quality: 'Right fit', speed: 'N/A', verdict: 'RECOMMENDED' },
+      { model: 'Enterprise', note: 'Only if you need SCIM, audit logs, or HIPAA. For a 50-person startup that is usually premature.', quality: 'Overbuilt', speed: 'N/A', verdict: 'Later' },
+    ],
+  },
+  {
+    id: 'uc-regulated',
+    title: 'Deploy Claude inside a regulated industry',
+    persona: 'CISO, compliance, GRC',
+    recommend: { plan: 'Enterprise', model: 'Sonnet default, Opus for IR' },
+    prompt: "We're a hospital. We need Claude available for clinical ops and coding, HIPAA-ready, with audit logs, retention controls, and IP allowlisting. Usage is hard to predict.",
+    variants: [
+      { model: 'Team', note: 'Close but no HIPAA offering, no audit log depth, no network controls. Fails the security review.', quality: 'Partial', speed: 'N/A', verdict: 'Insufficient' },
+      { model: 'Enterprise', note: 'HIPAA-ready offering, SCIM, audit logs, compliance API, custom retention. Usage billed at API rates keeps cost tied to actual work.', quality: 'Designed for this', speed: 'N/A', verdict: 'RECOMMENDED' },
+      { model: 'Direct API', note: 'Alternative if you only need developer access, but loses the chat UI and admin console.', quality: 'Different product', speed: 'N/A', verdict: 'If dev-only' },
+    ],
+  },
+  {
+    id: 'uc-chat',
+    title: 'A quick summary of a news article',
+    persona: 'Anyone, casually',
+    recommend: { plan: 'Free', model: 'Haiku or Sonnet' },
+    prompt: "Summarise this 1,200-word article into three bullet points and tell me the main counterargument.",
+    variants: [
+      { model: 'Opus', note: 'Unnecessary. You will wait longer for a result that is not meaningfully better.', quality: 'Excellent', speed: 'Slow', verdict: 'Overkill' },
+      { model: 'Sonnet', note: 'Crisp, balanced summary. The Free-tier default and perfectly adequate.', quality: 'Excellent', speed: 'Fast', verdict: 'RECOMMENDED' },
+      { model: 'Haiku', note: 'Faster, a touch less nuanced on the counterargument. Fine for skimming.', quality: 'Very good', speed: 'Very fast', verdict: 'Also fine' },
+    ],
+  },
+];
+
+/* ============================================================
+   THEME TOGGLE
+============================================================ */
+const themeToggle = document.getElementById('themeToggle');
+const labelSun = themeToggle.querySelector('.label-sun');
+const labelMoon = themeToggle.querySelector('.label-moon');
+
+function syncToggleLabels() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  labelSun.classList.toggle('active', !isDark);
+  labelMoon.classList.toggle('active', isDark);
+}
+
+const saved = localStorage.getItem('theme');
+if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+syncToggleLabels();
+
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  if (cur === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+  }
+  syncToggleLabels();
+});
+
+/* ============================================================
+   RENDER: PLANS
+============================================================ */
+const planGrid = document.getElementById('planGrid');
+let activeFilter = 'all';
+let selectedPlan = null;
+
+function renderPlans() {
+  planGrid.innerHTML = '';
+  const visible = PLANS.filter(p => activeFilter === 'all' || p.tier === activeFilter);
+  visible.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'plan fade' + (selectedPlan === p.id ? ' selected' : '');
+    el.dataset.id = p.id;
+    el.innerHTML = `
+      <div class="plan-tag">${p.tag}</div>
+      <div class="plan-name">${p.name}</div>
+      <div class="plan-tagline">${p.tagline}</div>
+      <div class="plan-price">
+        <span class="plan-price-main">${p.price}</span>
+        <span class="plan-price-unit">${p.priceUnit}</span>
+      </div>
+      <div class="plan-price-note">${p.priceNote}</div>
+      <dl class="plan-meta">
+        <div><dt>Usage</dt><dd>${p.usage}</dd></div>
+        <div><dt>Models</dt><dd>${p.models}</dd></div>
+      </dl>
+      <ul class="plan-features">
+        ${p.features.map(f => `<li><span class="check">✓</span>${f}</li>`).join('')}
+      </ul>
+      <button class="plan-cta">${selectedPlan === p.id ? 'Selected' : 'Select plan'}</button>
+      <div class="plan-footnote">${p.footnote}</div>
+    `;
+    el.addEventListener('click', () => {
+      selectedPlan = selectedPlan === p.id ? null : p.id;
+      renderPlans();
+    });
+    planGrid.appendChild(el);
+  });
+}
+
+document.querySelectorAll('.chip[data-filter]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-filter]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.filter;
+    renderPlans();
+  });
+});
+
+renderPlans();
+
+/* ============================================================
+   RENDER: MODELS
+============================================================ */
+const modelGrid = document.getElementById('modelGrid');
+MODELS.forEach(m => {
+  const colorClass = m.id === 'opus' ? 'accent' : m.id === 'sonnet' ? 'neutral' : 'positive';
+  const el = document.createElement('div');
+  el.className = 'model-card';
+  el.dataset.model = m.id;
+  el.innerHTML = `
+    <div class="model-top">
+      <div class="model-name">${m.name}</div>
+      <div class="model-version">v${m.version}</div>
+    </div>
+    <div class="model-tagline">${m.tagline}</div>
+
+    <div class="bar-row">
+      <div class="bar-label"><strong>Quality</strong><span>${m.bars.quality}/100</span></div>
+      <div class="bar-track"><div class="bar-fill ${colorClass}" data-w="${m.bars.quality}"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><strong>Speed</strong><span>${m.bars.speed}/100</span></div>
+      <div class="bar-track"><div class="bar-fill ${colorClass}" data-w="${m.bars.speed}"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><strong>Relative cost</strong><span>${m.bars.cost}/100</span></div>
+      <div class="bar-track"><div class="bar-fill ${colorClass}" data-w="${m.bars.cost}"></div></div>
+    </div>
+
+    <div class="model-specs">
+      ${m.specs.map(s => `<div><div class="label">${s.label}</div><div class="value">${s.value}</div></div>`).join('')}
+    </div>
+
+    <div class="best-for">
+      <h4>Best for</h4>
+      <ul>${m.bestFor.map(b => `<li>${b}</li>`).join('')}</ul>
+    </div>
+  `;
+  modelGrid.appendChild(el);
+});
+
+// Animate bars on intersection
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.w + '%'; }, 100);
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.model-card').forEach(c => barObserver.observe(c));
+
+/* ============================================================
+   RENDER: USE CASES
+============================================================ */
+const usecaseList = document.getElementById('usecaseList');
+const usecaseDetail = document.getElementById('usecaseDetail');
+let activeUC = USECASES[0].id;
+
+function renderUsecaseList() {
+  usecaseList.innerHTML = '';
+  USECASES.forEach((uc, i) => {
+    const li = document.createElement('li');
+    li.className = uc.id === activeUC ? 'active' : '';
+    li.innerHTML = `<span class="uc-num">${String(i+1).padStart(2,'0')}</span>${uc.title}`;
+    li.addEventListener('click', () => {
+      activeUC = uc.id;
+      renderUsecaseList();
+      renderUsecaseDetail();
+    });
+    usecaseList.appendChild(li);
+  });
+}
+
+function renderUsecaseDetail() {
+  const uc = USECASES.find(u => u.id === activeUC);
+  if (!uc) return;
+  usecaseDetail.className = 'usecase-detail fade';
+  void usecaseDetail.offsetWidth; // re-trigger
+  usecaseDetail.innerHTML = `
+    <div class="uc-header">
+      <div>
+        <div class="uc-title">${uc.title}</div>
+        <div class="uc-persona">Persona: ${uc.persona}</div>
+      </div>
+      <div class="uc-recommend">
+        Best fit
+        <strong>${uc.recommend.plan}</strong>
+        <span style="font-size:10px; opacity:0.85;">${uc.recommend.model}</span>
+      </div>
+    </div>
+    <div class="uc-prompt">${uc.prompt}</div>
+    <div class="uc-compare">
+      ${uc.variants.map(v => `
+        <div class="uc-model ${v.verdict === 'RECOMMENDED' ? 'recommended' : ''}">
+          <h5>${v.model}</h5>
+          <p>${v.note}</p>
+          <div class="uc-metric-row">
+            <span>Quality <strong>${v.quality}</strong></span>
+            <span>Speed <strong>${v.speed}</strong></span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+renderUsecaseList();
+renderUsecaseDetail();
+
+/* ============================================================
+   CALCULATOR
+============================================================ */
+const usersSlider = document.getElementById('usersSlider');
+const msgsSlider  = document.getElementById('msgsSlider');
+const usersVal    = document.getElementById('usersVal');
+const msgsVal     = document.getElementById('msgsVal');
+const mixDesc     = document.getElementById('mixDesc');
+const needsDesc   = document.getElementById('needsDesc');
+const calcHeadline = document.getElementById('calcHeadline');
+const calcBreakdown = document.getElementById('calcBreakdown');
+
+const MIX_DESC = {
+  casual:   'Casual: short prompts, mostly Haiku-class work.',
+  balanced: 'Balanced: mix of Sonnet-sized tasks and quick prompts.',
+  heavy:    'Heavy: Opus-class reasoning, coding, long docs.',
+};
+const NEEDS_DESC = {
+  basic:      'Basic: chat, web, file upload.',
+  power:      'Power: Claude Code, Research, Projects, connectors.',
+  enterprise: 'Enterprise: SSO, SCIM, audit logs, HIPAA, admin console.',
+};
+
+// Usage capacity estimates (dimensionless "units" per plan per user per day)
+// Anchored so Free = 30 "casual units" = ~30 short messages.
+const PLAN_CAP = {
+  free:       { cap:  30, minUsers: 1, needs: 'basic'     },
+  pro:        { cap: 150, minUsers: 1, needs: 'power'     },
+  max:        { cap: 750, minUsers: 1, needs: 'power'     },
+  team:       { cap: 200, minUsers: 5, needs: 'power'     },  // per seat
+  enterprise: { cap: 200, minUsers: 1, needs: 'enterprise' }, // per seat, plus usage
+};
+
+// Weight per message by mix
+const MIX_WEIGHT = { casual: 1, balanced: 2, heavy: 4 };
+
+function computeCosts() {
+  const users = +usersSlider.value;
+  const msgs  = +msgsSlider.value;
+  const mix   = document.querySelector('input[name="mix"]:checked').value;
+  const needs = document.querySelector('input[name="needs"]:checked').value;
+
+  const weight = MIX_WEIGHT[mix];
+  const dailyUnitsPerUser = msgs * weight;
+
+  // Enterprise usage cost (metered at API rates, rough blend per "unit")
+  // A "unit" roughly = 1 Sonnet-equivalent message = ~2K in + 400 out tokens @ Sonnet.
+  // That's ~$0.012/unit on Sonnet, ~$0.004 on Haiku, ~$0.03 on Opus. Use blended by mix.
+  const COST_PER_UNIT = {
+    casual:   0.005,
+    balanced: 0.014,
+    heavy:    0.028,
+  }[mix];
+
+  const MONTH_DAYS = 30;
+
+  const results = PLANS.map(p => {
+    const cap = PLAN_CAP[p.id];
+    const requiredPerUser = dailyUnitsPerUser;
+    const covers = requiredPerUser <= cap.cap;
+    const usersViable = users >= cap.minUsers;
+
+    let monthlyCost = 0;
+    let note = '';
+    let viable = true;
+    let coverage = '';
+
+    if (p.id === 'free') {
+      monthlyCost = 0;
+      if (!covers) { viable = false; note = 'Exceeds Free usage cap'; }
+      if (users > 1) { viable = false; note = 'Single-user only'; }
+      coverage = covers ? 'Covers workload' : 'Over cap';
+    }
+    else if (p.id === 'pro') {
+      monthlyCost = 17 * users;
+      if (!covers) { viable = false; note = 'Would hit Pro cap mid-day'; }
+      coverage = covers ? 'Covers workload' : 'Over cap';
+    }
+    else if (p.id === 'max') {
+      // Max 5x = $100, Max 20x = $200
+      const need20x = requiredPerUser > 200;  // roughly
+      monthlyCost = (need20x ? 200 : 100) * users;
+      coverage = need20x ? 'Max 20x tier' : 'Max 5x tier';
+    }
+    else if (p.id === 'team') {
+      if (users < 5) { viable = false; note = 'Min 5 seats'; }
+      // Premium seats for heavy users - assume 20% of users on premium if mix = heavy
+      const premiumShare = mix === 'heavy' ? 0.2 : (mix === 'balanced' ? 0.05 : 0);
+      const premSeats = Math.ceil(users * premiumShare);
+      const stdSeats  = users - premSeats;
+      monthlyCost = stdSeats * 20 + premSeats * 100;
+      if (!covers && premSeats === 0) { viable = false; note = 'Standard seats would cap out'; }
+      coverage = premSeats > 0 ? `${stdSeats} std + ${premSeats} premium` : `${stdSeats} std seats`;
+    }
+    else if (p.id === 'enterprise') {
+      if (needs !== 'enterprise' && users < 25) {
+        // Still viable but called out as premature
+        note = 'Likely premature';
+      }
+      const seatCost = users * 20;
+      const usageCost = users * dailyUnitsPerUser * MONTH_DAYS * COST_PER_UNIT;
+      monthlyCost = seatCost + usageCost;
+      coverage = `$${seatCost.toFixed(0)} seats + $${usageCost.toFixed(0)} usage`;
+    }
+
+    // Needs mismatch disqualifies
+    if (needs === 'enterprise' && !['enterprise'].includes(p.id)) viable = false;
+    if (needs === 'power' && p.id === 'free') viable = false;
+
+    return { plan: p, monthlyCost, coverage, viable, note };
+  });
+
+  // Find best (cheapest viable)
+  const viable = results.filter(r => r.viable);
+  let best = null;
+  if (viable.length) {
+    best = viable.reduce((a, b) => (a.monthlyCost < b.monthlyCost ? a : b));
+  }
+
+  // Render
+  mixDesc.textContent = MIX_DESC[mix];
+  needsDesc.textContent = NEEDS_DESC[needs];
+
+  const userLabel = users === 1 ? '1 user' : `${users} users`;
+  const headlineBits = [];
+  if (best) {
+    headlineBits.push(`For ${userLabel} doing ${msgs} ${mix} messages/day, `);
+    headlineBits.push(`<em>${best.plan.name}</em>`);
+    headlineBits.push(best.monthlyCost === 0 ? ' covers it at no cost.' : ` runs you <em>$${best.monthlyCost.toFixed(0)}/mo</em>.`);
+  } else {
+    headlineBits.push(`No standard plan comfortably covers ${userLabel} at this volume. Consider Enterprise with metered usage.`);
+  }
+  calcHeadline.innerHTML = headlineBits.join('');
+
+  calcBreakdown.innerHTML = results.map(r => `
+    <div class="calc-row ${best && r.plan.id === best.plan.id ? 'best' : ''}" style="${r.viable ? '' : 'opacity:0.4;'}">
+      <div>
+        <div class="plan-nm">${r.plan.name}</div>
+        <div class="plan-coverage">${r.viable ? r.coverage : (r.note || 'Not viable')}</div>
+      </div>
+      <div></div>
+      <div class="plan-cost">${r.viable ? (r.monthlyCost === 0 ? 'Free' : '$' + r.monthlyCost.toFixed(0)) : '—'}</div>
+    </div>
+  `).join('');
+}
+
+[usersSlider, msgsSlider].forEach(s => {
+  s.addEventListener('input', () => {
+    usersVal.textContent = usersSlider.value;
+    msgsVal.textContent  = msgsSlider.value;
+    computeCosts();
+  });
+});
+document.querySelectorAll('input[name="mix"], input[name="needs"]').forEach(r => {
+  r.addEventListener('change', computeCosts);
+});
+
+computeCosts();
+
+</script>
+</body>
+</html>
