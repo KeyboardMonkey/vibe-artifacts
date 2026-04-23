@@ -12,3 +12,4 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [KG Guide](./kg-guide/index.html) — Für die Eltern
 - [LLM Data Risks](./llm-data-risks/ai-privacy-retention-guide.html) — Model training, data rentention and other risks with big 3 LLMs
 - [LLM Fundamentals](https://llm-explorer-psi.vercel.app/) — Learning LLM fundamentals
+- [Nuqta](./nuqta/index.html) — Urdu
