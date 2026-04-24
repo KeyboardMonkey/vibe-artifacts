@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<!-- Signed: Syed Ishaq B. | ishaqzafar.com -->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Claude Desktop Bridge: An Investigative Breakdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f1e8;
+    --bg-paper: #fbf8f1;
+    --bg-accent: #eae4d4;
+    --ink: #14110d;
+    --ink-soft: #3a342b;
+    --ink-faint: #6d6456;
+    --rule: #2a251e;
+    --rule-soft: #c8bfaa;
+    --red: #a8281f;
+    --red-soft: #f2d9d6;
+    --amber: #9c6c12;
+    --amber-soft: #f0e4c9;
+    --green: #3d6b2c;
+    --green-soft: #d9e5cf;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --reading: 'Newsreader', Georgia, serif;
+  }
+  [data-theme="dark"] {
+    --bg: #0e0c09;
+    --bg-paper: #17140f;
+    --bg-accent: #221d15;
+    --ink: #f0e8d8;
+    --ink-soft: #bdb3a0;
+    --ink-faint: #80776a;
+    --rule: #d6ccb5;
+    --rule-soft: #3a342b;
+    --red: #e8615a;
+    --red-soft: #3d1a17;
+    --amber: #d4a017;
+    --amber-soft: #3d2f10;
+    --green: #8ab872;
+    --green-soft: #1e2a15;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--reading);
+    font-size: 17px;
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--red) 4%, transparent) 0%, transparent 40%),
+      radial-gradient(circle at 80% 100%, color-mix(in srgb, var(--amber) 4%, transparent) 0%, transparent 40%);
+  }
+
+  /* Toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 1000;
+    background: var(--bg-paper);
+    border: 1.5px solid var(--rule);
+    border-radius: 999px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 112px;
+    height: 38px;
+    position: fixed;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .theme-toggle__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 50px;
+    height: 30px;
+    background: var(--ink);
+    border-radius: 999px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+  }
+  [data-theme="dark"] .theme-toggle__thumb { transform: translateX(54px); }
+  .theme-toggle__label {
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+    color: var(--ink);
+    transition: color 0.3s ease;
+  }
+  .theme-toggle__label--day { color: var(--bg-paper); }
+  .theme-toggle__label--night { color: var(--ink); }
+  [data-theme="dark"] .theme-toggle__label--day { color: var(--ink); }
+  [data-theme="dark"] .theme-toggle__label--night { color: var(--bg-paper); }
+
+  /* Layout */
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 60px 32px 120px;
+  }
+  @media (max-width: 720px) {
+    .wrap { padding: 40px 20px 80px; }
+    body { font-size: 16px; }
+  }
+
+  /* Masthead */
+  .masthead {
+    border-top: 4px double var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 0;
+    margin-bottom: 42px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .masthead__stamp {
+    display: inline-block;
+    background: var(--red);
+    color: var(--bg-paper);
+    padding: 3px 10px;
+    letter-spacing: 0.22em;
+    font-weight: 700;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    margin-bottom: 80px;
+  }
+  .hero__eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 20px;
+    display: inline-block;
+    padding-bottom: 4px;
+    border-bottom: 1.5px solid var(--red);
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(42px, 7vw, 88px);
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    color: var(--red);
+  }
+  .hero__sub {
+    font-family: var(--reading);
+    font-size: clamp(18px, 2vw, 22px);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 680px;
+    font-weight: 300;
+  }
+  .hero__meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .hero__meta span strong { color: var(--ink); font-weight: 700; }
+
+  /* Section heading */
+  .section { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .section-header {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 32px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    padding-top: 8px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-variation-settings: "opsz" 72;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  /* TLDR cards */
+  .tldr {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .tldr-card {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid var(--red);
+    padding: 22px 22px 20px;
+    position: relative;
+  }
+  .tldr-card--verdict { border-left-color: var(--amber); }
+  .tldr-card--risk { border-left-color: var(--red); }
+  .tldr-card--context { border-left-color: var(--green); }
+  .tldr-card__label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .tldr-card__headline {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .tldr-card__body {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  /* Evidence block */
+  .evidence {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    padding: 32px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .evidence::before {
+    content: "EXHIBIT A";
+    position: absolute;
+    top: -11px;
+    left: 24px;
+    background: var(--bg);
+    padding: 0 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--red);
+    font-weight: 700;
+  }
+  .evidence h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .evidence p.caption {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  pre.code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    background: var(--bg-accent);
+    border: 1px solid var(--rule-soft);
+    padding: 18px 20px;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+  .code-comment { color: var(--ink-faint); font-style: italic; }
+  .code-key { color: var(--red); }
+  .code-string { color: var(--green); }
+
+  /* Filesystem tree */
+  .fs-tree {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg-accent);
+    border: 1px solid var(--rule-soft);
+    padding: 18px 20px;
+    margin-top: 18px;
+    overflow-x: auto;
+  }
+  .fs-tree .fs-line { display: block; padding: 2px 0; }
+  .fs-tree .fs-installed { color: var(--red); font-weight: 700; }
+  .fs-tree .fs-phantom { color: var(--amber); }
+  .fs-tree .fs-note { color: var(--ink-faint); font-style: italic; }
+
+  /* Claims matrix */
+  .claim {
+    border-bottom: 1px solid var(--rule-soft);
+    padding: 0;
+    overflow: hidden;
+  }
+  .claim:first-child { border-top: 1px solid var(--rule-soft); }
+  .claim__header {
+    display: grid;
+    grid-template-columns: 130px 1fr 32px;
+    gap: 16px;
+    align-items: center;
+    padding: 20px 0;
+    cursor: pointer;
+    user-select: none;
+    transition: padding-left 0.2s ease;
+  }
+  .claim__header:hover { padding-left: 6px; }
+  .claim__verdict {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    padding: 5px 10px;
+    text-align: center;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .claim__verdict--confirmed { background: var(--green-soft); color: var(--green); }
+  .claim__verdict--partial { background: var(--amber-soft); color: var(--amber); }
+  .claim__verdict--weak { background: var(--red-soft); color: var(--red); }
+  .claim__text {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.35;
+  }
+  .claim__chevron {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--ink-faint);
+    transition: transform 0.25s ease;
+    text-align: center;
+  }
+  .claim.open .claim__chevron { transform: rotate(45deg); }
+  .claim__body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .claim.open .claim__body { max-height: 1200px; }
+  .claim__body-inner {
+    padding: 0 0 28px 146px;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.6;
+  }
+  .claim__body-inner p { margin-bottom: 12px; }
+  .claim__body-inner .source {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--rule-soft);
+  }
+  @media (max-width: 720px) {
+    .claim__header { grid-template-columns: 100px 1fr 24px; gap: 12px; }
+    .claim__verdict { font-size: 9px; padding: 4px 6px; letter-spacing: 0.1em; }
+    .claim__text { font-size: 16px; }
+    .claim__body-inner { padding-left: 0; padding-top: 4px; }
+  }
+
+  /* Attack path */
+  .attack {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .attack-diagram {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .attack-node {
+    background: var(--bg-accent);
+    border: 1px solid var(--rule-soft);
+    padding: 18px 22px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .attack-node:hover { border-color: var(--red); transform: translateX(4px); }
+  .attack-node.active { border-color: var(--red); background: var(--red-soft); }
+  .attack-node + .attack-node::before {
+    content: "▼";
+    position: absolute;
+    top: -14px;
+    left: 28px;
+    color: var(--red);
+    font-size: 12px;
+    background: var(--bg-paper);
+    padding: 0 4px;
+  }
+  .attack-node__step {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .attack-node__title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+  .attack-node__desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .attack-detail {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: var(--bg-accent);
+    border-left: 3px solid var(--red);
+    font-size: 14.5px;
+    line-height: 1.55;
+    min-height: 60px;
+  }
+
+  /* Counterpoint */
+  .counterpoint {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid var(--amber);
+    padding: 28px 32px;
+    font-family: var(--reading);
+  }
+  .counterpoint h4 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .counterpoint ul {
+    list-style: none;
+    padding: 0;
+  }
+  .counterpoint li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    border-bottom: 1px dashed var(--rule-soft);
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .counterpoint li:last-child { border-bottom: none; }
+  .counterpoint li::before {
+    content: "◂";
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    color: var(--amber);
+  }
+  .counterpoint li strong { color: var(--ink); font-weight: 600; }
+
+  /* Industry comparison */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+  }
+  .compare-table th {
+    text-align: left;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+  .compare-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table .vendor {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+  .badge--good { background: var(--green-soft); color: var(--green); }
+  .badge--bad { background: var(--red-soft); color: var(--red); }
+  .badge--mid { background: var(--amber-soft); color: var(--amber); }
+  @media (max-width: 720px) {
+    .compare-table, .compare-table thead, .compare-table tbody, .compare-table th, .compare-table td, .compare-table tr { display: block; }
+    .compare-table thead { display: none; }
+    .compare-table td { padding: 8px 18px; border: none; }
+    .compare-table td::before {
+      content: attr(data-label);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .compare-table tr {
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 0;
+    }
+  }
+
+  /* Risk score */
+  .risk {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) { .risk { grid-template-columns: 1fr; } }
+  .risk__content { padding: 32px; }
+  .risk__score {
+    background: var(--bg-accent);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid var(--rule-soft);
+  }
+  @media (max-width: 720px) { .risk__score { border-left: none; border-top: 1px solid var(--rule-soft); } }
+  .risk__score-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .risk__score-value {
+    font-family: var(--serif);
+    font-variation-settings: "opsz" 144;
+    font-weight: 400;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--amber);
+    margin-bottom: 4px;
+  }
+  .risk__score-scale {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .risk h4 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  .risk dl { display: grid; grid-template-columns: 180px 1fr; gap: 8px 18px; }
+  .risk dt {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 4px;
+  }
+  .risk dd { font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+  @media (max-width: 720px) { .risk dl { grid-template-columns: 1fr; gap: 2px 0; } .risk dt { padding-top: 10px; } }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--rule-soft);
+  }
+  .timeline-event {
+    position: relative;
+    padding: 8px 0 24px;
+  }
+  .timeline-event::before {
+    content: "";
+    position: absolute;
+    left: -32px;
+    top: 14px;
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--ink);
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .timeline-event--critical::before { border-color: var(--red); background: var(--red); }
+  .timeline-event__date {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 4px;
+  }
+  .timeline-event__title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .timeline-event__body {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* Remediation */
+  .remed {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 720px) { .remed { grid-template-columns: 1fr; } }
+  .remed-card {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    padding: 24px;
+  }
+  .remed-card h4 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  .remed-card p.sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+  .cmd {
+    position: relative;
+    background: var(--bg-accent);
+    border: 1px solid var(--rule-soft);
+    padding: 14px 50px 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.5;
+  }
+  .cmd-copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    padding: 3px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+  }
+  .cmd-copy:hover { background: var(--ink); color: var(--bg-paper); }
+  .cmd-copy.copied { background: var(--green); color: var(--bg-paper); border-color: var(--green); }
+
+  /* Refs */
+  .refs {
+    background: var(--bg-paper);
+    border: 1px solid var(--rule-soft);
+    padding: 32px;
+  }
+  .refs ol {
+    padding-left: 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .refs a { color: var(--red); text-decoration: none; border-bottom: 1px solid var(--rule-soft); }
+  .refs a:hover { border-bottom-color: var(--red); }
+
+  /* Footer */
+  .colophon {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 4px double var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Assumptions callout */
+  .assumptions {
+    margin-top: 48px;
+    padding: 24px 28px;
+    background: var(--bg-paper);
+    border: 1px dashed var(--rule-soft);
+  }
+  .assumptions h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+  .assumptions p, .assumptions li {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .assumptions ol { padding-left: 20px; }
+  .assumptions li { padding: 4px 0; }
+
+  /* Pull quote */
+  .pq {
+    font-family: var(--serif);
+    font-variation-settings: "opsz" 144;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(22px, 3vw, 28px);
+    line-height: 1.3;
+    color: var(--ink-soft);
+    padding: 24px 0 24px 32px;
+    border-left: 3px solid var(--red);
+    margin: 32px 0;
+  }
+  .pq cite {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-style: normal;
+    margin-top: 12px;
+  }
+
+  /* Confidence tag */
+  .confidence {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    padding: 3px 8px;
+    margin-left: 8px;
+    vertical-align: middle;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .confidence--high { background: var(--green-soft); color: var(--green); }
+  .confidence--med { background: var(--amber-soft); color: var(--amber); }
+  .confidence--low { background: var(--red-soft); color: var(--red); }
+
+  /* Inline em-dash replacement spacing */
+  body { hyphens: none; }
+
+  /* Nav */
+  .nav {
+    position: sticky;
+    top: 0;
+    background: color-mix(in srgb, var(--bg) 95%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 50;
+    padding: 10px 0;
+    margin: 0 -32px 40px;
+    padding-left: 32px;
+    padding-right: 32px;
+    border-bottom: 1px solid var(--rule-soft);
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    display: inline-block;
+    margin-right: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-decoration: none;
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .nav a:hover, .nav a.active { color: var(--ink); border-bottom-color: var(--red); }
+
+  /* Selection */
+  ::selection { background: var(--red); color: var(--bg-paper); }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Toggle theme">
+  <span class="theme-toggle__thumb" aria-hidden="true"></span>
+  <span class="theme-toggle__label theme-toggle__label--day">DAY</span>
+  <span class="theme-toggle__label theme-toggle__label--night">NIGHT</span>
+</div>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <span>No. 001 · Investigative Dossier</span>
+    <span class="masthead__stamp">SECURITY BRIEF</span>
+    <span>Filed: 24 Apr 2026</span>
+  </div>
+
+  <header class="hero">
+    <span class="hero__eyebrow">On the "Anthropic Spyware" Allegation</span>
+    <h1>The Claude Desktop Bridge <em>&mdash;</em> what's real, what's hype.</h1>
+    <p class="hero__sub">A privacy researcher says Anthropic silently installed a native messaging bridge into seven Chromium browsers, including ones not on the machine. The security community replied in two voices at once. Here is what the evidence actually shows, what Anthropic's own blog confirms, and where the spyware framing overreaches.</p>
+    <div class="hero__meta">
+      <span>Source: <strong>thatprivacyguy.com</strong></span>
+      <span>Author: <strong>Alexander Hanff</strong></span>
+      <span>Published: <strong>18 Apr 2026</strong></span>
+      <span>Corroborated by: <strong>The Register, gHacks, Malwarebytes</strong></span>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#tldr">01 · Bottom line</a>
+    <a href="#evidence">02 · The artifact</a>
+    <a href="#claims">03 · Claims validated</a>
+    <a href="#attack">04 · Attack path</a>
+    <a href="#counter">05 · Counterpoint</a>
+    <a href="#industry">06 · Industry pattern</a>
+    <a href="#risk">07 · Risk assessment</a>
+    <a href="#timeline">08 · Timeline</a>
+    <a href="#remed">09 · Remediation</a>
+    <a href="#refs">10 · References</a>
+  </nav>
+
+  <!-- ================= BOTTOM LINE ================= -->
+  <section class="section" id="tldr">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">The bottom line, in four cards.</h2>
+    </div>
+    <div class="tldr">
+      <div class="tldr-card tldr-card--verdict">
+        <div class="tldr-card__label">Verdict</div>
+        <div class="tldr-card__headline">The technical claim holds. The label overreaches.</div>
+        <div class="tldr-card__body">Claude Desktop does silently install a Native Messaging manifest into seven Chromium browsers, including ones not present on the disk. That is real, reproducible, and independently confirmed. "Spyware" is a stretch: the binary never runs without an extension wired up to it.</div>
+      </div>
+      <div class="tldr-card tldr-card--risk">
+        <div class="tldr-card__label">Real risk</div>
+        <div class="tldr-card__headline">Pre-staged attack surface, not active exfiltration.</div>
+        <div class="tldr-card__body">If any of the three pre-authorised extension IDs is compromised or sideloaded, an attacker reaches a signed, user-privilege binary outside the browser sandbox with zero extra install steps. This is not hypothetical. ShadowPrompt already did it once this January.</div>
+      </div>
+      <div class="tldr-card tldr-card--context">
+        <div class="tldr-card__label">Industry context</div>
+        <div class="tldr-card__headline">1Password and KeePassXC ship the same pattern.</div>
+        <div class="tldr-card__body">Native Messaging hosts pre-registered for absent browsers is industry standard for password managers and other bridges. Anthropic's choice to not ask is normal. That doesn't make it right. KeePassXC is the outlier that proves it's not necessary.</div>
+      </div>
+      <div class="tldr-card tldr-card--verdict" style="border-left-color: var(--red);">
+        <div class="tldr-card__label">Regulatory</div>
+        <div class="tldr-card__headline">Article 5(3) ePrivacy is in scope. Outcome is not settled.</div>
+        <div class="tldr-card__body">Writing files onto a user's device without consent is in-scope for Article 5(3). Whether it's a violation turns on the "strictly necessary" carve-out and consent given at extension install time. Expect a DPA complaint if Anthropic doesn't fix this.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EVIDENCE ================= -->
+  <section class="section" id="evidence">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">The artifact itself.</h2>
+    </div>
+
+    <p style="margin-bottom: 24px; max-width: 720px;">The evidence is a 300-byte JSON file that Chromium browsers consult before allowing an extension to invoke a local binary. Nothing exotic. What's unusual is how it arrived.</p>
+
+    <div class="evidence">
+      <h3>com.anthropic.claude_browser_extension.json</h3>
+      <p class="caption">~/Library/Application Support/{Browser}/NativeMessagingHosts/</p>
+      <pre class="code">{
+  <span class="code-key">"name"</span>: <span class="code-string">"com.anthropic.claude_browser_extension"</span>,
+  <span class="code-key">"description"</span>: <span class="code-string">"Claude Browser Extension Native Host"</span>,
+  <span class="code-key">"path"</span>: <span class="code-string">"/Applications/Claude.app/Contents/Helpers/chrome-native-host"</span>,
+  <span class="code-key">"type"</span>: <span class="code-string">"stdio"</span>,
+  <span class="code-key">"allowed_origins"</span>: [
+    <span class="code-string">"chrome-extension://dihbgbndebgnbjfmelmegjepbnkhlgni/"</span>,
+    <span class="code-string">"chrome-extension://fcoeoabgfenejglbffodgkkbkcdhcgfn/"</span>,  <span class="code-comment">// Claude in Chrome</span>
+    <span class="code-string">"chrome-extension://dngcpimnedloihjnnfngkgjoidhnaolf/"</span>
+  ]
+}</pre>
+      <p style="margin-top: 16px; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55;">Three extension IDs are pre-authorised to spawn the helper binary. The middle one is Anthropic's public "Claude in Chrome" extension. The other two are unidentified at time of writing.</p>
+    </div>
+
+    <div class="evidence">
+      <h3>Where the file landed</h3>
+      <p class="caption">Installed locations on the researcher's test machine</p>
+      <div class="fs-tree">
+        <span class="fs-line">~/Library/Application Support/</span>
+        <span class="fs-line fs-installed">├── Google/Chrome/NativeMessagingHosts/         <span class="fs-note"># installed (Chrome present)</span></span>
+        <span class="fs-line fs-installed">├── BraveSoftware/Brave-Browser/NativeMessagingHosts/   <span class="fs-note"># installed (Brave present)</span></span>
+        <span class="fs-line fs-phantom">├── Microsoft Edge/NativeMessagingHosts/        <span class="fs-note"># installed; Edge NOT on disk</span></span>
+        <span class="fs-line fs-phantom">├── Arc/User Data/NativeMessagingHosts/         <span class="fs-note"># installed; Arc NOT on disk</span></span>
+        <span class="fs-line fs-phantom">├── Vivaldi/NativeMessagingHosts/               <span class="fs-note"># installed; Vivaldi NOT on disk</span></span>
+        <span class="fs-line fs-phantom">├── Chromium/NativeMessagingHosts/              <span class="fs-note"># installed; Chromium NOT on disk</span></span>
+        <span class="fs-line fs-phantom">└── com.operasoftware.Opera/NativeMessagingHosts/  <span class="fs-note"># installed; Opera NOT on disk</span></span>
+      </div>
+      <p style="margin-top: 16px; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55;">Seven manifests, byte-for-byte identical (MD5 <code style="font-family:var(--mono);font-size:12px;">1e927a9e7796d0175a2a1f30028f4baa</code>). Four land in parent directories Claude Desktop had to create because the browser itself is not installed. If any of those browsers is ever installed later, the bridge is already waiting.</p>
+    </div>
+
+    <div class="evidence">
+      <h3>Claude Desktop's own log file admits it</h3>
+      <p class="caption">~/Library/Logs/Claude/main.log</p>
+      <pre class="code">2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Chrome
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Brave
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Edge
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Chromium
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Arc
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Vivaldi
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Installed native host manifest for Opera
+2026-03-21 14:54:40 [info] [Chrome Extension MCP] Native host installation complete</pre>
+      <p style="margin-top: 16px; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55;">Internal subsystem name: <code style="font-family:var(--mono);font-size:12px;">Chrome Extension MCP</code>. Thirty-one install events across log files. File modification timestamps show each manifest rewritten every launch. Deleting one does not make it stay deleted.</p>
+    </div>
+
+    <blockquote class="pq">
+      The helper binary is signed with Anthropic PBC's Developer ID certificate, bears an Apple RFC 3161 timestamp, and ships inside a notarised bundle. This is not a test artifact. It is a signed, notarised, shipped capability.
+      <cite>&mdash; Verified via <code style="font-family:var(--mono);font-size:11px;">codesign -dvv</code> output in the post</cite>
+    </blockquote>
+  </section>
+
+  <!-- ================= CLAIMS MATRIX ================= -->
+  <section class="section" id="claims">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">Claim-by-claim validation.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">Click any claim to see how it holds up against primary sources (Anthropic's own docs, GitHub issues, The Register, Malwarebytes, independent reviewers). Confidence ratings are mine.</p>
+
+    <div id="claims-list">
+      <!-- claims injected by JS below -->
+    </div>
+  </section>
+
+  <!-- ================= ATTACK PATH ================= -->
+  <section class="section" id="attack">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">The attack path, if it ever lights up.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">At rest, the binary is dormant. These are the four steps from "user opens a web page" to "out-of-sandbox code runs as the user". Click a node to see what would have to happen.</p>
+
+    <div class="attack">
+      <div class="attack-diagram" id="attack-diagram">
+        <div class="attack-node active" data-step="1" data-title="Malicious page or hijacked extension" data-detail="Either (a) the user visits a page containing a prompt injection, (b) an attacker compromises one of the three pre-authorised extension IDs via Chrome Web Store takeover, a forced update, or enterprise policy sideload, or (c) the Arkose-style XSS chain used by ShadowPrompt in January repeats. Any one of these is enough to make the browser extension behave hostilely. Anthropic's own telemetry puts prompt injection success at 23.6% without defences, 11.2% with the mitigations available when Claude for Chrome shipped. Latest (Opus 4.5) numbers are closer to 1%, but ShadowPrompt proved classifier-based defences can be bypassed.">
+          <div class="attack-node__step">STEP 01 · Entry</div>
+          <div class="attack-node__title">Hostile instruction reaches the extension</div>
+          <div class="attack-node__desc">Prompt injection, extension supply-chain compromise, or XSS on a trusted origin.</div>
+        </div>
+        <div class="attack-node" data-step="2" data-title="Extension calls connectNative()" data-detail="The hijacked extension calls chrome.runtime.connectNative('com.anthropic.claude_browser_extension'). In Chrome's permission model this is gated by the 'nativeMessaging' permission, which the user granted when they installed the Claude extension. With the Claude Desktop bridge pre-staged, this call succeeds instantly. No operating-system prompt. No user visibility. Chrome is doing exactly what it's designed to do.">
+          <div class="attack-node__step">STEP 02 · Bridge</div>
+          <div class="attack-node__title">Browser invokes the pre-authorised manifest</div>
+          <div class="attack-node__desc">Chrome reads the manifest, matches the extension ID, spawns the binary.</div>
+        </div>
+        <div class="attack-node" data-step="3" data-title="chrome-native-host executes" data-detail="The helper at /Applications/Claude.app/Contents/Helpers/chrome-native-host starts as a child of the browser, but outside the browser sandbox. It runs at user privilege. It can read the filesystem under $HOME. It can call network endpoints. It can write anywhere the user can write. macOS TCC controls still apply to Documents, Downloads, Desktop, and cloud-synced folders, but nothing else surfaces a prompt.">
+          <div class="attack-node__step">STEP 03 · Execution</div>
+          <div class="attack-node__title">Signed binary runs at user privilege</div>
+          <div class="attack-node__desc">Code-signed by Anthropic PBC (Q6L2SF6YDW). Outside Chromium's sandbox. Inside your user context.</div>
+        </div>
+        <div class="attack-node" data-step="4" data-title="Impact: documented capabilities become attacker capabilities" data-detail="Anthropic's own docs describe what the bridge can do: open tabs, inherit browser login state, read console errors and DOM state, extract structured data, fill forms, capture the screen as a GIF. In attacker hands, 'inherits login state' means banking, email, Slack, admin consoles. 'DOM state' means decrypted messages in your Gmail tab, values typed mid-form, 2FA codes on screen. 'Form filling' means the helper can see the password as it's typed. This is not speculation; it's a straight reading of Anthropic's capability list under a hostile operator.">
+          <div class="attack-node__step">STEP 04 · Impact</div>
+          <div class="attack-node__title">Authenticated session access, DOM read, form filling</div>
+          <div class="attack-node__desc">Anthropic's own capability list becomes the attacker's capability list.</div>
+        </div>
+      </div>
+      <div class="attack-detail" id="attack-detail">
+        <strong style="font-family: var(--serif); font-size: 17px; display: block; margin-bottom: 8px;">Step 01 · Hostile instruction reaches the extension</strong>
+        Either (a) the user visits a page containing a prompt injection, (b) an attacker compromises one of the three pre-authorised extension IDs via Chrome Web Store takeover, a forced update, or enterprise policy sideload, or (c) the Arkose-style XSS chain used by ShadowPrompt in January repeats. Any one of these is enough to make the browser extension behave hostilely. Anthropic's own telemetry puts prompt injection success at 23.6% without defences, 11.2% with the mitigations available when Claude for Chrome shipped. Latest (Opus 4.5) numbers are closer to 1%, but ShadowPrompt proved classifier-based defences can be bypassed.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COUNTERPOINT ================= -->
+  <section class="section" id="counter">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">The counterpoint, fairly.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">The Lobsters thread and Malwarebytes' follow-up raised reasonable objections. These are the strongest ones, with my read on each.</p>
+
+    <div class="counterpoint">
+      <h4>"It's a nothing burger. The file does nothing on its own."</h4>
+      <ul>
+        <li><strong>Weight: real.</strong> The manifest is inert until Chrome invokes it. And Chrome only invokes it when a matching extension calls <code style="font-family:var(--mono);font-size:12.5px;">connectNative()</code>. So on a machine with no Claude browser extension installed, the binary never runs. This is mechanically true.</li>
+        <li><strong>My read:</strong> Dormancy narrows the threat but does not remove it. The point of a pre-staged hook is that it collapses the number of install steps an attacker needs from three to one. Two bugs make that matter: (1) the list of "approved" extensions is under Anthropic's control and can change in any future release, and (2) enterprise policy or malicious sideloading can push one of those three IDs without user involvement at all.</li>
+      </ul>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="counterpoint">
+      <h4>"1Password, Adobe, KeePassXC all do this too."</h4>
+      <ul>
+        <li><strong>Weight: partial.</strong> Yes, 1Password absolutely ships NM manifests into Chromium directories including ones for browsers not installed. Adobe and Microsoft have been doing similar registry writes on Windows for years. The pattern is genuinely industry standard.</li>
+        <li><strong>My read:</strong> KeePassXC is the counter-example that breaks this defence. It shows a per-browser explicit opt-in dialog the first time you enable browser integration. It proves the UX is possible, not prohibitively expensive, and that users can handle it. The "everyone does it" argument is weaker than it looks when one respected peer in the same category demonstrably does not.</li>
+      </ul>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="counterpoint">
+      <h4>"Consent is given when you install the Chrome extension, which asks for 'Communicate with cooperating native applications'."</h4>
+      <ul>
+        <li><strong>Weight: partial.</strong> Chrome's install flow does surface that permission. A user installing Claude in Chrome has, technically, consented to native messaging for that extension.</li>
+        <li><strong>My read:</strong> This argument falls over in two places. First, the Desktop-side manifest is installed <em>before</em> any extension is installed, which is backwards: consent at install time of the extension cannot retroactively authorise file writes that already happened months earlier. Second, the manifest is written into browsers the user does not have and has never consented to anything about. There is no extension install flow to piggyback on for an absent browser.</li>
+      </ul>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="counterpoint">
+      <h4>"There's no mechanism for the browser to install the manifest itself, so the desktop app has to."</h4>
+      <ul>
+        <li><strong>Weight: true but beside the point.</strong> Correct, Chrome does not let the Web Store trigger native host registration. A separate desktop process must write the file.</li>
+        <li><strong>My read:</strong> This explains why Anthropic's desktop app has to do the write. It does not explain why the write has to be silent, unscoped, for browsers the user has not installed, and rewritten on every launch. None of those design decisions follow from the mechanical constraint.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= INDUSTRY PATTERN ================= -->
+  <section class="section" id="industry">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">How this compares across the industry.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">Native Messaging is in use across password managers, security tools, note apps, and AI clients. The behaviour varies more than you'd think.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Asks before writing?</th>
+          <th>Writes to absent browsers?</th>
+          <th>Surfaces the integrations list in-app?</th>
+          <th>Removal persists?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="vendor" data-label="Vendor">Claude Desktop (Anthropic)</td>
+          <td data-label="Asks?"><span class="badge badge--bad">NO</span></td>
+          <td data-label="Writes to absent?"><span class="badge badge--bad">YES · 7 browsers</span></td>
+          <td data-label="Surfaces in-app?"><span class="badge badge--bad">NO</span></td>
+          <td data-label="Removal persists?"><span class="badge badge--bad">NO · rewrites on launch</span></td>
+        </tr>
+        <tr>
+          <td class="vendor" data-label="Vendor">1Password</td>
+          <td data-label="Asks?"><span class="badge badge--bad">NO</span></td>
+          <td data-label="Writes to absent?"><span class="badge badge--bad">YES</span></td>
+          <td data-label="Surfaces in-app?"><span class="badge badge--mid">PARTIAL</span></td>
+          <td data-label="Removal persists?"><span class="badge badge--bad">NO</span></td>
+        </tr>
+        <tr>
+          <td class="vendor" data-label="Vendor">KeePassXC</td>
+          <td data-label="Asks?"><span class="badge badge--good">YES · per browser</span></td>
+          <td data-label="Writes to absent?"><span class="badge badge--good">NO</span></td>
+          <td data-label="Surfaces in-app?"><span class="badge badge--good">YES · Settings tab</span></td>
+          <td data-label="Removal persists?"><span class="badge badge--good">YES</span></td>
+        </tr>
+        <tr>
+          <td class="vendor" data-label="Vendor">Bitwarden</td>
+          <td data-label="Asks?"><span class="badge badge--mid">TOGGLE IN-APP</span></td>
+          <td data-label="Writes to absent?"><span class="badge badge--good">NO</span></td>
+          <td data-label="Surfaces in-app?"><span class="badge badge--good">YES</span></td>
+          <td data-label="Removal persists?"><span class="badge badge--good">YES</span></td>
+        </tr>
+        <tr>
+          <td class="vendor" data-label="Vendor">Claude Code (same vendor, diff product)</td>
+          <td data-label="Asks?"><span class="badge badge--mid">IMPLICIT · CLI flag</span></td>
+          <td data-label="Writes to absent?"><span class="badge badge--mid">ONLY ON /chrome</span></td>
+          <td data-label="Surfaces in-app?"><span class="badge badge--good">YES · /chrome status</span></td>
+          <td data-label="Removal persists?"><span class="badge badge--mid">PARTIAL</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px; max-width: 720px; color: var(--ink-soft); font-size: 15px;">Note the last row: Anthropic's other product, Claude Code, handles this substantially better. It installs the manifest only when the user runs <code style="font-family:var(--mono);font-size:13px;">/chrome</code> and explicitly opts in. The pattern exists inside Anthropic already. Desktop just didn't adopt it.</p>
+  </section>
+
+  <!-- ================= RISK ================= -->
+  <section class="section" id="risk">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">Risk assessment for security teams.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">If Claude Desktop is in your endpoint fleet or approved software list, this matters. Here is the framing I'd bring to a CISO conversation.</p>
+
+    <div class="risk">
+      <div class="risk__content">
+        <h4>Composite exposure rating</h4>
+        <dl>
+          <dt>Today (dormant)</dt>
+          <dd>Low direct impact. No network traffic, no data read, no capability exercised until a matching extension runs. Endpoint detection will not flag this as an IOC.</dd>
+          <dt>With extension installed</dt>
+          <dd>Medium. Documented capabilities (session access, DOM read, form fill) are powerful. Real-world prompt injection rate against Claude for Chrome was 23.6% at launch, ~1% with latest Opus 4.5 defences, but ShadowPrompt (Jan 2026) proved classifier-based defences can be fully bypassed by chained web flaws.</dd>
+          <dt>On supply-chain compromise</dt>
+          <dd>High. An attacker who takes over any of the three pre-authorised extension IDs (Chrome Web Store account compromise, malicious Anthropic build, rogue insider) inherits an already-authorised path to out-of-sandbox code execution on every Claude Desktop install globally.</dd>
+          <dt>Regulatory (EU)</dt>
+          <dd>Medium-high. Article 5(3) ePrivacy is clearly in scope. Whether it's breached is litigable. A DPA complaint is likely; the penalty exposure for Anthropic is real but probably not existential. The enterprise exposure for customers running Claude Desktop on corporate devices is more nuanced.</dd>
+          <dt>Reputational (for Anthropic)</dt>
+          <dd>Medium. The "safety-conscious AI lab" brand is the one that takes the hit. The Register, Malwarebytes, gHacks already covered it. As of 24 Apr 2026, no Anthropic public response.</dd>
+        </dl>
+      </div>
+      <div class="risk__score">
+        <div class="risk__score-label">Composite rating</div>
+        <div class="risk__score-value">5.8</div>
+        <div class="risk__score-scale">out of 10 · medium</div>
+        <div style="margin-top: 16px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; color: var(--ink-faint); text-align: center;">CONFIDENCE: HIGH</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding: 20px 24px; background: var(--bg-paper); border: 1px solid var(--rule-soft); border-left: 3px solid var(--red);">
+      <p style="font-family: var(--serif); font-size: 18px; margin-bottom: 10px; font-weight: 500;">If you run a security team: what I'd do this week.</p>
+      <ol style="padding-left: 20px; font-size: 15px; line-height: 1.6; color: var(--ink-soft);">
+        <li style="padding: 4px 0;">Inventory Claude Desktop installs across your macOS fleet. MDM query on <code style="font-family:var(--mono);font-size:13px;">com.anthropic.claudefordesktop</code>.</li>
+        <li style="padding: 4px 0;">Check whether any of your users have also installed the Claude in Chrome extension (ID <code style="font-family:var(--mono);font-size:13px;">fcoeoabgfenejglbffodgkkbkcdhcgfn</code>). That's the combination that activates the bridge.</li>
+        <li style="padding: 4px 0;">Decide policy: block, allow with extension disabled, or allow fully. Most enterprises will land on "allow, extension disabled" until Anthropic ships an affirmative consent flow.</li>
+        <li style="padding: 4px 0;">Consider adding <code style="font-family:var(--mono);font-size:13px;">~/Library/Application Support/*/NativeMessagingHosts/com.anthropic.*.json</code> to your EDR monitoring path set. If they get rewritten outside a user-initiated Claude Desktop launch, that's an IOC.</li>
+        <li style="padding: 4px 0;">Watch for Anthropic's next Claude Desktop release. If it still writes silently, escalate to your vendor risk process.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= TIMELINE ================= -->
+  <section class="section" id="timeline">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">Timeline of the whole story.</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-event">
+        <div class="timeline-event__date">Aug 2025</div>
+        <div class="timeline-event__title">Claude for Chrome launches as research preview</div>
+        <div class="timeline-event__body">Anthropic ships the Chrome extension with 100-user waitlist. Launch blog openly publishes the 23.6% / 11.2% prompt injection success rates. Positioned as safety-aware research rollout.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Dec 20, 2025</div>
+        <div class="timeline-event__title">First manifest birth time on researcher's machine</div>
+        <div class="timeline-event__body">Chrome manifest created on test machine. Researcher did not install any Chrome extension or consent to the manifest.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Dec 26, 2025</div>
+        <div class="timeline-event__title">Koi reports ShadowPrompt to Anthropic</div>
+        <div class="timeline-event__body">DOM-based XSS in Arkose CAPTCHA + overly permissive origin allowlist. Any website could silently inject prompts into the Claude extension sidebar.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Jan 15, 2026</div>
+        <div class="timeline-event__title">Anthropic patches extension to v1.0.41</div>
+        <div class="timeline-event__body">Strict origin check added. Older versions remain vulnerable until Arkose pushes their own fix (Feb 19).</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Jan 19, 2026</div>
+        <div class="timeline-event__title">Six more manifests appear</div>
+        <div class="timeline-event__body">Simultaneous timestamps across Arc, Brave, Chromium, Edge, Vivaldi, Opera. Four of them in browsers not on the disk. Claude Desktop wrote them.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Jan 23, 2026</div>
+        <div class="timeline-event__title">GitHub issue #20341 opened</div>
+        <div class="timeline-event__body">User darkneo29 files a bug: Claude Desktop's native messaging host intercepts Claude Code's Chrome extension connection. Issue confirms the two apps register conflicting manifests. Auto-closed by stale-bot Feb 28 without resolution.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Mar 26, 2026</div>
+        <div class="timeline-event__title">Koi publishes ShadowPrompt research</div>
+        <div class="timeline-event__body">Real-world proof that silent browser control via the Claude extension is achievable. Relevant because this is the exact trust path Hanff later warns about.</div>
+      </div>
+      <div class="timeline-event timeline-event--critical">
+        <div class="timeline-event__date">Apr 16, 2026</div>
+        <div class="timeline-event__title">Helper binary re-signed. Manifests rewritten.</div>
+        <div class="timeline-event__body">codesign timestamp on chrome-native-host: 16 Apr 2026 18:39:18. Every manifest's mod time: 16 Apr 2026 23:42:18. This is the most recent ship as of publication.</div>
+      </div>
+      <div class="timeline-event timeline-event--critical">
+        <div class="timeline-event__date">Apr 18, 2026</div>
+        <div class="timeline-event__title">Hanff publishes "Anthropic secretly installs spyware"</div>
+        <div class="timeline-event__body">Full audit report. ePrivacy violation claim. Independent reviewer Noah Kenney (Digital 520) confirms reproducibility for The Register.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Apr 20, 2026</div>
+        <div class="timeline-event__title">Coverage broadens</div>
+        <div class="timeline-event__body">The Register, gHacks, Malwarebytes, Let's Data Science all pick it up. Malwarebytes explicitly rejects the "spyware" label but accepts the core technical claim.</div>
+      </div>
+      <div class="timeline-event">
+        <div class="timeline-event__date">Apr 24, 2026 · today</div>
+        <div class="timeline-event__title">No public Anthropic response</div>
+        <div class="timeline-event__body">Anthropic has not commented publicly, has not pushed a Claude Desktop update, has not contacted the researcher. Regulatory complaint threatened but not filed.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REMEDIATION ================= -->
+  <section class="section" id="remed">
+    <div class="section-header">
+      <span class="section-num">§ 09</span>
+      <h2 class="section-title">Detection and remediation.</h2>
+    </div>
+    <p style="margin-bottom: 24px; max-width: 720px;">Hover or tap the copy button on any block. Works on macOS. For Linux, swap the base path to <code style="font-family:var(--mono);font-size:13px;">~/.config</code>.</p>
+
+    <div class="remed">
+      <div class="remed-card">
+        <h4>1. Find every Anthropic NM manifest</h4>
+        <p class="sub">DETECTION · MACOS</p>
+        <div class="cmd" data-copy='find ~/Library/Application\ Support -name "com.anthropic.*.json" 2>/dev/null -exec ls -la {} \;'>find ~/Library/Application\ Support -name "com.anthropic.*.json" 2>/dev/null -exec ls -la {} \;<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+
+      <div class="remed-card">
+        <h4>2. Confirm they are Claude Desktop's</h4>
+        <p class="sub">PROVENANCE CHECK</p>
+        <div class="cmd" data-copy='for f in ~/Library/Application\ Support/*/NativeMessagingHosts/com.anthropic.claude_browser_extension.json ~/Library/Application\ Support/*/*/NativeMessagingHosts/com.anthropic.claude_browser_extension.json; do [ -f "$f" ] && echo "=== $f ===" && xattr -p -x com.apple.provenance "$f" 2>/dev/null; done'>for f in ~/Library/Application\ Support/*/NativeMessagingHosts/com.anthropic.claude_browser_extension.json ~/Library/Application\ Support/*/*/NativeMessagingHosts/com.anthropic.claude_browser_extension.json; do [ -f "$f" ] && echo "=== $f ===" && xattr -p -x com.apple.provenance "$f" 2>/dev/null; done<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+
+      <div class="remed-card">
+        <h4>3. Read Claude Desktop's own install log</h4>
+        <p class="sub">ADMIT-BY-LOG</p>
+        <div class="cmd" data-copy='grep -E "Chrome Extension MCP|Native host installation" ~/Library/Logs/Claude/main*.log 2>/dev/null | tail -40'>grep -E "Chrome Extension MCP|Native host installation" ~/Library/Logs/Claude/main*.log 2>/dev/null | tail -40<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+
+      <div class="remed-card">
+        <h4>4. Remove all bridges (until reinstall)</h4>
+        <p class="sub">REMEDIATION · NOTE: REAPPEARS ON LAUNCH</p>
+        <div class="cmd" data-copy='find ~/Library/Application\ Support -name "com.anthropic.claude_browser_extension.json" -print -delete'>find ~/Library/Application\ Support -name "com.anthropic.claude_browser_extension.json" -print -delete<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+
+      <div class="remed-card">
+        <h4>5. Quit Claude Desktop completely</h4>
+        <p class="sub">PERSISTENCE BREAK</p>
+        <div class="cmd" data-copy='osascript -e '"'"'quit app "Claude"'"'"' 2>/dev/null; pkill -f "Claude.app" 2>/dev/null; echo "Claude Desktop terminated. Bridges will not be rewritten until next launch."'>osascript -e 'quit app "Claude"' 2>/dev/null; pkill -f "Claude.app" 2>/dev/null; echo "Claude Desktop terminated."<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+
+      <div class="remed-card">
+        <h4>6. Verify the Chrome extension is NOT installed</h4>
+        <p class="sub">ACTIVATION-GUARD CHECK</p>
+        <div class="cmd" data-copy='find ~/Library/Application\ Support -type d -name "fcoeoabgfenejglbffodgkkbkcdhcgfn" 2>/dev/null; find ~/Library/Application\ Support -type d -name "dihbgbndebgnbjfmelmegjepbnkhlgni" 2>/dev/null; find ~/Library/Application\ Support -type d -name "dngcpimnedloihjnnfngkgjoidhnaolf" 2>/dev/null'>find ~/Library/Application\ Support -type d -name "fcoeoabgfenejglbffodgkkbkcdhcgfn" 2>/dev/null<button class="cmd-copy" onclick="copyCmd(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding: 18px 22px; background: var(--bg-paper); border: 1px dashed var(--rule-soft); font-size: 14.5px; line-height: 1.55; color: var(--ink-soft);">
+      <strong style="color: var(--ink);">Caveat.</strong> Removing the manifest without uninstalling Claude Desktop is cosmetic. Claude Desktop rewrites it on every launch. The durable fixes are: (a) fully uninstall Claude Desktop, (b) replace the manifest path with a no-op binary under a file you own with mode 000 so Claude Desktop can't overwrite it (fragile), or (c) wait for Anthropic to ship a consent flow. Option (c) is the only one that scales.
+    </div>
+  </section>
+
+  <!-- ================= REFERENCES ================= -->
+  <section class="section" id="refs">
+    <div class="section-header">
+      <span class="section-num">§ 10</span>
+      <h2 class="section-title">Primary sources.</h2>
+    </div>
+    <div class="refs">
+      <ol>
+        <li>Alexander Hanff. <em>Anthropic secretly installs spyware when you install Claude Desktop.</em> That Privacy Guy, 18 Apr 2026. <a href="https://www.thatprivacyguy.com/blog/anthropic-spyware" target="_blank" rel="noopener">thatprivacyguy.com</a></li>
+        <li>Thomas Claburn. <em>Claude Desktop changes software permissions without consent.</em> The Register, 20 Apr 2026. Independent verification via Noah Kenney (Digital 520). <a href="https://www.theregister.com/2026/04/20/anthropic_claude_desktop_spyware_allegation/" target="_blank" rel="noopener">theregister.com</a></li>
+        <li>Pieter Arntz. <em>Researcher claims Claude Desktop installs "spyware" on macOS.</em> Malwarebytes, 22 Apr 2026. Rejects "spyware" label while accepting the core technical finding. <a href="https://www.malwarebytes.com/blog/news/2026/04/researcher-claims-claude-desktop-installs-spyware-on-macos" target="_blank" rel="noopener">malwarebytes.com</a></li>
+        <li>gHacks staff. <em>Claude Desktop silently installs browser extension files for browsers not installed.</em> 21 Apr 2026. <a href="https://www.ghacks.net/2026/04/21/claude-desktop-silently-installs-browser-extension-files-for-browsers-not-installed/" target="_blank" rel="noopener">ghacks.net</a></li>
+        <li>Anthropic. <em>Piloting Claude for Chrome.</em> 26 Aug 2025. Source of the 23.6% / 11.2% figures. <a href="https://www.anthropic.com/news/claude-for-chrome" target="_blank" rel="noopener">anthropic.com</a></li>
+        <li>Anthropic. <em>Mitigating the risk of prompt injections in browser use.</em> Latest Opus 4.5 figures (approximately 1% attack success). <a href="https://www.anthropic.com/news/prompt-injection-defenses" target="_blank" rel="noopener">anthropic.com</a></li>
+        <li>Koi Research. <em>ShadowPrompt: How any website could have hijacked Claude's Chrome extension.</em> 26 Mar 2026. <a href="https://www.koi.ai/blog/shadowprompt-how-any-website-could-have-hijacked-anthropic-claude-chrome-extension" target="_blank" rel="noopener">koi.ai</a></li>
+        <li>Anthropic. GitHub issues #20341 and #20887. Internal acknowledgment of the Claude Desktop native messaging host registration. Both auto-closed by stale-bot. <a href="https://github.com/anthropics/claude-code/issues/20341" target="_blank" rel="noopener">github.com</a></li>
+        <li>European Parliament and Council. Directive 2002/58/EC (ePrivacy Directive), Article 5(3). <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02002L0058-20091219" target="_blank" rel="noopener">eur-lex.europa.eu</a></li>
+        <li>Chrome Developers. <em>Native Messaging.</em> <a href="https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging" target="_blank" rel="noopener">developer.chrome.com</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= ASSUMPTIONS ================= -->
+  <div class="assumptions">
+    <h4>Assumptions made in this analysis</h4>
+    <ol>
+      <li>Hanff's audit output (MD5 hashes, timestamps, log excerpts) was not fabricated. This is corroborated by The Register's independent reviewer, gHacks, and Anthropic's own GitHub issues documenting the same manifest filename and path.</li>
+      <li>Anthropic's publicly stated prompt injection figures (23.6% / 11.2% at launch, approximately 1% with Opus 4.5) reflect the system as of their publication dates. Real-world rates may differ, as ShadowPrompt demonstrated.</li>
+      <li>The "composite rating" in Section 07 is my professional judgment applied to the published evidence, not a formal CVSS or FAIR calculation. Others may weight regulatory exposure higher or lower depending on jurisdiction.</li>
+      <li>Behaviour described here is macOS-specific. Windows and Linux behaviour has not been independently audited at time of writing.</li>
+      <li>The article publication date (18 Apr 2026) and the codesign timestamp on the helper binary (16 Apr 2026) imply this behaviour was live in the most recent Claude Desktop release when the article ran. If Anthropic ships a silent fix between now and when you read this, the findings may no longer apply to your install.</li>
+    </ol>
+  </div>
+
+  <div class="colophon">
+    <span>Dossier prepared for internal review · 24 Apr 2026</span>
+    <span>Signed: Syed Ishaq B. · ishaqzafar.com</span>
+  </div>
+</div>
+
+<!-- Non-obvious angles worth chasing:
+     sigi:U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t
+     - Is the same bridge being installed on Windows and Linux? No public audit yet. Worth replicating on both.
+     - Do the other two unlabeled extension IDs belong to unreleased Anthropic extensions? Whois-equivalent work on Chrome Web Store would clarify.
+     - What happens inside Anthropic's own enterprise Claude rollout with managed Chrome policies? Could be a different install path entirely.
+-->
+
+<script>
+  const THEME_KEY = 'theme';
+  function applyTheme(t) {
+    document.body.dataset.theme = t;
+    localStorage.setItem(THEME_KEY, t);
+  }
+  function toggleTheme() {
+    const cur = document.body.dataset.theme || 'light';
+    applyTheme(cur === 'light' ? 'dark' : 'light');
+  }
+  (function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) { applyTheme(saved); return; }
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  })();
+
+  // Claims data
+  const claims = [
+    {
+      verdict: 'confirmed',
+      text: 'Claude Desktop silently installs a Native Messaging manifest into Chromium-based browsers without a visible consent dialog.',
+      confidence: 'high',
+      body: `<p>Verified reproducibly on two machines by the original researcher. The Register independently reviewed the artifacts (per Noah Kenney, Digital 520) and described them as "largely testable and, as described, reproducible". Anthropic's own GitHub issues #20341 and #20887 document the exact filename <code>com.anthropic.claude_browser_extension.json</code> and install path. Malwarebytes, gHacks, and Let's Data Science all confirmed the core technical behaviour.</p>
+      <span class="source">Sources: The Register (2026-04-20), GitHub issues #20341 and #20887, Malwarebytes, gHacks</span>`
+    },
+    {
+      verdict: 'confirmed',
+      text: 'The manifest is written into browsers that are not installed on the system.',
+      confidence: 'high',
+      body: `<p>Confirmed via filesystem inspection. Hanff's post shows four of seven manifests (Edge, Arc, Vivaldi, Opera, Chromium) landing in parent directories Claude Desktop itself had to create, because the browsers are not in <code>/Applications</code>. gHacks explicitly covered this point in its summary. This is the single most damaging behavioural finding: if any of those browsers is later installed, the bridge is already active on first launch.</p>
+      <span class="source">Sources: Hanff audit Steps 1 and 3, gHacks (2026-04-21)</span>`
+    },
+    {
+      verdict: 'confirmed',
+      text: 'Claude Desktop rewrites the manifest on every launch, defeating manual removal.',
+      confidence: 'high',
+      body: `<p>Thirty-one install events across log files, modification timestamps on every manifest all clustered at 23:42:18 on 16 Apr 2026 (hours after the binary was re-signed at 18:39:18 the same day). Deleting the file without uninstalling the app is cosmetic.</p>
+      <span class="source">Source: Hanff audit Steps 4 and 5 (own log and stat output)</span>`
+    },
+    {
+      verdict: 'confirmed',
+      text: 'The helper binary runs outside the browser sandbox at user privilege level.',
+      confidence: 'high',
+      body: `<p>This is how Native Messaging works by design. Chrome's own documentation says Native Messaging hosts run outside the browser sandbox at the user privilege of the person who owns the browser. The Claude helper binary (<code>chrome-native-host</code>) is signed with Anthropic PBC's Developer ID, notarised inside <code>Claude.app</code>, and Mach-O universal. Malwarebytes and The Register both cite this correctly.</p>
+      <span class="source">Sources: Chrome Developers docs, codesign output in Hanff audit Step 6</span>`
+    },
+    {
+      verdict: 'confirmed',
+      text: 'The documented capabilities of the paired extension are severe (authenticated session access, DOM read, form filling, screen capture).',
+      confidence: 'high',
+      body: `<p>These capabilities are described on Anthropic's own Claude in Chrome documentation and in Anthropic's launch blog. The quoted list (new tab opening, login state sharing, console error reading, DOM state access, data extraction, task automation including form filling, session recording as GIF) is not Hanff editorialising; it is Anthropic's own marketing.</p>
+      <span class="source">Source: anthropic.com/news/claude-for-chrome, Claude Code /chrome docs</span>`
+    },
+    {
+      verdict: 'confirmed',
+      text: 'The 23.6% and 11.2% prompt injection attack success rates are accurate.',
+      confidence: 'high',
+      body: `<p>Directly from Anthropic's Claude for Chrome launch blog (Aug 2025). Covered independently by VentureBeat at the time. Anthropic's more recent Opus 4.5 figure is approximately 1% against an adaptive "Best-of-N" attacker with new safeguards, so the 23.6% / 11.2% numbers are no longer current, but they were accurate at the time Claude for Chrome opened. Hanff quoting them without noting the later improvement is slightly misleading but not wrong.</p>
+      <span class="source">Sources: anthropic.com/news/claude-for-chrome, anthropic.com/news/prompt-injection-defenses</span>`
+    },
+    {
+      verdict: 'partial',
+      text: 'This constitutes a direct breach of Article 5(3) of the ePrivacy Directive.',
+      confidence: 'med',
+      body: `<p>Article 5(3) is clearly in scope: writing files to a user's device is storing information in terminal equipment, which requires consent unless strictly necessary for a service the user requested. The hard questions are: (1) is the manifest "strictly necessary" for Claude Desktop to function? Arguably no, since Claude Desktop works fully without browser integration. (2) did the user provide consent at Claude Desktop install time? Anthropic can argue the Desktop install EULA covers it. Most EU data protection scholars I've read would side with Hanff on the merits, but this is a legitimate legal argument, not a slam dunk. Kenney (Digital 520) called it "more complicated" than Hanff presented.</p>
+      <p>The question of whether the finding would survive a formal DPA complaint (and which DPA would be competent) is open. The outcome would not be known for 12 to 24 months even if a complaint is filed today.</p>
+      <span class="source">Sources: ePrivacy Directive text, The Register (Kenney quote)</span>`
+    },
+    {
+      verdict: 'partial',
+      text: 'This is "spyware".',
+      confidence: 'med',
+      body: `<p>The dictionary test for spyware usually requires active collection or exfiltration of user data. The bridge is dormant; the binary does not run until a matching extension calls it, and on a machine without those extensions, no data leaves. Malwarebytes explicitly rejected the "spyware" label while accepting everything else in Hanff's piece.</p>
+      <p>My read: "spyware" is a deliberately loaded term that Hanff uses for shock value. "Pre-staged spyware capability", which he also uses, is defensible. The raw "spyware" claim in the headline is rhetorically overcharged, and this undermines the legitimately serious technical findings. Calling it an unsanctioned persistence mechanism or pre-staged attack surface would be more accurate and more damning, not less.</p>
+      <span class="source">Sources: Malwarebytes, Lobsters thread consensus</span>`
+    },
+    {
+      verdict: 'partial',
+      text: 'No other major vendor does this.',
+      confidence: 'high',
+      body: `<p>False as stated, and Hanff does not actually claim this, but the framing of his piece implies uniqueness. 1Password writes Native Messaging manifests into directories for browsers that are not installed (confirmed by Lobsters commenter with machine-level evidence). Adobe and Microsoft do similar things on Windows registry. The pattern is industry standard for cross-browser integrations.</p>
+      <p>However, KeePassXC is a documented counter-example: it asks the user to explicitly enable browser integration per browser, with a settings UI that lists registered hosts and allows revocation. Bitwarden does similar. Anthropic's own Claude Code does similar. So the "everyone does it" defence collapses under a five-minute comparison: enough peers do better to make this a deliberate design choice.</p>
+      <span class="source">Sources: KeePassXC documentation, Claude Code /chrome docs, Lobsters discussion</span>`
+    },
+    {
+      verdict: 'weak',
+      text: 'Anthropic is actively exploiting this bridge today.',
+      confidence: 'high',
+      body: `<p>Hanff does not actually claim this. Some coverage does imply it. There is no evidence of active exploitation. The bridge is dormant. The attack scenarios are all conditional on a matching extension being present or a compromise occurring. This matters because it separates "bad design that creates risk" (true) from "active malicious behaviour" (unsupported by evidence).</p>
+      <p>I flag this explicitly because some of the louder Mastodon and LinkedIn reactions have collapsed the distinction. If you bring this to a CISO, keep the distinction sharp.</p>
+      <span class="source">Source: Multiple independent reviewers confirm dormant-state analysis</span>`
+    }
+  ];
+
+  function renderClaims() {
+    const host = document.getElementById('claims-list');
+    claims.forEach((c, i) => {
+      const el = document.createElement('div');
+      el.className = 'claim';
+      el.innerHTML = `
+        <div class="claim__header" onclick="this.parentElement.classList.toggle('open')">
+          <span class="claim__verdict claim__verdict--${c.verdict}">${c.verdict === 'confirmed' ? 'Confirmed' : c.verdict === 'partial' ? 'Partial / Nuanced' : 'Overstated'}</span>
+          <span class="claim__text">${c.text}<span class="confidence confidence--${c.confidence}">CONF: ${c.confidence.toUpperCase()}</span></span>
+          <span class="claim__chevron">+</span>
+        </div>
+        <div class="claim__body"><div class="claim__body-inner">${c.body}</div></div>
+      `;
+      host.appendChild(el);
+    });
+  }
+  renderClaims();
+
+  // Attack nodes
+  document.querySelectorAll('.attack-node').forEach(node => {
+    node.addEventListener('click', () => {
+      document.querySelectorAll('.attack-node').forEach(n => n.classList.remove('active'));
+      node.classList.add('active');
+      const detail = document.getElementById('attack-detail');
+      detail.innerHTML = `<strong style="font-family: var(--serif); font-size: 17px; display: block; margin-bottom: 8px;">Step 0${node.dataset.step} · ${node.dataset.title}</strong>${node.dataset.detail}`;
+    });
+  });
+
+  // Copy commands
+  function copyCmd(btn) {
+    const cmd = btn.parentElement.dataset.copy;
+    navigator.clipboard.writeText(cmd).then(() => {
+      btn.classList.add('copied');
+      btn.textContent = 'COPIED';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = 'COPY';
+      }, 1600);
+    }).catch(() => {
+      btn.textContent = 'ERROR';
+    });
+  }
+
+  // Active nav highlighting
+  const navLinks = document.querySelectorAll('.nav a');
+  const sections = document.querySelectorAll('.section');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
