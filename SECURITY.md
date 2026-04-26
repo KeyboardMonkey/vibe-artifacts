@@ -50,6 +50,6 @@ The following will not be acted on:
 
 ## Dependencies and AI-Generated Code
 
-Some code in this repo was generated or heavily assisted by AI tools. Dependency
+Most of the code in this repo was generated or heavily assisted by AI tools. Dependency
 hygiene and code review coverage may be incomplete. If you spot a real risk,
 the report is appreciated.
