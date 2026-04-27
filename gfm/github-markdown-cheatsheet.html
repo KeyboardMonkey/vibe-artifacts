@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<!-- Signed: Syed Ishaq B. | ishaqzafar.com -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Markdown — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --bg2: #141418;
+    --bg3: #1c1c22;
+    --border: #2a2a35;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #606078;
+    --code-bg: #111116;
+    --c1: #f97316;
+    --c2: #a78bfa;
+    --c3: #34d399;
+    --c4: #60a5fa;
+    --c5: #facc15;
+    --c6: #fb7185;
+    --c7: #22d3ee;
+    --c8: #4ade80;
+    --c9: #c084fc;
+    --font-sans: 'Bricolage Grotesque', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  [data-theme="light"] {
+    --bg: #f5f5f7;
+    --bg2: #ffffff;
+    --bg3: #ebebef;
+    --border: #d0d0dc;
+    --text: #1a1a28;
+    --text2: #4a4a60;
+    --text3: #8888a0;
+    --code-bg: #ebebef;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  /* --- TOGGLE --- */
+  .toggle-wrap {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .toggle-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 0 7px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    background: var(--bg3);
+    color: var(--text3);
+    transition: all .2s;
+    user-select: none;
+    cursor: pointer;
+  }
+  .toggle-label.left  { border-radius: 30px 0 0 30px; border-right: none; }
+  .toggle-label.right { border-radius: 0 30px 30px 0; border-left: none; }
+  .toggle-label.active { background: var(--text); color: var(--bg); }
+  .toggle-thumb {
+    width: 28px;
+    height: 24px;
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: background .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toggle-thumb::after {
+    content: '';
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--text);
+    transition: background .2s;
+  }
+
+  /* --- HEADER --- */
+  header {
+    max-width: 1320px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    color: var(--text);
+  }
+  header h1 span { color: var(--c1); }
+  header p {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  /* --- GRID --- */
+  .grid {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* --- CARD --- */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .card.span2 { grid-column: span 2; }
+  .card.span3 { grid-column: span 3; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .card-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+  .card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-body.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  .card-body.three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px 16px;
+  }
+
+  /* --- ROWS --- */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+    align-items: start;
+  }
+  .row.triple {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .row.full {
+    grid-template-columns: 1fr;
+  }
+
+  /* --- SYNTAX & PREVIEW --- */
+  .syn {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--c8);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .syn .kw  { color: var(--c2); }
+  .syn .str { color: var(--c5); }
+  .syn .cm  { color: var(--text3); font-style: italic; }
+  .syn .op  { color: var(--c6); }
+  .syn .var { color: var(--c4); }
+  .syn .fn  { color: var(--c1); }
+
+  .prev {
+    font-size: 11.5px;
+    color: var(--text);
+    padding: 4px 8px;
+    background: var(--bg3);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .prev code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: var(--code-bg);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--c8);
+  }
+  .prev kbd {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    background: var(--bg3);
+    border: 1px solid var(--text3);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 4px;
+  }
+  .prev mark {
+    background: var(--c5);
+    color: #1a1a00;
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+
+  label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* --- HEADING DEMOS --- */
+  .h-demo { display: flex; flex-direction: column; gap: 3px; }
+  .h1d { font-size: 20px; font-weight: 800; line-height: 1.1; color: var(--text); }
+  .h2d { font-size: 16px; font-weight: 700; color: var(--text); }
+  .h3d { font-size: 13px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+  .h4d { font-size: 11.5px; font-weight: 600; color: var(--text2); }
+  .h5d { font-size: 10px;   font-weight: 600; color: var(--text2); }
+  .h6d { font-size: 9px;    font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing:.06em; }
+
+  /* --- ALERT DEMOS --- */
+  .alert-demo {
+    border-left: 3px solid;
+    padding: 5px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 10.5px;
+    background: var(--bg3);
+    margin-bottom: 4px;
+  }
+  .alert-note     { border-color: var(--c4); }
+  .alert-tip      { border-color: var(--c3); }
+  .alert-important{ border-color: var(--c9); }
+  .alert-warning  { border-color: var(--c5); }
+  .alert-caution  { border-color: var(--c6); }
+  .alert-demo .tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 2px;
+  }
+  .alert-note .tag     { color: var(--c4); }
+  .alert-tip .tag      { color: var(--c3); }
+  .alert-important .tag{ color: var(--c9); }
+  .alert-warning .tag  { color: var(--c5); }
+  .alert-caution .tag  { color: var(--c6); }
+
+  /* --- DIFF --- */
+  .diff-add { color: var(--c3); }
+  .diff-del { color: var(--c6); }
+  .diff-ctx { color: var(--text2); }
+
+  /* --- TABLE DEMO --- */
+  .tbl-demo {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+  }
+  .tbl-demo th {
+    background: var(--bg3);
+    padding: 4px 8px;
+    text-align: left;
+    color: var(--text2);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing:.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  .tbl-demo td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .tbl-demo tr:last-child td { border-bottom: none; }
+  .tbl-demo .align-c { text-align: center; }
+  .tbl-demo .align-r { text-align: right; }
+
+  /* --- TREE DEMO --- */
+  .tree {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    line-height: 1.8;
+    color: var(--text2);
+  }
+  .tree a {
+    color: var(--c4);
+    text-decoration: none;
+  }
+  .tree a:hover { text-decoration: underline; }
+  .tree .dir  { color: var(--c5); font-weight: 600; }
+  .tree .file { color: var(--text); }
+  .tree .note { color: var(--text3); font-style: italic; }
+  .tree .branch { color: var(--text3); }
+
+  /* --- BADGE DEMO --- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 2px 3px 2px 0;
+  }
+  .badge span:first-child {
+    background: #555;
+    color: #fff;
+    padding: 2px 6px;
+  }
+  .badge span:last-child {
+    padding: 2px 6px;
+    color: #fff;
+  }
+
+  /* --- CODE BLOCK DEMO --- */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .code-block .lang-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 10px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-block .lang-bar span {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: lowercase;
+  }
+  .code-block pre {
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+
+  /* --- MERMAID PLACEHOLDER --- */
+  .mermaid-demo {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .mermaid-demo .nodes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mermaid-node {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .mermaid-arrow {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--text3);
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+  .mermaid-code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+    flex: 1;
+    line-height: 1.7;
+  }
+  .mermaid-code .kw { color: var(--c4); }
+  .mermaid-code .nd { color: var(--c1); }
+  .mermaid-code .ar { color: var(--c3); }
+  .mermaid-code .lb { color: var(--c5); }
+
+  /* --- MULTICOL DEMO --- */
+  .multicol-demo {
+    display: grid;
+    gap: 6px;
+  }
+  .multicol-demo.two  { grid-template-columns: 1fr 1fr; }
+  .multicol-demo.three { grid-template-columns: 1fr 1fr 1fr; }
+  .col-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 10.5px;
+  }
+  .col-box strong {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text3);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* --- FOOTNOTE --- */
+  .fn-demo {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .fn-demo sup a {
+    color: var(--c4);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 9px;
+  }
+  .fn-list {
+    margin-top: 6px;
+    border-top: 1px solid var(--border);
+    padding-top: 5px;
+  }
+  .fn-list p {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: var(--text3);
+    margin-bottom: 2px;
+  }
+  .fn-list p a { color: var(--c4); }
+
+  /* --- DIVIDER --- */
+  .section-divider {
+    grid-column: span 3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+  }
+  .section-divider span {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* --- FOOTER --- */
+  footer {
+    max-width: 1320px;
+    margin: 16px auto 0;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer p {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text3);
+  }
+  footer a { color: var(--c4); text-decoration: none; }
+
+  /* --- LIST DEMOS --- */
+  .list-demo {
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--text2);
+    padding-left: 4px;
+  }
+  .list-demo li { margin-left: 14px; }
+  .list-demo a { color: var(--c4); text-decoration: none; }
+  .list-demo input[type=checkbox] {
+    accent-color: var(--c3);
+    margin-right: 4px;
+  }
+
+  /* --- MATH --- */
+  .math-demo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c5);
+    text-align: center;
+    padding: 6px;
+    background: var(--code-bg);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .math-inline {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--c5);
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* --- BQUOTE DEMO --- */
+  .bq-demo {
+    border-left: 3px solid var(--text3);
+    padding-left: 10px;
+    color: var(--text2);
+    font-size: 11px;
+    font-style: italic;
+  }
+  .bq-demo .bq2 {
+    margin-top: 5px;
+    border-left: 3px solid var(--border);
+    padding-left: 8px;
+    color: var(--text3);
+  }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .card.span3 { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Toggle -->
+<div class="toggle-wrap" id="toggleWrap">
+  <div class="toggle-label left" id="lblDay" onclick="setTheme('light')">DAY</div>
+  <div class="toggle-thumb" onclick="toggleTheme()"></div>
+  <div class="toggle-label right active" id="lblNight" onclick="setTheme('dark')">NIGHT</div>
+</div>
+
+<header>
+  <h1>GitHub <span>Markdown</span> — Cheat Sheet</h1>
+  <p>All renderable elements · GFM + HTML passthrough · github.com</p>
+</header>
+
+<div class="grid">
+
+  <!-- HEADINGS -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c1)"></div><span class="card-title">Headings</span></div>
+    <div class="card-body">
+      <div class="row">
+        <div>
+          <label>Syntax</label>
+          <div class="syn"><span class="op">#</span> H1
+<span class="op">##</span> H2
+<span class="op">###</span> H3
+<span class="op">####</span> H4
+<span class="op">#####</span> H5
+<span class="op">######</span> H6</div>
+        </div>
+        <div>
+          <label>Rendered</label>
+          <div class="h-demo">
+            <div class="h1d">H1 Title</div>
+            <div class="h2d">H2 Section</div>
+            <div class="h3d">H3 Subsection</div>
+            <div class="h4d">H4 Sub-sub</div>
+            <div class="h5d">H5 Minor</div>
+            <div class="h6d">H6 Smallest</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:4px">
+        <label>Anchor links to headings</label>
+        <div class="syn"><span class="kw">[</span>Jump to Section<span class="kw">]</span>(<span class="str">#section-name</span>)</div>
+        <div style="font-size:9.5px;color:var(--text3);margin-top:3px;font-family:var(--font-mono)">⟶ lowercase, spaces → hyphens, strip punctuation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEXT FORMATTING -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c2)"></div><span class="card-title">Text Formatting</span></div>
+    <div class="card-body">
+      <div class="row">
+        <div class="syn"><span class="op">**</span>bold<span class="op">**</span></div>
+        <div class="prev"><strong>bold</strong></div>
+        <div class="syn"><span class="op">*</span>italic<span class="op">*</span></div>
+        <div class="prev"><em>italic</em></div>
+        <div class="syn"><span class="op">***</span>bold italic<span class="op">***</span></div>
+        <div class="prev"><strong><em>bold italic</em></strong></div>
+        <div class="syn"><span class="op">~~</span>strikethrough<span class="op">~~</span></div>
+        <div class="prev"><del>strikethrough</del></div>
+        <div class="syn"><span class="op">`</span>inline code<span class="op">`</span></div>
+        <div class="prev"><code>inline code</code></div>
+        <div class="syn">&lt;sub&gt;sub&lt;/sub&gt;</div>
+        <div class="prev">H<sub>2</sub>O</div>
+        <div class="syn">&lt;sup&gt;sup&lt;/sup&gt;</div>
+        <div class="prev">E=mc<sup>2</sup></div>
+        <div class="syn">&lt;kbd&gt;Ctrl&lt;/kbd&gt;</div>
+        <div class="prev"><kbd>Ctrl</kbd>+<kbd>C</kbd></div>
+        <div class="syn">&lt;mark&gt;text&lt;/mark&gt;</div>
+        <div class="prev"><mark>highlighted</mark></div>
+        <div class="syn"><span class="cm">&lt;!-- comment --&gt;</span></div>
+        <div class="prev" style="color:var(--text3);font-style:italic;font-size:10px">invisible in output</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCKQUOTES & ALERTS -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c6)"></div><span class="card-title">Blockquotes &amp; Alerts</span></div>
+    <div class="card-body">
+      <label>Blockquotes (nested)</label>
+      <div class="syn"><span class="op">&gt;</span> Level one
+<span class="op">&gt; &gt;</span> Level two
+<span class="op">&gt; &gt; &gt;</span> Level three</div>
+      <div class="bq-demo">
+        Level one
+        <div class="bq2">Level two
+          <div class="bq2">Level three</div>
+        </div>
+      </div>
+      <label style="margin-top:6px">GitHub Alert Callouts</label>
+      <div class="syn"><span class="op">&gt;</span> <span class="kw">[!NOTE]</span>
+<span class="op">&gt;</span> <span class="kw">[!TIP]</span>
+<span class="op">&gt;</span> <span class="kw">[!IMPORTANT]</span>
+<span class="op">&gt;</span> <span class="kw">[!WARNING]</span>
+<span class="op">&gt;</span> <span class="kw">[!CAUTION]</span></div>
+      <div class="alert-demo alert-note"><div class="tag">📘 Note</div>Informational context.</div>
+      <div class="alert-demo alert-tip"><div class="tag">💡 Tip</div>Shortcuts &amp; suggestions.</div>
+      <div class="alert-demo alert-important"><div class="tag">🔖 Important</div>Must-read information.</div>
+      <div class="alert-demo alert-warning"><div class="tag">⚠️ Warning</div>Proceed with caution.</div>
+      <div class="alert-demo alert-caution"><div class="tag">🚨 Caution</div>Risk of data loss.</div>
+    </div>
+  </div>
+
+  <!-- CODE BLOCKS -->
+  <div class="card span2">
+    <div class="card-header"><div class="dot" style="background:var(--c8)"></div><span class="card-title">Code Blocks</span></div>
+    <div class="card-body two-col">
+      <div>
+        <label>Syntax</label>
+        <div class="syn"><span class="op">```</span><span class="str">python</span>
+<span class="fn">def</span> greet(name: <span class="kw">str</span>) -&gt; <span class="kw">str</span>:
+    <span class="fn">return</span> <span class="str">f"Hello, {name}!"</span>
+<span class="op">```</span></div>
+        <div style="margin-top:8px">
+          <label>Diff blocks</label>
+          <div class="syn"><span class="op">```</span><span class="str">diff</span>
+<span class="diff-del">- old_line = "legacy"</span>
+<span class="diff-add">+ new_line = "updated"</span>
+  unchanged = "same"
+<span class="op">```</span></div>
+        </div>
+        <div style="margin-top:8px">
+          <label>Common language tags</label>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+            <span class="syn" style="padding:2px 6px">python</span>
+            <span class="syn" style="padding:2px 6px">bash</span>
+            <span class="syn" style="padding:2px 6px">javascript</span>
+            <span class="syn" style="padding:2px 6px">typescript</span>
+            <span class="syn" style="padding:2px 6px">go</span>
+            <span class="syn" style="padding:2px 6px">json</span>
+            <span class="syn" style="padding:2px 6px">yaml</span>
+            <span class="syn" style="padding:2px 6px">sql</span>
+            <span class="syn" style="padding:2px 6px">diff</span>
+            <span class="syn" style="padding:2px 6px">mermaid</span>
+            <span class="syn" style="padding:2px 6px">terraform</span>
+            <span class="syn" style="padding:2px 6px">dockerfile</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label>Rendered</label>
+        <div class="code-block">
+          <div class="lang-bar"><span>python</span><span>syntax highlighted</span></div>
+          <pre><span style="color:var(--c2)">def</span> <span style="color:var(--c1)">greet</span>(name: <span style="color:var(--c4)">str</span>) -> <span style="color:var(--c4)">str</span>:
+    <span style="color:var(--c2)">return</span> <span style="color:var(--c5)">f"Hello, {name}!"</span></pre>
+        </div>
+        <div style="margin-top:8px">
+          <label>Diff rendered</label>
+          <div class="code-block">
+            <div class="lang-bar"><span>diff</span><span></span></div>
+            <pre><span class="diff-del">- old_line = "legacy"</span>
+<span class="diff-add">+ new_line = "updated"</span>
+<span class="diff-ctx">  unchanged = "same"</span></pre>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label>No-language block (plain output)</label>
+          <div class="code-block">
+            <div class="lang-bar"><span>text</span><span></span></div>
+            <pre style="color:var(--text2)">$ nmap -sV 10.0.0.1
+80/open/tcp/http</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLES -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c5)"></div><span class="card-title">Tables</span></div>
+    <div class="card-body">
+      <label>Syntax (alignment with colons)</label>
+      <div class="syn"><span class="op">|</span> Left <span class="op">|</span> Center <span class="op">|</span> Right <span class="op">|</span>
+<span class="op">|:------|:------:|------:|</span>
+<span class="op">|</span> A     <span class="op">|</span>   B    <span class="op">|</span>     C <span class="op">|</span></div>
+      <label style="margin-top:8px">Rendered (with inline formatting)</label>
+      <table class="tbl-demo">
+        <tr><th>Tool</th><th class="align-c">Status</th><th class="align-r">Priority</th></tr>
+        <tr><td><code>nmap</code></td><td class="align-c">✅</td><td class="align-r">High</td></tr>
+        <tr><td><code>burp</code></td><td class="align-c">✅</td><td class="align-r">High</td></tr>
+        <tr><td><del>legacy</del></td><td class="align-c">❌</td><td class="align-r">—</td></tr>
+      </table>
+      <div style="font-size:9.5px;color:var(--text3);margin-top:5px;font-family:var(--font-mono)">
+        Supports: <code style="font-size:9px">**bold**</code> <code style="font-size:9px">`code`</code> <code style="font-size:9px">[links](#)</code> <code style="font-size:9px">~~strike~~</code> <code style="font-size:9px">emoji</code> inside cells
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTS -->
+  <div class="card span2">
+    <div class="card-header"><div class="dot" style="background:var(--c3)"></div><span class="card-title">Lists, Task Lists &amp; Tree Structures</span></div>
+    <div class="card-body two-col">
+      <div>
+        <label>Ordered · Unordered · Mixed</label>
+        <div class="syn"><span class="op">-</span> Unordered item
+  <span class="op">-</span> Nested unordered
+
+<span class="op">1.</span> Ordered item
+   <span class="op">1.</span> Sub-step
+   <span class="op">2.</span> Sub-step
+
+<span class="op">1.</span> Mixed outer
+   <span class="op">-</span> Unordered inner
+     <span class="op">1.</span> Ordered deep</div>
+        <div style="margin-top:8px">
+          <label>Task list</label>
+          <div class="syn"><span class="op">- [x]</span> Done
+<span class="op">- [ ]</span> Pending
+  <span class="op">- [x]</span> Sub-done
+  <span class="op">- [ ]</span> Sub-pending</div>
+          <ul class="list-demo" style="list-style:none;padding-left:0;margin-top:4px">
+            <li><input type="checkbox" checked disabled> Done</li>
+            <li><input type="checkbox" disabled> Pending
+              <ul style="list-style:none;padding-left:0">
+                <li><input type="checkbox" checked disabled> Sub-done</li>
+                <li><input type="checkbox" disabled> Sub-pending</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <label>Hyperlinked nested tree (mimics <code style="font-size:9px">tree</code> command)</label>
+        <div class="syn"><span class="cm"># Mix ordered + unordered + links</span>
+<span class="op">-</span> 📂 [<span class="str">project/</span>](#)
+  <span class="op">-</span> 📂 [<span class="str">src/</span>](#)
+    <span class="op">1.</span> [<span class="str">index.ts</span>](#) — entry
+    <span class="op">2.</span> [<span class="str">app.ts</span>](#) — setup
+    <span class="op">-</span> 📂 [<span class="str">utils/</span>](#)
+      <span class="op">-</span> [<span class="str">logger.ts</span>](#)
+  <span class="op">-</span> [<span class="str">package.json</span>](#)</div>
+        <div class="tree" style="margin-top:6px;background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px">
+          <div><span class="branch">└─</span> 📂 <a href="#" class="dir">project/</a></div>
+          <div style="padding-left:14px"><span class="branch">├─</span> 📂 <a href="#" class="dir">src/</a></div>
+          <div style="padding-left:28px"><span class="branch">│  ├─ 1.</span> <a href="#" class="file">index.ts</a> <span class="note">— entry</span></div>
+          <div style="padding-left:28px"><span class="branch">│  ├─ 2.</span> <a href="#" class="file">app.ts</a> <span class="note">— setup</span></div>
+          <div style="padding-left:28px"><span class="branch">│  └─</span> 📂 <a href="#" class="dir">utils/</a></div>
+          <div style="padding-left:42px"><span class="branch">└─</span> <a href="#" class="file">logger.ts</a></div>
+          <div style="padding-left:14px"><span class="branch">└─</span> <a href="#" class="file">package.json</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINKS & IMAGES -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c4)"></div><span class="card-title">Links &amp; Images</span></div>
+    <div class="card-body">
+      <div class="row">
+        <div>
+          <label>Inline link</label>
+          <div class="syn"><span class="kw">[</span>label<span class="kw">]</span>(<span class="str">https://url.com</span>)</div>
+        </div>
+        <div>
+          <label>Anchor link</label>
+          <div class="syn"><span class="kw">[</span>Jump<span class="kw">]</span>(<span class="str">#heading-id</span>)</div>
+        </div>
+        <div>
+          <label>Reference link</label>
+          <div class="syn"><span class="kw">[</span>label<span class="kw">][</span>ref<span class="kw">]</span>
+<span class="kw">[</span>ref<span class="kw">]</span>: <span class="str">https://url</span></div>
+        </div>
+        <div>
+          <label>Autolink</label>
+          <div class="syn">https://github.com</div>
+        </div>
+        <div>
+          <label>Image</label>
+          <div class="syn"><span class="op">!</span><span class="kw">[</span>alt<span class="kw">]</span>(<span class="str">url</span>)</div>
+        </div>
+        <div>
+          <label>Linked image</label>
+          <div class="syn"><span class="kw">[</span><span class="op">!</span><span class="kw">[</span>alt<span class="kw">]</span>(<span class="str">img</span>)<span class="kw">]</span>(<span class="str">url</span>)</div>
+        </div>
+        <div class="row full" style="grid-column:span 2">
+          <label>Sized image (HTML)</label>
+          <div class="syn">&lt;img src=<span class="str">"url"</span> alt=<span class="str">"text"</span> <span class="kw">width</span>=<span class="str">"64"</span>&gt;</div>
+        </div>
+        <div class="row full" style="grid-column:span 2">
+          <label>Badges (shields.io)</label>
+          <div style="margin-top:2px">
+            <span class="badge"><span>build</span><span style="background:#22c55e">passing</span></span>
+            <span class="badge"><span>license</span><span style="background:#3b82f6">MIT</span></span>
+            <span class="badge"><span>version</span><span style="background:#f97316">1.0.0</span></span>
+          </div>
+          <div class="syn" style="margin-top:4px">![Build](https://img.shields.io/badge/<span class="str">build</span>-<span class="str">passing</span>-<span class="str">brightgreen</span>)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-COLUMN -->
+  <div class="card span2">
+    <div class="card-header"><div class="dot" style="background:var(--c9)"></div><span class="card-title">Multi-Column Layout (HTML Table trick)</span></div>
+    <div class="card-body two-col">
+      <div>
+        <label>Syntax — 2 columns</label>
+        <div class="syn">&lt;<span class="kw">table</span>&gt;&lt;<span class="kw">tr</span>&gt;
+&lt;<span class="kw">td</span> width=<span class="str">"50%"</span>&gt;
+
+**Left column**
+Any markdown here.
+
+&lt;/<span class="kw">td</span>&gt;
+&lt;<span class="kw">td</span> width=<span class="str">"50%"</span>&gt;
+
+**Right column**
+
+&lt;/<span class="kw">td</span>&gt;
+&lt;/<span class="kw">tr</span>&gt;&lt;/<span class="kw">table</span>&gt;</div>
+        <div style="margin-top:8px">
+          <label>Notes</label>
+          <ul style="font-size:10px;color:var(--text2);padding-left:14px;line-height:1.8">
+            <li>Blank line required before Markdown inside <code style="font-size:9px">&lt;td&gt;</code></li>
+            <li>Supports code blocks, lists, images inside cells</li>
+            <li>Use <code style="font-size:9px">align="center"</code> on <code style="font-size:9px">&lt;td&gt;</code> for centered content</li>
+            <li>Works with 2, 3, or 4 columns</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <label>2-col rendered</label>
+        <div class="multicol-demo two">
+          <div class="col-box"><strong>Left Column</strong>Use for before/after, pros/cons, input/output comparisons.</div>
+          <div class="col-box"><strong>Right Column</strong>Any valid Markdown renders here including code blocks.</div>
+        </div>
+        <label style="margin-top:8px">3-col rendered</label>
+        <div class="multicol-demo three">
+          <div class="col-box"><strong>Discover</strong>🔍 Asset inventory</div>
+          <div class="col-box"><strong>Test</strong>🧪 Validate controls</div>
+          <div class="col-box"><strong>Harden</strong>🛡️ Apply benchmarks</div>
+        </div>
+        <label style="margin-top:8px">4-col icon grid</label>
+        <div class="multicol-demo" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div class="col-box" style="text-align:center">🔍<br><strong style="font-size:8px">SCAN</strong></div>
+          <div class="col-box" style="text-align:center">🧪<br><strong style="font-size:8px">TEST</strong></div>
+          <div class="col-box" style="text-align:center">🛡️<br><strong style="font-size:8px">FIX</strong></div>
+          <div class="col-box" style="text-align:center">📊<br><strong style="font-size:8px">MONITOR</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLAPSED SECTIONS -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c7)"></div><span class="card-title">Collapsed Sections</span></div>
+    <div class="card-body">
+      <label>Syntax</label>
+      <div class="syn">&lt;<span class="kw">details</span>&gt;
+&lt;<span class="kw">summary</span>&gt;<span class="str">Click to expand</span>&lt;/<span class="kw">summary</span>&gt;
+
+Content here (blank line required).
+Code, tables, lists all supported.
+
+&lt;/<span class="kw">details</span>&gt;
+
+<span class="cm">&lt;!-- Open by default: --&gt;</span>
+&lt;<span class="kw">details</span> <span class="var">open</span>&gt;...</div>
+      <label style="margin-top:8px">Rendered</label>
+      <details style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:10.5px">
+        <summary style="cursor:pointer;font-family:var(--font-mono);font-size:10px;color:var(--c4)">Click to expand: Nmap flags</summary>
+        <table class="tbl-demo" style="margin-top:8px">
+          <tr><th>Flag</th><th>Purpose</th></tr>
+          <tr><td><code>-sV</code></td><td>Version detection</td></tr>
+          <tr><td><code>-sC</code></td><td>Default scripts</td></tr>
+          <tr><td><code>-T4</code></td><td>Aggressive timing</td></tr>
+        </table>
+      </details>
+    </div>
+  </div>
+
+  <!-- MERMAID -->
+  <div class="card span2">
+    <div class="card-header"><div class="dot" style="background:var(--c1)"></div><span class="card-title">Mermaid Diagrams</span></div>
+    <div class="card-body two-col">
+      <div>
+        <label>Syntax wrapper</label>
+        <div class="syn"><span class="op">```</span><span class="str">mermaid</span>
+<span class="cm">flowchart / sequenceDiagram /</span>
+<span class="cm">gantt / erDiagram /</span>
+<span class="cm">classDiagram / gitGraph</span>
+<span class="op">```</span></div>
+        <div style="margin-top:8px">
+          <label>Flowchart</label>
+          <div class="syn"><span class="fn">flowchart</span> TD
+  A([Start]) <span class="op">--&gt;</span> B{Auth?}
+  B <span class="op">-- Yes --&gt;</span> C[Dashboard]
+  B <span class="op">-- No  --&gt;</span> D[Login]</div>
+        </div>
+        <div style="margin-top:8px">
+          <label>Sequence</label>
+          <div class="syn"><span class="fn">sequenceDiagram</span>
+  Browser<span class="op">-&gt;&gt;</span>API: POST /login
+  API<span class="op">--&gt;&gt;</span>Browser: 200 OK token</div>
+        </div>
+      </div>
+      <div>
+        <label>Flowchart rendered (schematic)</label>
+        <div style="background:var(--code-bg);border:1px solid var(--border);border-radius:5px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px">
+          <div style="background:var(--bg3);border:1px solid var(--c3);border-radius:20px;padding:3px 14px;color:var(--c3)">Start</div>
+          <div style="color:var(--text3)">↓</div>
+          <div style="background:var(--bg3);border:1px solid var(--c5);transform:rotate(0deg);padding:3px 14px;color:var(--c5);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)">Auth?</div>
+          <div style="display:flex;gap:30px;align-items:flex-start;margin-top:2px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+              <div style="color:var(--c3);font-size:9px">Yes ↓</div>
+              <div style="background:var(--bg3);border:1px solid var(--c4);border-radius:3px;padding:3px 10px;color:var(--c4)">Dashboard</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+              <div style="color:var(--c6);font-size:9px">No ↓</div>
+              <div style="background:var(--bg3);border:1px solid var(--c6);border-radius:3px;padding:3px 10px;color:var(--c6)">Login</div>
+            </div>
+          </div>
+        </div>
+        <label style="margin-top:8px">Diagram types</label>
+        <div style="display:flex;flex-wrap:wrap;gap:3px">
+          <span class="syn" style="padding:2px 6px">flowchart</span>
+          <span class="syn" style="padding:2px 6px">sequenceDiagram</span>
+          <span class="syn" style="padding:2px 6px">gantt</span>
+          <span class="syn" style="padding:2px 6px">erDiagram</span>
+          <span class="syn" style="padding:2px 6px">classDiagram</span>
+          <span class="syn" style="padding:2px 6px">gitGraph</span>
+          <span class="syn" style="padding:2px 6px">pie</span>
+          <span class="syn" style="padding:2px 6px">mindmap</span>
+          <span class="syn" style="padding:2px 6px">timeline</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATH -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c5)"></div><span class="card-title">Math (LaTeX / MathJax)</span></div>
+    <div class="card-body">
+      <label>Inline — wrap in <code style="font-size:9px">$...$</code></label>
+      <div class="syn">Entropy is <span class="str">$H = -\sum p(x) \log p(x)$</span></div>
+      <div class="prev" style="margin-top:4px">Entropy is <span class="math-inline">H = -Σ p(x) log p(x)</span></div>
+      <label style="margin-top:8px">Block — wrap in <code style="font-size:9px">$$...$$</code></label>
+      <div class="syn"><span class="str">$$</span>
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+<span class="str">$$</span></div>
+      <div class="math-demo" style="margin-top:4px">x = ( -b ± √(b²-4ac) ) / 2a</div>
+    </div>
+  </div>
+
+  <!-- FOOTNOTES -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--c6)"></div><span class="card-title">Footnotes</span></div>
+    <div class="card-body">
+      <label>Syntax</label>
+      <div class="syn">Text with a footnote<span class="op">[^1]</span>.
+Named footnote<span class="op">[^aws]</span>.
+
+<span class="op">[^1]</span>: <span class="str">Footnote content here.</span>
+<span class="op">[^aws]</span>: <span class="str">Named footnotes work too.</span></div>
+      <label style="margin-top:8px">Rendered</label>
+      <div class="fn-demo">
+        Text with a footnote<sup><a href="#">[1]</a></sup>. Named footnote<sup><a href="#">[aws]</a></sup>.
+        <div class="fn-list">
+          <p>1. Footnote content here.</p>
+          <p>aws. Named footnotes work too.</p>
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:var(--text3);margin-top:4px;font-family:var(--font-mono)">Footnotes render at the bottom of the page automatically.</div>
+    </div>
+  </div>
+
+  <!-- MISC -->
+  <div class="card">
+    <div class="card-header"><div class="dot" style="background:var(--text3)"></div><span class="card-title">Miscellaneous</span></div>
+    <div class="card-body">
+      <label>Horizontal rule (3 ways)</label>
+      <div class="syn"><span class="op">---</span>  or  <span class="op">***</span>  or  <span class="op">___</span></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:4px 0">
+      <label style="margin-top:4px">Escaping special chars</label>
+      <div class="syn">\*not italic\*  \`not code\`
+\[not a link\]  \# not heading</div>
+      <label style="margin-top:6px">Emoji</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:14px;margin-top:2px">
+        ✅ ❌ ⚠️ 🚀 🔒 🔍 🐛 📖 🛡️ 🔥 💡 📊
+      </div>
+      <div style="font-size:9.5px;color:var(--text3);margin-top:2px;font-family:var(--font-mono)">Use <code style="font-size:9px">:shortcode:</code> or paste Unicode directly</div>
+      <label style="margin-top:6px">Centered HTML block</label>
+      <div class="syn">&lt;<span class="kw">div</span> align=<span class="str">"center"</span>&gt;
+**Centered content**
+&lt;/<span class="kw">div</span>&gt;</div>
+      <label style="margin-top:6px">Abbreviation with tooltip</label>
+      <div class="syn">&lt;<span class="kw">abbr</span> title=<span class="str">"Transport Layer Security"</span>&gt;TLS&lt;/<span class="kw">abbr</span>&gt;</div>
+      <div class="prev" style="margin-top:4px"><abbr title="Transport Layer Security" style="text-decoration:underline dotted;cursor:help">TLS</abbr> — hover for tooltip</div>
+    </div>
+  </div>
+
+  <!-- QUICK REF TABLE -->
+  <div class="card span3">
+    <div class="card-header"><div class="dot" style="background:var(--c1)"></div><span class="card-title">Quick Reference — All Syntax at a Glance</span></div>
+    <div class="card-body three-col">
+      <div>
+        <table class="tbl-demo">
+          <tr><th>Element</th><th>Syntax</th></tr>
+          <tr><td>H1–H6</td><td><code># … ######</code></td></tr>
+          <tr><td>Bold</td><td><code>**text**</code></td></tr>
+          <tr><td>Italic</td><td><code>*text*</code></td></tr>
+          <tr><td>Bold+Italic</td><td><code>***text***</code></td></tr>
+          <tr><td>Strikethrough</td><td><code>~~text~~</code></td></tr>
+          <tr><td>Inline code</td><td><code>`code`</code></td></tr>
+          <tr><td>Code block</td><td><code>```lang</code></td></tr>
+          <tr><td>Diff block</td><td><code>```diff</code></td></tr>
+          <tr><td>Subscript</td><td><code>&lt;sub&gt;x&lt;/sub&gt;</code></td></tr>
+          <tr><td>Superscript</td><td><code>&lt;sup&gt;x&lt;/sup&gt;</code></td></tr>
+        </table>
+      </div>
+      <div>
+        <table class="tbl-demo">
+          <tr><th>Element</th><th>Syntax</th></tr>
+          <tr><td>Keyboard key</td><td><code>&lt;kbd&gt;Ctrl&lt;/kbd&gt;</code></td></tr>
+          <tr><td>Highlight</td><td><code>&lt;mark&gt;text&lt;/mark&gt;</code></td></tr>
+          <tr><td>Link</td><td><code>[label](url)</code></td></tr>
+          <tr><td>Anchor</td><td><code>[label](#id)</code></td></tr>
+          <tr><td>Image</td><td><code>![alt](url)</code></td></tr>
+          <tr><td>Blockquote</td><td><code>&gt; text</code></td></tr>
+          <tr><td>Note alert</td><td><code>&gt; [!NOTE]</code></td></tr>
+          <tr><td>Warning</td><td><code>&gt; [!WARNING]</code></td></tr>
+          <tr><td>Horizontal rule</td><td><code>---</code></td></tr>
+          <tr><td>Task list</td><td><code>- [ ] / - [x]</code></td></tr>
+        </table>
+      </div>
+      <div>
+        <table class="tbl-demo">
+          <tr><th>Element</th><th>Syntax</th></tr>
+          <tr><td>Table</td><td><code>| col | col |</code></td></tr>
+          <tr><td>Align left</td><td><code>|:---|</code></td></tr>
+          <tr><td>Align center</td><td><code>|:---:|</code></td></tr>
+          <tr><td>Align right</td><td><code>|---:|</code></td></tr>
+          <tr><td>Footnote</td><td><code>[^1] / [^id]</code></td></tr>
+          <tr><td>Collapsed</td><td><code>&lt;details&gt;</code></td></tr>
+          <tr><td>Mermaid</td><td><code>```mermaid</code></td></tr>
+          <tr><td>Math inline</td><td><code>$formula$</code></td></tr>
+          <tr><td>Math block</td><td><code>$$formula$$</code></td></tr>
+          <tr><td>Multi-column</td><td><code>&lt;table&gt;&lt;tr&gt;&lt;td&gt;</code></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<footer>
+  <p>Signed: Syed Ishaq B. · <a href="https://ishaqzafar.com">ishaqzafar.com</a></p>
+  <p>GitHub Flavored Markdown (GFM) + HTML passthrough · <a href="https://github.github.com/gfm/">spec</a></p>
+</footer>
+
+<!-- sigi: U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+
+<script>
+  function getTheme() {
+    return localStorage.getItem('md-cheatsheet-theme') || 'dark';
+  }
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('md-cheatsheet-theme', t);
+    document.getElementById('lblDay').classList.toggle('active', t === 'light');
+    document.getElementById('lblNight').classList.toggle('active', t === 'dark');
+  }
+  function toggleTheme() {
+    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  }
+  setTheme(getTheme());
+</script>
+</body>
+</html>
