@@ -1,0 +1,1033 @@
+<!doctype html>
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Claude Security: Operator's Field Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e14;
+  --surface: #11161f;
+  --surface-2: #0d1219;
+  --border: #1f2733;
+  --border-strong: #2c3645;
+  --text: #ece6d8;
+  --text-dim: #a1a195;
+  --text-faint: #6b6e6a;
+  --accent: #5eead4;
+  --accent-dim: #2dd4bf;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --good: #86efac;
+  --code-bg: #0d1219;
+  --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Menlo', monospace;
+}
+[data-theme="light"] {
+  --bg: #faf7f0;
+  --surface: #ffffff;
+  --surface-2: #f3efe6;
+  --border: #e3ddcf;
+  --border-strong: #c9c2b0;
+  --text: #1a1f2a;
+  --text-dim: #5a5f6a;
+  --text-faint: #8a8e96;
+  --accent: #0d9488;
+  --accent-dim: #14b8a6;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --good: #15803d;
+  --code-bg: #f3efe6;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(94, 234, 212, 0.06), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 100% 100%, rgba(94, 234, 212, 0.03), transparent 60%);
+}
+[data-theme="light"] body, [data-theme="light"] {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(13, 148, 136, 0.05), transparent 60%);
+}
+
+/* ============ Layout ============ */
+.shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 28px 96px;
+}
+header.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.brandblock { flex: 1; }
+.kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.kicker::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  display: inline-block;
+}
+h1.title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  font-variation-settings: "opsz" 144;
+}
+h1.title em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 300;
+}
+.subtitle {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-dim);
+  font-style: italic;
+  max-width: 60ch;
+  font-variation-settings: "opsz" 14;
+}
+.metaline {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.metaline span strong { color: var(--text-dim); font-weight: 500; }
+
+/* ============ Theme Toggle (per spec) ============ */
+.toggle-wrap {
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.toggle {
+  position: relative;
+  width: 132px;
+  height: 38px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  font-family: var(--mono);
+  user-select: none;
+}
+.toggle .thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: calc(50% - 3px);
+  left: 3px;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+[data-theme="dark"] .toggle .thumb { left: calc(50% + 0px); }
+.toggle .label {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: color 0.25s ease;
+}
+[data-theme="light"] .toggle .label.day { color: var(--bg); }
+[data-theme="dark"] .toggle .label.night { color: var(--bg); }
+
+/* ============ Sections ============ */
+section { margin-bottom: 56px; }
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -0.012em;
+  margin: 0 0 8px;
+  font-variation-settings: "opsz" 48;
+  color: var(--text);
+}
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+  display: block;
+}
+h3 {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  margin: 32px 0 10px;
+}
+h4 {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 24px 0 8px;
+}
+p { margin: 0 0 14px; }
+strong { color: var(--text); font-weight: 600; }
+em { color: var(--text-dim); }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+a:hover { border-bottom-color: var(--accent); }
+
+/* ============ Components ============ */
+.lede {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--text);
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 22px;
+  margin: 24px 0 32px;
+  font-variation-settings: "opsz" 18;
+}
+
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 18px 0;
+  border-radius: 2px;
+  font-size: 14.5px;
+}
+.callout.warn { border-left-color: var(--warn); }
+.callout.danger { border-left-color: var(--danger); }
+.callout-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 6px;
+}
+.callout.warn .callout-tag { color: var(--warn); }
+.callout.danger .callout-tag { color: var(--danger); }
+
+ul, ol { margin: 12px 0 18px; padding-left: 22px; }
+li { margin-bottom: 8px; line-height: 1.6; }
+li::marker { color: var(--text-faint); }
+
+ul.tight li { margin-bottom: 4px; }
+
+dl { margin: 12px 0; }
+dl dt { font-weight: 600; color: var(--text); margin-top: 10px; font-size: 14px; }
+dl dd { margin: 2px 0 0 0; color: var(--text-dim); font-size: 14.5px; }
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  color: var(--text);
+  margin: 14px 0;
+}
+pre .com { color: var(--text-faint); font-style: italic; }
+pre .key { color: var(--accent); }
+pre .str { color: var(--good); }
+pre .num { color: var(--warn); }
+code:not(pre code) {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.88em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+/* ============ Tables ============ */
+.scrolltable { overflow-x: auto; margin: 18px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  font-family: var(--sans);
+}
+th {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-strong);
+  vertical-align: bottom;
+}
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+td.dim { color: var(--text-dim); }
+td strong { color: var(--text); }
+td .pill { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); letter-spacing: 0.05em; }
+td .pill.good { color: var(--good); border-color: var(--good); }
+td .pill.warn { color: var(--warn); border-color: var(--warn); }
+td .pill.bad { color: var(--danger); border-color: var(--danger); }
+
+/* ============ Steps ============ */
+.steps { counter-reset: step; list-style: none; padding: 0; }
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 14px 0 14px 56px;
+  border-bottom: 1px dashed var(--border);
+}
+.steps > li:last-child { border-bottom: none; }
+.steps > li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.steps > li > strong:first-child {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* ============ Cards ============ */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr; }
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  border-radius: 3px;
+}
+.card .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: block;
+}
+.card.bad .tag { color: var(--danger); }
+.card.warn .tag { color: var(--warn); }
+.card h4 { margin: 0 0 8px; color: var(--text); text-transform: none; letter-spacing: -0.005em; font-size: 14.5px; font-family: var(--sans); }
+.card p { font-size: 14px; color: var(--text-dim); margin: 0; }
+
+/* ============ Confidence pills ============ */
+.conf {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 6px;
+  vertical-align: middle;
+  border: 1px solid currentColor;
+}
+.conf.high { color: var(--good); }
+.conf.med  { color: var(--warn); }
+.conf.low  { color: var(--danger); }
+
+/* ============ Footer ============ */
+footer {
+  margin-top: 80px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+footer a { color: var(--text-dim); }
+
+/* TOC */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px 22px;
+  margin-bottom: 56px;
+  border-radius: 3px;
+  font-size: 13.5px;
+}
+.toc-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.toc ol { padding-left: 20px; margin: 0; columns: 2; column-gap: 24px; }
+.toc li { margin-bottom: 4px; break-inside: avoid; }
+.toc a { color: var(--text-dim); border-bottom: none; }
+.toc a:hover { color: var(--accent); }
+@media (max-width: 640px) { .toc ol { columns: 1; } }
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <div class="brandblock">
+      <div class="kicker">Operator's Field Manual / 2026 Q2</div>
+      <h1 class="title">Claude Security<br><em>configuration &amp; combat use</em></h1>
+      <p class="subtitle">A direct guide for security engineers shipping code through GitHub Actions to Kubernetes on AWS, with a head-to-head framework against AWS Security Agent and Wiz Code Security.</p>
+      <div class="metaline">
+        <span><strong>STATUS</strong> Public beta, Apr 30 2026</span>
+        <span><strong>BACKBONE</strong> Claude Opus 4.7</span>
+        <span><strong>TIER</strong> Max / Team / Enterprise</span>
+        <span><strong>SCOPE</strong> GitHub repos only</span>
+      </div>
+    </div>
+    <div class="toggle-wrap">
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="thumb" aria-hidden="true"></span>
+        <span class="label day">DAY</span>
+        <span class="label night">NIGHT</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#tldr">TL;DR</a></li>
+      <li><a href="#what">What it actually is</a></li>
+      <li><a href="#use-cases">Use cases</a></li>
+      <li><a href="#non-use-cases">Non-use cases</a></li>
+      <li><a href="#prereqs">Prerequisites</a></li>
+      <li><a href="#setup">Step-by-step setup</a></li>
+      <li><a href="#scan">Running scans</a></li>
+      <li><a href="#configs">Sample configurations</a></li>
+      <li><a href="#findings">Reviewing findings</a></li>
+      <li><a href="#ops">Operationalising</a></li>
+      <li><a href="#tokens">Token consumption &amp; cost</a></li>
+      <li><a href="#anti">Anti-patterns</a></li>
+      <li><a href="#compare">Versus AWS Security Agent &amp; Wiz</a></li>
+      <li><a href="#hf-experiment">HelloFresh comparison experiment</a></li>
+      <li><a href="#refs">Sources</a></li>
+      <li><a href="#assumptions">Assumptions</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ TL;DR ============ -->
+  <section id="tldr">
+    <span class="section-num">§ 01</span>
+    <h2>TL;DR</h2>
+    <p class="lede">Claude Security is an agentic SAST replacement, not an additional one. It reads code the way a security researcher does, traces data flow across files, self-verifies, and produces patch-ready findings inside Claude Code on the Web. It is good at logic and multi-file vulnerabilities, weak at runtime, infra, container, and dependency CVE coverage. Treat it as one of three complementary layers next to AWS Security Agent (DAST / pentest) and Wiz (cloud-to-code posture, IaC, SCA).</p>
+    <ul>
+      <li><strong>Where it wins:</strong> business-logic flaws, IDOR, auth-bypass chains, deserialisation, multi-file taint paths, anything pattern matchers miss.</li>
+      <li><strong>Where it does not play:</strong> dependency CVE feeds, IaC misconfig, container CVE, cloud posture, runtime threats, secret rotation. None of those are in scope.</li>
+      <li><strong>Cost shape:</strong> consumption-billed at standard API rates on top of seat fees. There is no fixed price per scan. Plan a budget cap before opening it up to a team.</li>
+      <li><strong>Determinism:</strong> stochastic by design. Two scans of the same SHA produce overlapping but not identical findings. Build process around that, not against it.</li>
+    </ul>
+  </section>
+
+  <!-- ============ What it is ============ -->
+  <section id="what">
+    <span class="section-num">§ 02</span>
+    <h2>What it actually is</h2>
+    <p>Claude Security is a defensive code-scanning capability built into <code>claude.ai</code>, accessed at <code>claude.ai/security</code>. It launched as <em>Claude Code Security</em> in February 2026 limited preview, was renamed and reissued in public beta on 30 April 2026 to all Max, Team, and Enterprise tenants. The model under it is <strong>Opus 4.7</strong>, not the more capable but restricted Mythos. <span class="conf high">High</span></p>
+    <p>The agent scans a GitHub repository (full repo, scoped directory, or specific branch), reasons over the source, runs an adversarial verification pass on its own findings to suppress false positives, then produces structured output: title, location, impact, reproduction steps, recommended fix, severity, status, category. From any finding you can launch a Claude Code on the Web session pre-loaded with the context to draft and review the patch.</p>
+    <div class="callout">
+      <span class="callout-tag">Mental model</span>
+      <strong>Read it as: "an Opus 4.7 agent with self-critique, scoped to one GitHub repo, scheduled or on-demand, exporting CSV / Markdown / webhooks."</strong> If you treat it as a Snyk replacement you will be disappointed. If you treat it as an SCA replacement you will ship a CVE.
+    </div>
+    <h3>Finding categories Anthropic calls out</h3>
+    <p>Per the official help centre: injection (SQLi, command, code, XSS, XXE, ReDoS), path and network (traversal, SSRF, open redirect), auth and access (authn bypass, privesc, IDOR/BOLA, CSRF, race), memory safety (overflow, UAF, unsafe), cryptography (timing, alg confusion, weak primitives), deserialisation (arbitrary type instantiation), protocol and encoding (cache safety, encoding confusion, length-prefix trust). Severity is assigned per finding based on exploitability in your codebase, not category, so the same class can land High in one repo and Low in another. <span class="conf high">High</span></p>
+  </section>
+
+  <!-- ============ Use cases ============ -->
+  <section id="use-cases">
+    <span class="section-num">§ 03</span>
+    <h2>Use cases</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="tag">PRIMARY</span>
+        <h4>Logic and multi-file vulnerabilities</h4>
+        <p>The strongest pitch. Cross-file taint flow, business-logic IDOR, missing auth checks across handler chains, race windows. The places Semgrep and Snyk Code routinely miss.</p>
+      </div>
+      <div class="card">
+        <span class="tag">PRIMARY</span>
+        <h4>Pre-release deep review of a critical service</h4>
+        <p>Schedule an Extended-effort scan against the service handling payments / PII before a release boundary. Treat the output as input to a human review, not a release gate.</p>
+      </div>
+      <div class="card">
+        <span class="tag">PRIMARY</span>
+        <h4>Targeted directory deep dive</h4>
+        <p>Scope to <code>auth/</code>, <code>billing/</code>, <code>session/</code> in a monorepo. Anthropic's own guidance is that scoping increases scan reliability and signal density.</p>
+      </div>
+      <div class="card">
+        <span class="tag">SECONDARY</span>
+        <h4>Continuous weekly hygiene scan</h4>
+        <p>Weekly cadence tied to a triage ritual (Monday review, sprint boundary). Findings export to Jira via webhook, dismissed with documented reasons to build an audit trail.</p>
+      </div>
+      <div class="card">
+        <span class="tag">SECONDARY</span>
+        <h4>M&amp;A or codebase due diligence</h4>
+        <p>Useful for "what is the security shape of this codebase" before integration. Pair with Wiz on the cloud side. Note Anthropic's licensing rule: only scan code you own or hold rights to scan.</p>
+      </div>
+      <div class="card">
+        <span class="tag">SECONDARY</span>
+        <h4>Augmenting a thin AppSec team</h4>
+        <p>If you have 1-2 AppSec engineers across 30+ repos, this is force multiplication. Not a replacement for human review on critical changes, a way to widen coverage at the long tail.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Non use cases ============ -->
+  <section id="non-use-cases">
+    <span class="section-num">§ 04</span>
+    <h2>Non-use cases</h2>
+    <p>Just as important. If you reach for Claude Security for any of these, you are using the wrong tool.</p>
+    <div class="cards">
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Dependency &amp; container CVE scanning</h4>
+        <p>Not its job. Stay on Snyk Open Source, Trivy, or Wiz SCA. Claude Security has no Trivy database, no NVD feed, no transitive dependency graph.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>IaC misconfiguration</h4>
+        <p>Terraform, Helm, k8s manifests, CFN. The agent will read code but is not built for cloud-config posture. Use Wiz IaC, Checkov, or AWS Security Agent's design review.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Runtime, container, or cloud posture</h4>
+        <p>Use Wiz Defend, Falco, GuardDuty, or your CSPM. Claude Security only sees source.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Secret scanning</h4>
+        <p>It is not a Gitleaks or TruffleHog. Keep your existing pre-commit and push-protection in place. The agent may flag obvious hard-coded creds incidentally, do not rely on it.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Production penetration testing</h4>
+        <p>It does not run anything. No active exploitation, no traffic, no auth fuzzing against live systems. AWS Security Agent or a human pentest covers this.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Compliance gating in CI/CD</h4>
+        <p>Stochastic output and variable scan length make it a poor blocking gate. Run it as a sidecar that posts to Jira, not a check that fails the merge.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Third-party / OSS code you do not own</h4>
+        <p>Anthropic's terms restrict use to code your company owns or holds rights to scan. Scanning OSS upstream "to find a 0-day" is a policy violation.</p>
+      </div>
+      <div class="card bad">
+        <span class="tag">DO NOT</span>
+        <h4>Non-GitHub repos</h4>
+        <p>GitLab, Bitbucket, self-hosted Gitea, Azure DevOps Repos: not supported in beta. Anthropic has flagged GitHub-only as a current constraint.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Prerequisites ============ -->
+  <section id="prereqs">
+    <span class="section-num">§ 05</span>
+    <h2>Prerequisites</h2>
+    <p>Anthropic's own getting-started guide enumerates these, so this section reflects the official requirements rather than my interpretation. <span class="conf high">High</span></p>
+    <ol class="tight">
+      <li><strong>Eligible plan.</strong> Claude Enterprise, Team, or Max. (Enterprise was first, Team and Max were added in the public beta release.)</li>
+      <li><strong>Claude Code on the Web enabled.</strong> The remediation flow opens a Claude Code session, so this has to be on for the org. Check at <code>claude.ai/code</code>.</li>
+      <li><strong>Extra Usage enabled.</strong> Claude Security is consumption-billed. If Extra Usage is off you cannot run scans.</li>
+      <li><strong>Anthropic GitHub App installed.</strong> Same app as Claude Code on the Web. Granted access to the repos you want to scan, at the GitHub org level.</li>
+      <li><strong>Premium seats for scan operators.</strong> Standard seats do not include Claude Code on the Web. Each engineer who runs scans needs a premium seat.</li>
+      <li><strong>Network allowlisting (optional).</strong> If your GitHub Enterprise has IP allowlisting, add Anthropic's published egress ranges.</li>
+    </ol>
+  </section>
+
+  <!-- ============ Setup ============ -->
+  <section id="setup">
+    <span class="section-num">§ 06</span>
+    <h2>Step-by-step setup</h2>
+    <p>The set-up itself is short. The hard work is policy: who can scan what, what gets exported where, how dismissals are governed.</p>
+    <ol class="steps">
+      <li>
+        <strong>Confirm Extra Usage and set a spend cap</strong>
+        Go to Organization Billing settings. Enable Extra Usage if it is off. Set a separate spend limit specifically for Claude Security once the feature toggle exposes it. Treat the first month as a budget calibration period, not a steady state.
+      </li>
+      <li>
+        <strong>Verify the Anthropic GitHub App is installed</strong>
+        In your GitHub org settings, check Installed GitHub Apps. The app should be present and granted access to the relevant repositories. Scope by repository selection, not by "all repos" unless the org is small enough that the blast radius is acceptable.
+      </li>
+      <li>
+        <strong>Enable Claude Security in the admin console</strong>
+        Visit <code>claude.ai/admin-settings/claude-code</code>. Toggle Claude Security on. Once enabled, the Security entry appears in the left sidebar of <code>claude.ai</code> for users with premium seats.
+      </li>
+      <li>
+        <strong>Provision RBAC roles</strong>
+        Anthropic exposes custom roles via Claude Enterprise RBAC. Create at least two: a <em>Security Operator</em> who can run scans and triage findings, and a <em>Security Reviewer</em> who can read findings and dismissals but not run scans. Default-deny scan permission to engineering generally. You do not want every engineer launching repo-wide Opus 4.7 sessions on a whim, both for cost and noise.
+      </li>
+      <li>
+        <strong>Pick the first three repositories</strong>
+        Do not start with the monolith. Pick: one critical service (small, high-stakes, you already understand it), one repo recently audited by humans (so you can sanity-check signal vs noise), and one greenfield service (so you see what zero-history scanning produces).
+      </li>
+      <li>
+        <strong>Wire integrations before findings start landing</strong>
+        Set up the Slack and Jira webhooks per project before the first scheduled scan. Findings without an inbox accumulate as a backlog people stop opening.
+      </li>
+      <li>
+        <strong>Document dismissal policy</strong>
+        Decide before, not after, what counts as a valid dismissal reason. Suggested taxonomy: <code>not-exploitable-in-context</code>, <code>compensating-control</code>, <code>accepted-risk</code>, <code>false-positive</code>, <code>duplicate</code>. Reject a generic "not applicable" with no reason.
+      </li>
+      <li>
+        <strong>Run a calibration scan</strong>
+        Pick the small critical service. Run a Regular-effort scan first, then an Extended-effort scan. Compare findings. The delta is your real signal about how much depth Extended buys you on this codebase.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ Running ============ -->
+  <section id="scan">
+    <span class="section-num">§ 07</span>
+    <h2>Running scans</h2>
+    <ol>
+      <li><strong>Sidebar &gt; Security</strong> or <code>claude.ai/security</code>.</li>
+      <li><strong>Pick the repo.</strong> For anything larger than a single service, pick a directory or branch. Anthropic explicitly recommends scoping for larger repositories.</li>
+      <li><strong>Effort: Regular vs Extended.</strong> Regular is the default. Extended runs deeper analysis at materially higher token cost. Use Extended on the first scan of a repo or after material changes (rewrite, framework upgrade, new auth).</li>
+      <li><strong>Start the scan.</strong> Time varies based on repo size and what the agent decides to investigate. Minutes to hours, not seconds.</li>
+      <li><strong>Run multiple in parallel.</strong> Useful for triaging several services at once, or comparing a hardened branch against main without serialising.</li>
+    </ol>
+    <div class="callout warn">
+      <span class="callout-tag">Determinism warning</span>
+      Scans are stochastic by design. Anthropic states this explicitly: the agent adapts its analysis per run rather than applying fixed pattern matches. Two scans on the same commit will overlap but not match. This is the right trade for catching logic bugs but the wrong trade for a CI gate. Plan accordingly.
+    </div>
+  </section>
+
+  <!-- ============ Sample configs ============ -->
+  <section id="configs">
+    <span class="section-num">§ 08</span>
+    <h2>Sample configurations</h2>
+    <p>Claude Security is configured in-product, not via YAML. There is no <code>.claude-security.yml</code>. What you can configure: schedule cadence, scan effort, scope, webhook endpoints, and dismissal taxonomy. The samples below show what the integrations on the receiving end should look like.</p>
+
+    <h3>Webhook payload &rarr; Slack triage channel (Block Kit)</h3>
+    <p>Claude Security pushes scan-completion and new-finding events. Forward through a small Lambda or n8n flow that maps severity to channel, formats with Block Kit, and posts a <code>review</code> button linking back to <code>claude.ai/security</code>.</p>
+<pre><span class="com"># n8n / Lambda handler shape (illustrative)</span>
+<span class="key">on</span>: webhook.claude-security.finding.created
+<span class="key">filter</span>:
+  severity: [HIGH, MEDIUM]
+  repository: hellofresh/*
+<span class="key">route</span>:
+  HIGH:   <span class="str">"#sec-findings-high"</span>
+  MEDIUM: <span class="str">"#sec-findings-triage"</span>
+<span class="key">payload</span>:
+  blocks:
+    - type: header
+      text: <span class="str">"[{{severity}}] {{title}}"</span>
+    - type: section
+      fields:
+        - <span class="str">"*Repo:*  {{repository}}"</span>
+        - <span class="str">"*File:*  {{location.path}}:{{location.line}}"</span>
+        - <span class="str">"*Category:*  {{category}}"</span>
+    - type: actions
+      elements:
+        - type: button
+          text: <span class="str">"Open in Claude Security"</span>
+          url:  <span class="str">"https://claude.ai/security/findings/{{id}}"</span>
+        - type: button
+          text: <span class="str">"Triage in Jira"</span>
+          url:  <span class="str">"https://hellofresh.atlassian.net/secure/CreateIssue.jspa?summary={{title}}"</span></pre>
+
+    <h3>Jira auto-creation policy</h3>
+<pre><span class="com"># Recommended policy at the receiving end</span>
+<span class="key">create_issue_when</span>:
+  severity: HIGH
+  AND repository_tier: tier-1   <span class="com"># PII, payments, auth</span>
+
+<span class="key">create_issue_when</span>:
+  severity: HIGH or MEDIUM
+  AND scan_type: scheduled-weekly
+
+<span class="key">project</span>:        APPSEC
+<span class="key">issuetype</span>:      Vulnerability
+<span class="key">priority_map</span>:
+  HIGH:   Highest
+  MEDIUM: High
+  LOW:    Medium
+<span class="key">labels</span>:         [<span class="str">"claude-security"</span>, <span class="str">"auto-created"</span>, <span class="str">"{{category}}"</span>]
+<span class="key">assignee</span>:       service_owner_lookup({{repository}})</pre>
+
+    <h3>Schedule policy by repo tier</h3>
+    <div class="scrolltable">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Examples</th><th>Cadence</th><th>Effort</th><th>Scope</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>T1</strong></td><td class="dim">payments, auth, account, PII</td><td>Weekly</td><td>Extended</td><td>Service root</td></tr>
+        <tr><td><strong>T2</strong></td><td class="dim">order, fulfilment, internal APIs</td><td>Bi-weekly</td><td>Regular</td><td>Service root</td></tr>
+        <tr><td><strong>T3</strong></td><td class="dim">internal tools, low-risk back-office</td><td>Monthly</td><td>Regular</td><td>Service root</td></tr>
+        <tr><td><strong>T0 monorepo</strong></td><td class="dim">large platform repos</td><td>Weekly</td><td>Regular</td><td>One subdirectory per scan, rotated</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Dismissal taxonomy</h3>
+<pre><span class="key">not-exploitable-in-context</span>   <span class="com"># real bug, not reachable here</span>
+<span class="key">compensating-control</span>         <span class="com"># WAF rule, network policy, etc.</span>
+<span class="key">accepted-risk</span>                <span class="com"># risk owner has signed off; link decision doc</span>
+<span class="key">false-positive</span>               <span class="com"># model wrong; link evidence</span>
+<span class="key">duplicate</span>                    <span class="com"># covered by existing Jira ticket; link it</span></pre>
+  </section>
+
+  <!-- ============ Findings ============ -->
+  <section id="findings">
+    <span class="section-num">§ 09</span>
+    <h2>Reviewing findings</h2>
+    <p>Each finding ships with: title, details, location (file + line, linked), impact, reproduction steps, recommended fix, severity, status, category, repo, branch, date. Dismissed findings carry a reason and optional note that travel forward into future scans.</p>
+    <p>Recommended review flow:</p>
+    <ol class="tight">
+      <li><strong>Triage by severity, then exploitability.</strong> Anthropic's severity already accounts for exploitability per repo, but you still have local context they do not.</li>
+      <li><strong>Read the reproduction steps before the recommended fix.</strong> If the repro is hand-wavy, the finding is suspect. Real ones describe a concrete payload or call sequence.</li>
+      <li><strong>Open a remediation session.</strong> Click into Claude Code on the Web with the finding pre-loaded. Review the proposed patch as you would any PR. Do not auto-merge.</li>
+      <li><strong>Dismiss with reason if not acting.</strong> The dismissal reason becomes the audit trail. Future reviewers (and future you) will read these.</li>
+      <li><strong>Export per scan.</strong> Pull a CSV or Markdown after each significant scan. Keep the exports as the paper trail for SOC2 / ISO 27001 evidence. Do not rely on the in-product UI being your sole record.</li>
+    </ol>
+  </section>
+
+  <!-- ============ Operationalising ============ -->
+  <section id="ops">
+    <span class="section-num">§ 10</span>
+    <h2>Operationalising</h2>
+    <h3>Ownership</h3>
+    <p>Tag every project with a named owner (an engineering team or on-call rota), not a person. Findings without a routing rule become a backlog. Tie ownership to the same service catalogue you already use for incident routing.</p>
+
+    <h3>Scoped scanning beats whole-repo scanning</h3>
+    <p>For monorepos and anything over roughly 200k lines, run scoped scans against modules in rotation rather than full-repo scans. This is Anthropic's own guidance: narrower scope increases determinism and focuses the agent. It is also cheaper.</p>
+
+    <h3>Audit trail discipline</h3>
+    <p>Three artefacts per scan should be retained: the CSV / Markdown export, the Jira tickets created, and the dismissal log. These are what an auditor will ask for. Capture them in your existing GRC system, not just in the Claude Security UI.</p>
+
+    <h3>Human gate on patches</h3>
+    <p>Anthropic's own product copy says it: <em>Claude can make mistakes, so you should always review proposed patches before applying them, especially for critical systems</em>. The remediation session generates a candidate, not a merge-ready commit. Treat it as a PR draft.</p>
+
+    <h3>Cyber Verification Program</h3>
+    <p>If your team's legitimate security work (red team, exploit research, pentest) trips Opus 4.7's built-in cyber safeguards, Anthropic's <em>Cyber Verification Program</em> is the route to keep operating without interruption. Apply early if you anticipate it. <span class="conf med">Medium</span></p>
+  </section>
+
+  <!-- ============ Tokens / cost ============ -->
+  <section id="tokens">
+    <span class="section-num">§ 11</span>
+    <h2>Token consumption &amp; cost</h2>
+    <p>This is the section vendors are most evasive on, so here is the honest shape of it.</p>
+
+    <h3>Billing model</h3>
+    <p>Claude Security is <strong>consumption-billed at standard Anthropic API rates</strong> on top of your seat fees. There is no fixed price per scan, no included monthly scan budget. The seat fee covers access; every token the agent spends scanning, reasoning, self-verifying, and producing the report is billed as Extra Usage. <span class="conf high">High</span></p>
+
+    <h3>What drives cost</h3>
+    <ul class="tight">
+      <li><strong>Codebase size.</strong> The agent reads source. Lines of code multiplied by re-reads as it traces flows is the dominant cost driver.</li>
+      <li><strong>Effort setting.</strong> Extended runs deeper, costs materially more than Regular. No public multiplier published. Plan for 2x to 5x as a working assumption until you measure.</li>
+      <li><strong>Scope.</strong> Full repo vs scoped directory differs by orders of magnitude on a monorepo.</li>
+      <li><strong>Self-verification.</strong> The agent's own adversarial pass is part of the cost. It is what reduces false positives, but it is not free.</li>
+      <li><strong>Findings volume.</strong> Each verified finding adds output tokens for the structured report.</li>
+    </ul>
+
+    <h3>What it does <em>not</em> do for cost</h3>
+    <ul class="tight">
+      <li><strong>No prompt caching across scans</strong> documented. You should not assume re-scanning the same repo next week is cheap. <span class="conf med">Medium</span></li>
+      <li><strong>No Batch API discount</strong> exposed for this product surface. <span class="conf med">Medium</span></li>
+    </ul>
+
+    <h3>Working numbers</h3>
+    <p>Anthropic publishes Opus 4.7 API pricing (input / output / cache) on the platform docs. As of the launch window, expect that a Regular scan of a small service (sub-50k LOC) is in the low-single-digit USD range, an Extended scan on the same repo is the same order higher, and a full monorepo Extended scan can be in the low-three-digit USD range. <strong>These are working estimates, not Anthropic-published figures.</strong> Run a calibration scan on a known repo and divide your invoice line item by the run to get your actual unit cost. <span class="conf low">Low: order of magnitude only. Verify by measuring.</span></p>
+
+    <h3>Cost-control playbook</h3>
+    <ol class="tight">
+      <li>Set a feature-level Claude Security spend cap separate from the org cap.</li>
+      <li>Default to Regular effort. Reserve Extended for tier-1 services and post-incident deep dives.</li>
+      <li>Scope to directories on monorepos. Rotate weekly, do not full-scan weekly.</li>
+      <li>Limit who can run scans via RBAC. Premium seat plus a custom role.</li>
+      <li>Review the first invoice line by line before unlocking the rest of the org.</li>
+    </ol>
+  </section>
+
+  <!-- ============ Anti-patterns ============ -->
+  <section id="anti">
+    <span class="section-num">§ 12</span>
+    <h2>Anti-patterns</h2>
+    <div class="cards">
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Wiring it as a blocking CI gate</h4>
+        <p>Stochastic output and variable runtime mean you will both miss findings and block clean PRs at random. Run async, post to Jira, do not fail builds.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Treating the patch as merge-ready</h4>
+        <p>The remediation patch is a draft. Always review. The tool itself surfaces this, but cultural norms drift fast under deadline pressure.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Letting every engineer run scans</h4>
+        <p>Cost blowout and signal blowout in the same move. Default-deny via RBAC, opt-in by team.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Repeating the same scan to "confirm" a finding</h4>
+        <p>Stochastic. A finding that disappears on rerun is not necessarily a false positive. Investigate the code path, not the second scan result.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Replacing SCA / IaC / DAST tooling</h4>
+        <p>It does none of those. If you sunset Snyk or Wiz on the back of a successful Claude Security pilot, you have created CVE blindness.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Ignoring the licensing scope</h4>
+        <p>Scan only code you own. Pointing it at upstream OSS, vendor SDKs, or competitor repos is a usage policy violation, regardless of intent.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Skipping dismissal reasons</h4>
+        <p>"Dismissed: not applicable" is worthless to the next reviewer. Dismissal taxonomy plus a one-line note is the audit trail you will be glad you built.</p>
+      </div>
+      <div class="card warn">
+        <span class="tag">ANTI-PATTERN</span>
+        <h4>Not setting a spend cap</h4>
+        <p>Consumption billing plus an unfamiliar tool plus excited engineers equals an invoice you did not plan for. Cap before launch, not after.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Comparison ============ -->
+  <section id="compare">
+    <span class="section-num">§ 13</span>
+    <h2>Versus AWS Security Agent &amp; Wiz</h2>
+    <p>The three tools occupy different layers of the same problem. They are complementary, not competitive, despite the marketing surface. <span class="conf high">High</span></p>
+
+    <h3>What each one actually is</h3>
+    <dl>
+      <dt>Claude Security (Anthropic, Apr 2026)</dt>
+      <dd>Agentic SAST. Source-only. Logic and multi-file taint. Self-verifying. GitHub repo input, claude.ai surface, Claude Code remediation.</dd>
+      <dt>AWS Security Agent (Mar 2026 GA)</dt>
+      <dd>Agentic DAST + design review + on-demand penetration testing. Reads source, architecture docs, and runs validated multi-step attacks against running apps. Output includes CVSS scores and reproducible exploit paths. Across AWS, Azure, GCP, on-prem.</dd>
+      <dt>Wiz Code (and the broader Wiz Cloud Security Platform)</dt>
+      <dd>Cloud-to-code unified posture. SCA, secrets, IaC, container, CSPM, runtime. Code-to-cloud graph that ties a vulnerable line to a running workload to a public-facing cloud asset. Recently shipped Wiz Skills for agent-driven remediation in IDEs and PRs.</dd>
+    </dl>
+
+    <h3>Side-by-side</h3>
+    <div class="scrolltable">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Claude Security</th>
+          <th>AWS Security Agent</th>
+          <th>Wiz Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Logic / multi-file SAST</strong></td><td><span class="pill good">Strong</span></td><td><span class="pill warn">Partial</span> via code review</td><td><span class="pill warn">Partial</span></td></tr>
+        <tr><td><strong>Active exploit validation (DAST)</strong></td><td><span class="pill bad">No</span></td><td><span class="pill good">Strong</span></td><td><span class="pill bad">No</span> in Code; runtime via Defend</td></tr>
+        <tr><td><strong>Design / architecture review</strong></td><td><span class="pill bad">No</span></td><td><span class="pill good">Strong</span></td><td><span class="pill warn">Partial</span> via IaC</td></tr>
+        <tr><td><strong>Dependency CVE / SCA</strong></td><td><span class="pill bad">No</span></td><td><span class="pill warn">Partial</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>IaC misconfiguration</strong></td><td><span class="pill bad">No</span></td><td><span class="pill good">Strong</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>Container image CVE</strong></td><td><span class="pill bad">No</span></td><td><span class="pill warn">Partial</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>Secrets in code</strong></td><td><span class="pill bad">Incidental</span></td><td><span class="pill warn">Partial</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>Cloud posture (CSPM)</strong></td><td><span class="pill bad">No</span></td><td><span class="pill warn">Partial</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>Runtime threat detection</strong></td><td><span class="pill bad">No</span></td><td><span class="pill bad">No</span></td><td><span class="pill good">Wiz Defend</span></td></tr>
+        <tr><td><strong>Code-to-cloud graph</strong></td><td><span class="pill bad">No</span></td><td><span class="pill warn">AWS-centric</span></td><td><span class="pill good">Strong</span></td></tr>
+        <tr><td><strong>Repo support</strong></td><td>GitHub only</td><td>GitHub + others (via integration)</td><td>GitHub, GitLab, Bitbucket, Azure DevOps</td></tr>
+        <tr><td><strong>Pricing model</strong></td><td>Seat + token consumption</td><td>2-month free trial; AWS-billed</td><td>Per-asset SaaS subscription</td></tr>
+        <tr><td><strong>Determinism</strong></td><td>Stochastic</td><td>Stochastic (agent)</td><td>Deterministic (rule + graph)</td></tr>
+        <tr><td><strong>Patch generation</strong></td><td>Strong (Claude Code)</td><td>Strong (with code fixes)</td><td>Wiz Skills (agent-driven)</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>What this means in practice</h3>
+    <p>For HelloFresh's stack (GitHub Actions &rarr; k8s on AWS), the rational division of labour:</p>
+    <ul>
+      <li><strong>Claude Security</strong> on tier-1 service repos for logic-class bugs that bypass pattern-based SAST. Weekly scoped scans.</li>
+      <li><strong>AWS Security Agent</strong> for design-time review of new services and on-demand pentest of staging endpoints before release. Replaces the long lead-time human pentest for the long tail of services.</li>
+      <li><strong>Wiz Code</strong> as the everyday floor: SCA, IaC, container, secrets, CSPM, runtime. The existing investment continues to do the heavy lifting on the cloud and dependency surface.</li>
+    </ul>
+    <p>None of the three replaces the other two. The cost trap is convincing leadership any one of them is "the AI security tool" and dropping the others.</p>
+  </section>
+
+  <!-- ============ HF experiment ============ -->
+  <section id="hf-experiment">
+    <span class="section-num">§ 14</span>
+    <h2>HelloFresh comparison experiment</h2>
+    <div class="callout warn">
+      <span class="callout-tag">Blocker, with options</span>
+      I cannot run the actual three-way scan on a HelloFresh repo from this session: no access to the repos, the AWS account, or your Wiz tenant. What I can give you is the experiment design that produces a defensible comparison. Pick one of the three options below.
+    </div>
+
+    <h3>Option A: single-repo deep dive (1 week, low effort)</h3>
+    <ol class="tight">
+      <li>Pick one tier-1 service. Mid-sized, real history of findings. Avoid the absolute crown jewels for the first run.</li>
+      <li>Pin a specific commit SHA. All three tools scan the same SHA.</li>
+      <li>Run Claude Security (Extended), AWS Security Agent (code review + design review + pentest of the staging endpoint), Wiz Code (full).</li>
+      <li>Export each tool's findings to a single CSV. Normalise to: <code>category, severity, file, line, summary, tool</code>.</li>
+      <li>Score by hand: <em>true positive</em>, <em>false positive</em>, <em>duplicate of another tool</em>, <em>unique to this tool</em>.</li>
+      <li>Score the patches: <em>safe to merge as-is</em>, <em>safe with edits</em>, <em>unsafe / wrong</em>.</li>
+    </ol>
+    <p>Output: a Venn diagram of unique-vs-overlapping findings, a precision number per tool, a patch-quality score per tool, and a per-finding cost on the Claude side.</p>
+
+    <h3>Option B: representative cohort (3 weeks, medium effort)</h3>
+    <ol class="tight">
+      <li>Pick five repos across tiers: one tier-1 critical, two tier-2, two tier-3.</li>
+      <li>Same SHA-pinning and normalisation as Option A.</li>
+      <li>Score the same way, then aggregate.</li>
+    </ol>
+    <p>Output: a tier-weighted view of where each tool earns its keep. Stronger basis for a procurement decision than a single-repo data point.</p>
+
+    <h3>Option C: continuous parallel run (90 days, high effort)</h3>
+    <ol class="tight">
+      <li>Run all three in parallel across the top 20 repos for a quarter.</li>
+      <li>Track time-to-fix, real exploits caught, false-positive rate, and total tool-cost per real exploit caught.</li>
+      <li>Use that as the basis for a renewal / consolidation decision.</li>
+    </ol>
+    <p>This is the only mode that produces a real ROI number. The first two produce signal-quality numbers, which is different.</p>
+
+    <div class="callout">
+      <span class="callout-tag">Recommendation</span>
+      Start with Option A this month, escalate to Option B if the signal looks promising, only commit to Option C if you are heading into a renewal decision on Wiz or budgeting AWS Security Agent across the org. Calling a winner from Option A alone is the most common procurement mistake here.
+    </div>
+
+    <h3>Where each tool likely wins on HelloFresh-shaped code</h3>
+    <ul class="tight">
+      <li><strong>Claude Security:</strong> auth and session logic across the customer-account services. IDOR in order / subscription endpoints. Multi-file taint in the recipe-rendering pipeline.</li>
+      <li><strong>AWS Security Agent:</strong> design-review on new services before they hit prod. Validated pentest output that the eng team trusts more than a pure SAST finding. Speed up of the "we need a pentest before launch" lead time.</li>
+      <li><strong>Wiz:</strong> the long tail of CVE in container images, IaC drift in EKS clusters, exposed S3, IAM blast radius. The stuff that does not show up in source.</li>
+    </ul>
+  </section>
+
+  <!-- ============ Refs ============ -->
+  <section id="refs">
+    <span class="section-num">§ 15</span>
+    <h2>Sources</h2>
+    <ol class="tight">
+      <li>Anthropic, <em>Claude Security product page</em>: claude.com/product/claude-security</li>
+      <li>Anthropic, <em>Use Claude Security</em> (help centre): support.claude.com/en/articles/14661296-use-claude-security</li>
+      <li>Anthropic, <em>Getting started with Claude Security</em>: claude.com/resources/tutorials/getting-started-with-claude-security</li>
+      <li>SecurityWeek, <em>Anthropic Unveils Claude Security to Counter AI-Powered Exploit Surge</em>, 30 Apr 2026.</li>
+      <li>SiliconANGLE, <em>Anthropic announces Claude Security public beta to find and fix software vulnerabilities</em>, 30 Apr 2026.</li>
+      <li>The New Stack, <em>Anthropic's Claude Security emerges from closed preview</em>, 14 Mar 2026 (updated 30 Apr).</li>
+      <li>AWS, <em>New AWS Security Agent secures applications proactively from design to deployment</em>, GA 31 Mar 2026.</li>
+      <li>AWS Security Blog, <em>Building AI defenses at scale</em>, Apr 2026 (Project Glasswing context).</li>
+      <li>Google Cloud / Wiz, <em>Next '26: Redefining security for the AI era</em>, Apr 2026 (Wiz Skills, Wiz Code).</li>
+      <li>Anthropic platform docs, <em>Pricing</em>: platform.claude.com/docs/en/about-claude/pricing</li>
+    </ol>
+  </section>
+
+  <!-- ============ Assumptions ============ -->
+  <section id="assumptions">
+    <span class="section-num">§ 16</span>
+    <h2>Assumptions</h2>
+    <ul class="tight">
+      <li>"AWS security agent" in your prompt refers to <strong>AWS Security Agent</strong> (the frontier-agent product GA'd 31 Mar 2026), not Amazon Inspector or Security Hub. If you meant a different product (Inspector, GuardDuty, Security Hub), the comparison framework changes shape and I will redo §13 accordingly.</li>
+      <li>"Wiz code scanning" refers to the <strong>Wiz Code</strong> module of the Wiz Cloud Security Platform, including SCA, IaC, secrets, container, and the Wiz Code-to-Cloud graph. If you specifically mean Wiz Defend (runtime) or a different module, that also reshapes §13.</li>
+      <li>HelloFresh is on Claude Enterprise and already has Claude Code on the Web in flight. If the org is still on Team or seat-based Enterprise, the prerequisite path in §05 differs slightly.</li>
+      <li>The cost figures in §11 are <strong>working estimates</strong> based on Opus 4.7 published API pricing, not a Claude Security price sheet. Anthropic has not published a per-scan price. Calibrate by measuring your first-month invoice.</li>
+      <li>The §13 capability table reflects vendor-published positioning as of 30 Apr 2026, plus my interpretation of practical strength. The "partial / strong" labels are a working assessment, not a benchmark, and would shift on real measurement.</li>
+      <li>This document does not include Mythos / Project Glasswing in scope. Mythos is research-restricted, not generally available, and does not factor into a current procurement decision.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Operator's Field Manual / Claude Security / 2026 Q2</span>
+    <span>Drafted for security engineering use. Not legal or compliance advice.</span>
+    <span>Syed Ishaq B. &middot; ishaqzafar.com</span>
+  </footer>
+</div>
+
+<!-- sig: U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+<script>
+(function() {
+  var stored = null;
+  try { stored = localStorage.getItem('cs-guide-theme'); } catch (e) {}
+  var initial = stored || 'light';
+  document.documentElement.setAttribute('data-theme', initial);
+
+  var btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = cur === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('cs-guide-theme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
