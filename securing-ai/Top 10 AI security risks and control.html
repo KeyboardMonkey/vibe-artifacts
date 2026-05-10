@@ -1,0 +1,815 @@
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HelloFresh Secure AI Transformation — Top 10 Controls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   HelloFresh Secure AI Transformation — editorial spec doc
+   Aesthetic: technical white-paper / classified brief
+   ========================================================= */
+
+:root[data-theme="day"]{
+  --bg:#f3eee5;
+  --bg-elev:#ebe4d6;
+  --paper:#fbf8f1;
+  --ink:#1a1714;
+  --ink-soft:#5a544c;
+  --ink-muted:#8a8278;
+  --rule:#bfb5a3;
+  --rule-soft:#d4cab8;
+  --accent:#b3361a;        /* HF heritage red, muted */
+  --accent-2:#0d4f3c;      /* deep emerald */
+  --accent-3:#7a6332;      /* mustard ochre */
+  --crit:#7a1414;
+  --high:#b3361a;
+  --med:#a87212;
+  --low:#0d4f3c;
+  --info:#1c4670;
+  --shadow:0 1px 0 rgba(26,23,20,.06), 0 8px 24px rgba(26,23,20,.06);
+  --code-bg:#e9e1cf;
+  --tag-bg:#e6dec9;
+}
+:root[data-theme="night"]{
+  --bg:#0f0e0c;
+  --bg-elev:#15130f;
+  --paper:#1b1814;
+  --ink:#ece5d5;
+  --ink-soft:#b8ad97;
+  --ink-muted:#7d7363;
+  --rule:#3a342a;
+  --rule-soft:#2a261f;
+  --accent:#e96846;
+  --accent-2:#5fb39a;
+  --accent-3:#d4a857;
+  --crit:#e94545;
+  --high:#e96846;
+  --med:#d4a857;
+  --low:#5fb39a;
+  --info:#7aa9d6;
+  --shadow:0 1px 0 rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.4);
+  --code-bg:#222019;
+  --tag-bg:#26221b;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .25s ease,color .25s ease}
+body{padding:0 0 96px 0;font-size:15px}
+
+/* ============== Toggle ============== */
+.toggle-wrap{position:fixed;top:18px;right:22px;z-index:1000}
+.toggle{position:relative;display:inline-flex;align-items:center;background:var(--bg-elev);border:1px solid var(--rule);border-radius:999px;padding:4px;cursor:pointer;user-select:none;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.16em;box-shadow:var(--shadow)}
+.toggle .label{position:relative;z-index:2;padding:7px 14px;color:var(--ink-soft);transition:color .25s ease;mix-blend-mode:normal}
+.toggle .thumb{position:absolute;top:4px;bottom:4px;width:calc(50% - 4px);background:var(--ink);border-radius:999px;transition:transform .35s cubic-bezier(.6,.05,.2,1);z-index:1}
+:root[data-theme="day"] .toggle .thumb{transform:translateX(0)}
+:root[data-theme="night"] .toggle .thumb{transform:translateX(100%)}
+:root[data-theme="day"] .toggle .label.day{color:var(--bg)}
+:root[data-theme="night"] .toggle .label.night{color:var(--bg)}
+
+/* ============== Layout ============== */
+.shell{max-width:1240px;margin:0 auto;padding:48px 56px 0 56px}
+@media (max-width:880px){.shell{padding:32px 20px 0 20px}}
+
+/* ============== Masthead ============== */
+.masthead{border-top:3px solid var(--ink);padding-top:14px;margin-bottom:36px}
+.masthead .stamp{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--rule-soft);padding-bottom:10px;margin-bottom:22px}
+.masthead h1{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(36px,6vw,68px);line-height:1.02;letter-spacing:-.02em;font-variation-settings:"opsz" 144;margin-bottom:12px}
+.masthead h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 50}
+.masthead .deck{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:21px;color:var(--ink-soft);max-width:780px;line-height:1.35}
+.masthead .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px 28px;margin-top:24px;padding:18px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:11px}
+.masthead .meta dt{color:var(--ink-muted);letter-spacing:.18em;text-transform:uppercase;font-size:9.5px;margin-bottom:4px}
+.masthead .meta dd{color:var(--ink);font-weight:500}
+
+/* ============== Section pattern ============== */
+section{margin:64px 0}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:22px;border-bottom:1px solid var(--rule);padding-bottom:14px}
+.sec-num{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--accent);font-weight:600}
+.sec-title{font-family:'Fraunces',serif;font-weight:500;font-size:30px;letter-spacing:-.01em;flex:1}
+.sec-sub{font-family:'Fraunces',serif;font-style:italic;color:var(--ink-soft);font-size:15px}
+
+/* ============== Exec Summary + Threat Landscape ============== */
+.summary{display:grid;grid-template-columns:1.5fr 1fr;gap:36px}
+@media (max-width:900px){.summary{grid-template-columns:1fr}}
+.summary p{font-family:'Fraunces',serif;font-size:18px;line-height:1.55;color:var(--ink);font-weight:300;margin-bottom:14px}
+.summary p:first-of-type::first-letter{font-family:'Fraunces',serif;font-style:italic;font-weight:400;float:left;font-size:54px;line-height:.86;padding:6px 8px 0 0;color:var(--accent)}
+.threats{background:var(--paper);border:1px solid var(--rule);padding:22px 24px;border-radius:2px}
+.threats h3{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:14px;font-weight:600}
+.threats ul{list-style:none}
+.threats li{padding:10px 0;border-bottom:1px dotted var(--rule-soft);font-size:13.5px;line-height:1.5}
+.threats li:last-child{border-bottom:none}
+.threats li strong{color:var(--ink);font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;display:block;margin-bottom:3px}
+.threats li small{color:var(--ink-muted);font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;display:block;margin-top:3px}
+.threats a{color:var(--info);text-decoration:none;border-bottom:1px solid var(--rule-soft)}
+.threats a:hover{border-bottom-color:var(--info)}
+
+/* ============== Heatmap ============== */
+.heatmap-wrap{display:grid;grid-template-columns:1fr 280px;gap:36px;align-items:start}
+@media (max-width:900px){.heatmap-wrap{grid-template-columns:1fr}}
+.heatmap{background:var(--paper);border:1px solid var(--rule);padding:24px;border-radius:2px;position:relative}
+.hm-title{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:var(--ink-muted);text-transform:uppercase;margin-bottom:18px;font-weight:600}
+.grid5{display:grid;grid-template-columns:auto repeat(5,1fr);grid-template-rows:repeat(5,minmax(58px,auto)) auto;gap:2px;font-family:'IBM Plex Mono',monospace}
+.gx{font-size:9.5px;letter-spacing:.14em;color:var(--ink-muted);text-align:center;padding:8px 4px 0 4px;text-transform:uppercase}
+.gy{font-size:9.5px;letter-spacing:.14em;color:var(--ink-muted);writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;padding-right:6px;text-transform:uppercase;align-self:stretch;display:flex;align-items:center;justify-content:center}
+.cell{position:relative;border:1px solid var(--rule-soft);background:var(--bg-elev);min-height:58px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;padding:4px}
+.cell.c5{background:color-mix(in srgb,var(--crit) 24%,transparent)}
+.cell.c4{background:color-mix(in srgb,var(--high) 18%,transparent)}
+.cell.c3{background:color-mix(in srgb,var(--med) 14%,transparent)}
+.cell.c2{background:color-mix(in srgb,var(--low) 12%,transparent)}
+.cell.c1{background:transparent}
+.dot{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.2);font-family:'IBM Plex Mono',monospace}
+.axis-x-label{grid-column:2 / span 5;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:var(--ink-muted);text-transform:uppercase;padding-top:10px}
+.legend{font-size:13px;line-height:1.6}
+.legend h4{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:12px;font-weight:600}
+.legend ul{list-style:none}
+.legend li{padding:6px 0;display:flex;gap:10px;align-items:flex-start;border-bottom:1px dotted var(--rule-soft)}
+.legend .ldot{flex:0 0 22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:10px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace}
+.legend .ltxt{font-size:12.5px;color:var(--ink-soft)}
+.legend .ltxt strong{display:block;color:var(--ink);font-size:13px;font-weight:600;margin-bottom:1px}
+
+/* ============== Controls table view (compact) ============== */
+.compact-table{width:100%;border-collapse:collapse;font-size:12.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:20px}
+.compact-table th,.compact-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+.compact-table th{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;border-bottom:1.5px solid var(--rule);background:var(--paper)}
+.compact-table tr:hover td{background:var(--paper)}
+.compact-table .rk{font-weight:600;font-size:12px}
+.compact-table .num{color:var(--accent);font-weight:600}
+.compact-table td b{color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:13.5px}
+.compact-table .effort{display:inline-block;padding:2px 7px;border-radius:2px;font-size:10px;letter-spacing:.1em;font-weight:600}
+.eff-S{background:color-mix(in srgb,var(--low) 22%,transparent);color:var(--low)}
+.eff-M{background:color-mix(in srgb,var(--med) 22%,transparent);color:var(--med)}
+.eff-L{background:color-mix(in srgb,var(--high) 22%,transparent);color:var(--high)}
+.eff-XL{background:color-mix(in srgb,var(--crit) 28%,transparent);color:var(--crit)}
+
+/* ============== Control cards (detailed) ============== */
+.controls{display:flex;flex-direction:column;gap:16px}
+.control{background:var(--paper);border:1px solid var(--rule);border-radius:2px;overflow:hidden;transition:box-shadow .2s ease}
+.control[open]{box-shadow:var(--shadow)}
+.control summary{list-style:none;cursor:pointer;padding:18px 24px;display:grid;grid-template-columns:48px 1fr auto auto;gap:18px;align-items:center}
+.control summary::-webkit-details-marker{display:none}
+.ctrl-rank{font-family:'Fraunces',serif;font-style:italic;font-size:32px;color:var(--accent);font-weight:300;line-height:1}
+.ctrl-title-block{min-width:0}
+.ctrl-title{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:18px;letter-spacing:-.005em;line-height:1.25;color:var(--ink)}
+.ctrl-cat{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-muted);text-transform:uppercase;margin-top:5px}
+.risk-pill{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;font-weight:600;padding:5px 10px;border-radius:2px;text-transform:uppercase;white-space:nowrap}
+.r-CRIT{background:color-mix(in srgb,var(--crit) 18%,transparent);color:var(--crit);border:1px solid var(--crit)}
+.r-HIGH{background:color-mix(in srgb,var(--high) 18%,transparent);color:var(--high);border:1px solid var(--high)}
+.r-MED{background:color-mix(in srgb,var(--med) 18%,transparent);color:var(--med);border:1px solid var(--med)}
+.chev{font-family:'IBM Plex Mono',monospace;color:var(--ink-muted);font-size:18px;transition:transform .2s ease}
+.control[open] .chev{transform:rotate(45deg)}
+.ctrl-body{padding:8px 24px 26px 24px;border-top:1px dotted var(--rule);display:grid;grid-template-columns:1.4fr 1fr;gap:28px}
+@media (max-width:840px){.ctrl-body{grid-template-columns:1fr}.control summary{grid-template-columns:36px 1fr auto;gap:12px}.risk-pill{display:none}}
+.ctrl-section h5{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--ink-muted);text-transform:uppercase;margin:18px 0 8px 0;font-weight:600;border-bottom:1px solid var(--rule-soft);padding-bottom:5px}
+.ctrl-section p,.ctrl-section li{font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
+.ctrl-section ul{padding-left:18px;margin:6px 0}
+.ctrl-section li{padding:2px 0}
+.ctrl-section strong{color:var(--ink);font-weight:600}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;font-family:'IBM Plex Mono',monospace;font-size:11px}
+.metric{background:var(--bg-elev);padding:10px 12px;border-radius:2px;border:1px solid var(--rule-soft)}
+.metric .mlabel{color:var(--ink-muted);font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;font-weight:600}
+.metric .mval{color:var(--ink);font-weight:600;font-size:13px}
+.assets{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.assets .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--tag-bg);padding:4px 9px;border-radius:2px;color:var(--ink-soft);border:1px solid var(--rule-soft);letter-spacing:.04em}
+.commercials{display:flex;flex-wrap:wrap;gap:6px}
+.commercials .vendor{font-family:'IBM Plex Mono',monospace;font-size:10.5px;background:var(--bg-elev);padding:4px 9px;border-radius:2px;color:var(--ink);border:1px solid var(--rule-soft)}
+.compliance{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.compliance .map{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:2px;background:transparent;border:1px solid var(--rule);color:var(--ink-soft);letter-spacing:.06em}
+
+/* ============== Compliance crosswalk matrix ============== */
+.matrix-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:2px;background:var(--paper)}
+.matrix{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:780px}
+.matrix th,.matrix td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--rule-soft);border-right:1px solid var(--rule-soft)}
+.matrix th{background:var(--bg-elev);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
+.matrix th:first-child,.matrix td:first-child{text-align:left;font-weight:600;color:var(--ink);position:sticky;left:0;background:var(--paper)}
+.matrix th:first-child{background:var(--bg-elev)}
+.matrix .y{color:var(--low);font-weight:700;font-size:13px}
+.matrix .p{color:var(--med);font-weight:600}
+.matrix .n{color:var(--ink-muted);opacity:.4}
+.matrix tbody tr:hover td{background:var(--bg-elev)}
+
+/* ============== Assumptions / footer ============== */
+.assumptions{background:var(--paper);border-left:3px solid var(--accent);padding:20px 24px;margin-top:32px;border-radius:0 2px 2px 0}
+.assumptions h3{font-family:'Fraunces',serif;font-size:18px;font-weight:500;margin-bottom:10px}
+.assumptions ol{padding-left:20px}
+.assumptions li{font-size:13.5px;line-height:1.55;color:var(--ink-soft);padding:3px 0}
+
+footer.colophon{margin-top:80px;border-top:3px solid var(--ink);padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--ink-muted);text-transform:uppercase}
+footer.colophon a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--rule)}
+
+/* tiny niceties */
+::selection{background:var(--accent);color:var(--paper)}
+.kbd{font-family:'IBM Plex Mono',monospace;background:var(--code-bg);padding:1px 5px;border-radius:2px;font-size:11px;border:1px solid var(--rule-soft)}
+
+/* fold-out animation */
+details > div{animation:fold .35s ease}
+@keyframes fold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ===== Day/Night Toggle ===== -->
+<div class="toggle-wrap">
+  <div class="toggle" id="themeToggle" role="switch" aria-label="Theme toggle">
+    <span class="thumb" aria-hidden="true"></span>
+    <span class="label day">DAY</span>
+    <span class="label night">NIGHT</span>
+  </div>
+</div>
+
+<div class="shell">
+
+<!-- =============== MASTHEAD =============== -->
+<header class="masthead">
+  <div class="stamp">
+    <span>HelloFresh SE / Global Security</span>
+    <span>Classification: Internal — Restricted</span>
+    <span>Doc Ref: SEC-AI-TRANS-2026-Q2</span>
+  </div>
+  <h1>Securing the AI Transformation <em>at HelloFresh.</em></h1>
+  <p class="deck">A stack-ranked program of ten practical controls for safely adopting third-party SaaS AI, Claude, Gemini, Bedrock, MCP servers, OSS LLMs, RAG, and agentic workflows across tech and non-tech functions — calibrated to the 02 Aug 2026 EU AI Act enforcement date.</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Syed Ishaq B. — Global Head of Security</dd></div>
+    <div><dt>Audience</dt><dd>SLT, Tribe Leads, GRC, Privacy, Platform</dd></div>
+    <div><dt>Frameworks Cited</dt><dd>EU AI Act · ISO/IEC 42001 · NIST AI RMF 1.0 · OWASP LLM Top 10 (2025) · OWASP MCP Top 10 · NIS2 · GDPR</dd></div>
+    <div><dt>Effective</dt><dd>06 May 2026 — Review Q3 2026</dd></div>
+    <div><dt>Brands in Scope</dt><dd>HelloFresh · Chef's Plate · EveryPlate · Green Chef · Factor75</dd></div>
+    <div><dt>Status</dt><dd>Draft v0.9 — for SLT review</dd></div>
+  </dl>
+</header>
+
+<!-- =============== EXECUTIVE SUMMARY =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 01</span>
+    <h2 class="sec-title">Executive summary</h2>
+    <span class="sec-sub">why now, where the line of fire sits</span>
+  </div>
+  <div class="summary">
+    <div>
+      <p>HelloFresh is moving AI from pilots into the operating fabric of the company: code copilots in engineering, RAG-grounded knowledge bots for CX and Ops, agentic flows touching planning, fulfilment, and supplier comms. Every one of those use cases adds new attack surface that the existing AppSec, IAM, and DLP stack does not natively cover.</p>
+      <p>The risk concentration is not the model itself. It is the <strong>data flowing into prompts</strong>, the <strong>actions agents are authorised to take</strong>, and the <strong>identity, supply-chain, and trust assumptions</strong> baked into MCP tools and third-party SaaS connectors. The recent in-house Bedrock prompt-logging incident, the public CVE-2025-6514 affecting <em>mcp-remote</em> across 437k+ installs, and the live tool-poisoning research against MCPTox-tested clients all point to the same gap: AI traffic and agent identity are governance blind spots.</p>
+      <p>Ten controls, ranked by prerequisite ordering and risk-reduction-per-FTE-week. Tier 1 (#1–#3) is foundational and non-negotiable before scaling. Tier 2 (#4–#6) builds the technical chokepoints. Tier 3 (#7–#10) is data-architecture, supply-chain assurance, detection, and validation.</p>
+    </div>
+    <aside class="threats">
+      <h3>Threat landscape — verified facts</h3>
+      <ul>
+        <li>
+          <strong>EU AI Act enforcement</strong>
+          Most remaining obligations apply <strong>02 Aug 2026</strong>; GPAI provider obligations live since 02 Aug 2025. Fines up to €35M / 7% global turnover for prohibited practices, €15M / 3% for other breaches.
+          <small><a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener">ec.europa.eu</a></small>
+        </li>
+        <li>
+          <strong>OWASP LLM Top 10 (2025)</strong>
+          New entries: <em>System Prompt Leakage</em>, <em>Vector & Embedding Weaknesses</em>, expanded <em>Excessive Agency</em>. RAG and agent risks promoted to top of list.
+          <small><a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener">genai.owasp.org</a></small>
+        </li>
+        <li>
+          <strong>OWASP MCP Top 10 (2025)</strong>
+          First framework dedicated to Model Context Protocol risk. Top entries: prompt injection, tool poisoning, rug-pull updates, confused deputy.
+          <small><a href="https://www.practical-devsecops.com/mcp-security-guide/" target="_blank" rel="noopener">practical-devsecops.com</a></small>
+        </li>
+        <li>
+          <strong>CVE-2025-6514 — mcp-remote RCE</strong>
+          OAuth-proxy command injection; 437k+ downloads; turned every unpatched install into a supply-chain backdoor.
+          <small><a href="https://authzed.com/blog/timeline-mcp-breaches" target="_blank" rel="noopener">authzed.com</a></small>
+        </li>
+        <li>
+          <strong>Palo Alto → Portkey (Mar 2026)</strong>
+          PANW announced intent to acquire Portkey, fold into Prisma AIRS as the agent-era gateway. Validates the AI-gateway-as-security-checkpoint pattern.
+          <small><a href="https://thenewstack.io/palo-alto-portkey-ai-gateway/" target="_blank" rel="noopener">thenewstack.io</a></small>
+        </li>
+        <li>
+          <strong>492 publicly exposed MCP servers</strong>
+          Backslash + Data Science Dojo research, mid-2025; many bound to <code>0.0.0.0</code> with no auth. Tool-poisoning paired with prompt injection now routine in red-team tests.
+          <small><a href="https://datasciencedojo.com/blog/mcp-security-risks-and-challenges/" target="_blank" rel="noopener">datasciencedojo.com</a></small>
+        </li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- =============== HEATMAP =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 02</span>
+    <h2 class="sec-title">Risk heatmap — top 10 controls plotted</h2>
+    <span class="sec-sub">probability × business impact, exploit complexity overlay</span>
+  </div>
+  <div class="heatmap-wrap">
+    <div class="heatmap">
+      <div class="hm-title">Inherent risk landscape · gap-state (pre-mitigation)</div>
+      <div class="grid5">
+        <div></div>
+        <div class="gx">Rare</div><div class="gx">Unlikely</div><div class="gx">Possible</div><div class="gx">Likely</div><div class="gx">Almost certain</div>
+
+        <div class="gy">Catastrophic</div>
+        <div class="cell c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c3"></div>
+        <div class="cell c4"><span class="dot">3</span><span class="dot">8</span></div>
+        <div class="cell c5"><span class="dot">1</span></div>
+
+        <div class="gy">Major</div>
+        <div class="cell c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c3"><span class="dot">10</span></div>
+        <div class="cell c4"><span class="dot">5</span><span class="dot">6</span></div>
+        <div class="cell c5"><span class="dot">2</span><span class="dot">4</span></div>
+
+        <div class="gy">Moderate</div>
+        <div class="cell c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c3"><span class="dot">9</span></div>
+        <div class="cell c4"><span class="dot">7</span></div>
+        <div class="cell c4"></div>
+
+        <div class="gy">Minor</div>
+        <div class="cell c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c2"></div>
+        <div class="cell c3"></div>
+        <div class="cell c3"></div>
+
+        <div class="gy">Negligible</div>
+        <div class="cell c1"></div>
+        <div class="cell c1"></div>
+        <div class="cell c2"></div>
+        <div class="cell c2"></div>
+        <div class="cell c2"></div>
+
+        <div></div>
+        <div class="axis-x-label">→ probability of exploit / occurrence within 12 months</div>
+      </div>
+    </div>
+    <aside class="legend">
+      <h4>Reading the map</h4>
+      <ul>
+        <li><span class="ldot">1</span><span class="ltxt"><strong>Governance & AUP</strong> Almost-certain absence ⇒ Catastrophic blast radius</span></li>
+        <li><span class="ldot">2</span><span class="ltxt"><strong>AI Inventory</strong> Shadow AI almost guaranteed without it</span></li>
+        <li><span class="ldot">3</span><span class="ltxt"><strong>Data classification + DLP</strong> PII/IP leakage to LLMs</span></li>
+        <li><span class="ldot">4</span><span class="ltxt"><strong>AI Gateway</strong> Single chokepoint missing</span></li>
+        <li><span class="ldot">5</span><span class="ltxt"><strong>Agent / NHI identity</strong> Confused-deputy attack vector</span></li>
+        <li><span class="ldot">6</span><span class="ltxt"><strong>MCP hardening</strong> Tool poisoning, rug-pulls</span></li>
+        <li><span class="ldot">7</span><span class="ltxt"><strong>RAG security</strong> Vector-DB permission drift</span></li>
+        <li><span class="ldot">8</span><span class="ltxt"><strong>Vendor assurance</strong> Sub-processor + DPA risk</span></li>
+        <li><span class="ldot">9</span><span class="ltxt"><strong>AI logging & detection</strong> Forensic blind spot</span></li>
+        <li><span class="ldot">10</span><span class="ltxt"><strong>Red-teaming + evals</strong> Defence validation</span></li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- =============== AT-A-GLANCE TABLE =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 03</span>
+    <h2 class="sec-title">Stack-ranked controls — at a glance</h2>
+    <span class="sec-sub">click a row below in §04 for full detail</span>
+  </div>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Control</th>
+        <th>Risk</th>
+        <th>Effort</th>
+        <th>Residual</th>
+        <th>Owner</th>
+        <th>Primary mapping</th>
+      </tr>
+    </thead>
+    <tbody id="compactBody"><!-- filled by JS --></tbody>
+  </table>
+</section>
+
+<!-- =============== DETAILED CONTROLS =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 04</span>
+    <h2 class="sec-title">Detailed controls</h2>
+    <span class="sec-sub">expand any row for full specification</span>
+  </div>
+  <div class="controls" id="controlsList"><!-- filled by JS --></div>
+</section>
+
+<!-- =============== COMPLIANCE CROSSWALK =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 05</span>
+    <h2 class="sec-title">Compliance crosswalk</h2>
+    <span class="sec-sub">control × framework coverage matrix</span>
+  </div>
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Control</th>
+          <th>EU AI Act</th>
+          <th>ISO 42001</th>
+          <th>ISO 27001</th>
+          <th>NIST AI RMF</th>
+          <th>OWASP LLM10</th>
+          <th>OWASP MCP10</th>
+          <th>NIS2</th>
+          <th>GDPR</th>
+          <th>PCI DSS</th>
+        </tr>
+      </thead>
+      <tbody id="matrixBody"><!-- filled by JS --></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =============== ASSUMPTIONS =============== -->
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 06</span>
+    <h2 class="sec-title">Assumptions</h2>
+    <span class="sec-sub">stated explicitly so they can be challenged</span>
+  </div>
+  <div class="assumptions">
+    <h3>Stated assumptions backing this stack-rank</h3>
+    <ol>
+      <li>HelloFresh's AI exposure is currently dominated by SaaS LLM consumption (Claude, Gemini, ChatGPT) and Bedrock-hosted models, not in-house model training. The control set is weighted accordingly toward <strong>deployer</strong> obligations, not <strong>provider</strong> obligations under the EU AI Act.</li>
+      <li>HelloFresh, as a B2C company processing customer PII across DACH, NA, UK, and AU, treats GDPR and EU AI Act as binding; PCI DSS is in-scope only for payment-adjacent flows. NIS2 applies through the food/distribution-essential-services vertical.</li>
+      <li>Effort estimates assume the existing AppSec/IAM/DLP/SIEM stack and a security tribe of ~34 engineers is the baseline; estimates are FTE-weeks of net new work, not absolute hours.</li>
+      <li>"Residual risk" assumes the listed mitigation set is fully implemented and operating; it does not assume every commercial alternative is purchased — the named tools are reference architectures, not endorsements.</li>
+      <li>The stack-rank is a prerequisite ordering, not a strict severity ordering. #1 (governance) is highest priority because everything else depends on it; #10 (red-teaming) is critical-severity but can only validate controls #1–#9.</li>
+      <li>Hodor.ai is positioned as the agent identity-policy-audit reference for #5; based on its own product page (identity, policy, guardrails, audit trail for AI agents). Other named vendors are positioned to their public capability claims as of May 2026 — confirm via PoC, not marketing.</li>
+      <li>Risk ratings use a 5×5 probability × impact model with a complexity-of-exploitation modifier; complexity is treated as a probability discount, not a separate axis, to keep the heatmap two-dimensional.</li>
+    </ol>
+  </div>
+</section>
+
+<footer class="colophon">
+  <span>HF Global Security · Top 10 Secure-AI-Transformation Controls · v0.9</span>
+  <span>Authored by Syed Ishaq B. — <a href="https://ishaqzafar.com" target="_blank" rel="noopener">ishaqzafar.com</a></span>
+  <span>06 May 2026</span>
+</footer>
+
+</div><!-- /shell -->
+
+<!-- sig: U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+
+<script>
+/* ==========================================================
+   THEME TOGGLE — pill-shaped, thumb behind labels via z-index,
+   active-side label inverts to bg colour, persisted via localStorage
+   ========================================================== */
+(function(){
+  const root = document.documentElement;
+  const stored = localStorage.getItem('hf-theme');
+  root.setAttribute('data-theme', stored === 'night' ? 'night' : 'day');
+  const tog = document.getElementById('themeToggle');
+  tog.addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'day' ? 'night' : 'day';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('hf-theme', next);
+  });
+})();
+
+/* ==========================================================
+   CONTROLS DATA + RENDERERS
+   ========================================================== */
+const controls = [
+  {
+    n:1,
+    title:"AI Governance Charter, Risk Tiering & Acceptable Use Policy",
+    cat:"Foundation · policy & RACI",
+    risk:"CRIT", riskLabel:"Critical", prob:"Almost certain", impact:"Catastrophic",
+    score:"P5 × I5 = 25 · complexity: trivial",
+    effort:"M", effortNote:"~4–6 FTE-weeks GRC + Legal + Privacy",
+    residual:"Low",
+    owner:"GRC (lead) · Privacy/DPO · Legal · CISO Office",
+    summary:"Without a charter, every other control is unenforceable. Establishes provider-vs-deployer classification per EU AI Act, internal AI risk tiers (prohibited / high / limited / minimal), AUP for staff, and the AI literacy programme already mandated under EU AI Act Article 4 since 02 Feb 2025.",
+    impactDetail:"Brand-level reputational damage on a single viral incident; €15–35M regulatory fines under EU AI Act; cascading audit failures across ISO 27001, ISO 42001, GDPR Art 24/25; loss of SLT cover for product teams shipping AI.",
+    assets:["Brand & market value","Customer / employee PII","All cloud + workstation surfaces","Contractual / regulatory posture"],
+    mitigations:[
+      "Adopt AI Policy + AUP, ratified by SLT, separate from generic IT policy",
+      "Mandatory EU AI Act Article 4 literacy training (role-based: engineering, ops, marketing, customer care, exec)",
+      "Risk classification rubric mapping every use case to EU AI Act tier and ISO 42001 Annex A controls",
+      "RACI matrix for AI: business owner, AI sponsor, security review, privacy review, model evaluator",
+      "Quarterly AI Steering Committee chaired by CISO + CTO + DPO + General Counsel",
+      "Public model-output disclosure standard for any customer-facing AI per EU AI Act Art 50"
+    ],
+    commercials:["Credo AI","Holistic AI","FairNow","OneTrust AI Governance","Trustible","ISMS.online (ISO 42001 module)"],
+    compliance:["EU AI Act Art 4 / Art 50","ISO 42001 Cl.5–6, A.2, A.3","NIST AI RMF Govern","ISO 27001 A.5.1","NIS2 Art 21(2)(a)"],
+    notes:"Emerging trend: ISO 42001 is converging into the de-facto 'ISO 27001 for AI' through 2026; certifying earlier is cheap insurance against EU AI Act high-risk reclassification later."
+  },
+  {
+    n:2,
+    title:"AI Asset & Use-Case Inventory + Shadow-AI Discovery",
+    cat:"Visibility · catalogue & telemetry",
+    risk:"CRIT", riskLabel:"Critical", prob:"Almost certain", impact:"Major",
+    score:"P5 × I4 = 20 · complexity: low",
+    effort:"M", effortNote:"~6–8 FTE-weeks (CASB + telemetry + intake form)",
+    residual:"Low–Medium",
+    owner:"SecEng (lead) · Platform · GRC",
+    summary:"You cannot govern, classify, log, or red-team what you can't enumerate. A centralised AI inventory of every model, agent, RAG corpus, MCP server, fine-tune, and SaaS AI feature in use across HF brands is prerequisite to controls #3–#10.",
+    impactDetail:"Surveys of mid-market enterprises in 2025 show 50–70% of AI usage is shadow AI invisible to security. Each shadow flow is an undocumented data egress path and an EU AI Act reporting blind spot.",
+    assets:["Cloud infra (AWS / GCP)","Workstations (CASB / browser)","Customer PII","Recipe + supply-chain IP","Vendor SaaS estate"],
+    mitigations:[
+      "Formal AI use-case intake (Jira workflow gated by GRC + Privacy review)",
+      "CASB / SSE-based shadow-AI discovery on egress (ChatGPT, Claude, Gemini, Copilot, etc.)",
+      "Browser-based DLP plug-in for unsanctioned model surfaces",
+      "Cloud-side IaC scan of Bedrock / Vertex / Azure OpenAI deployments across all AWS accounts",
+      "MCP server registry — every server logged with owner, scope, transport, auth method",
+      "Quarterly attestation by tribe leads on AI tool use; tied to engineering performance cycle"
+    ],
+    commercials:["Harmonic Security","Lasso Security","Witness AI","Nightfall AI","Netskope SSE","Zscaler ZDX/ZIA","Palo Alto Prisma Access"],
+    compliance:["EU AI Act Art 49 / Art 60 (registration, logs)","ISO 42001 A.5.2, A.6.2","NIST AI RMF Map","ISO 27001 A.5.9 (asset inventory)","NIS2 Art 21(2)(d)"],
+    notes:"Watch the convergence of CASB and AI-DLP categories through 2026; Harmonic, Lasso, and Witness AI overlap heavily and pricing is moving downward fast."
+  },
+  {
+    n:3,
+    title:"Data Classification & DLP for AI Prompts, Outputs & Training Data",
+    cat:"Data protection · prevent the leak",
+    risk:"CRIT", riskLabel:"Critical", prob:"Likely", impact:"Catastrophic",
+    score:"P4 × I5 = 20 · complexity: low",
+    effort:"L", effortNote:"~10–14 FTE-weeks (depends on existing data-classification maturity)",
+    residual:"Medium",
+    owner:"Data Protection / DPO · SecEng · Data Platform",
+    summary:"Largest realised AI risk class. PII, customer order history, recipe IP, vendor contracts, and internal HR data routinely end up in prompts. The internal Bedrock prompt-logging incident is the canonical example: model logging silently captured prompts to S3/CloudWatch for five days. DLP must intercept inbound and outbound on every AI surface.",
+    impactDetail:"GDPR Art 32 / 33 breach with 72-hour notification; potential customer-data exfiltration to external vendors with weak DPAs; loss of trade-secret status for proprietary recipe / supply-chain data; regulator + media exposure.",
+    assets:["Customer PII (~10M+ active subs)","Employee PII / HR data","Recipe & menu IP","Supplier pricing / contracts","Payment / billing data (PCI scope)"],
+    mitigations:[
+      "Enterprise data classification scheme reduced to 4 tiers, mapped to AI-permissibility rules",
+      "Pre-prompt DLP on the AI gateway (control #4): redact PII, secrets, classified-data tokens before egress",
+      "Post-response DLP: scan outputs for hallucinated PII, secrets in code completions, prompt-leakage payloads",
+      "Disable prompt/response retention with each provider where contractually possible (Anthropic ZDR, OpenAI no-train, Google enterprise terms, Bedrock model-invocation logging OFF unless explicitly required)",
+      "Tokenisation / pseudonymisation for any RAG corpus containing customer data",
+      "Forbid free-tier consumer accounts for any work data via SSO + CASB enforcement"
+    ],
+    commercials:["Lakera Guard","Prompt Security","Harmonic Security","Nightfall AI","Cyberhaven","Microsoft Purview AI Hub","BigID"],
+    compliance:["GDPR Art 5, 25, 32","EU AI Act Art 10 (Data governance)","ISO 42001 A.7.4, A.6","NIST AI RMF Manage 2.2","OWASP LLM02 / LLM06","PCI DSS 3.2.1 / 4.0 Req 3"],
+    notes:"Lakera Guard and Prompt Security ship with HF-relevant detectors out of the box (PII categories, secret formats); evaluate both via PoC against a sample of real prompts. Cyberhaven's lineage approach pairs well with HF's existing data classification."
+  },
+  {
+    n:4,
+    title:"Centralised AI Gateway with Prompt-Injection Defence & Output Filtering",
+    cat:"Architecture · single chokepoint",
+    risk:"HIGH", riskLabel:"High", prob:"Likely", impact:"Major",
+    score:"P4 × I4 = 16 · complexity: low–medium",
+    effort:"L", effortNote:"~8–12 FTE-weeks (deploy + integrate with SSO, SIEM, DLP)",
+    residual:"Medium",
+    owner:"Platform Engineering · SecEng",
+    summary:"One semantic firewall for every model call: SaaS, Bedrock, OSS, and internal. Provides routing, rate-limiting, prompt-injection detection, output filtering, virtual keys, audit logs, cost ceilings, model fallback. The Palo Alto + Portkey acquisition (Mar 2026) confirmed this is the security-team-owned plane, not a developer convenience.",
+    impactDetail:"Without a gateway: API keys leak in code, prompt-injection slips past per-app filters, no central audit trail for forensics, no consistent policy enforcement, and every team's guardrails are reinvented.",
+    assets:["Cloud infra","Customer-facing AI products","Internal AI tools","API keys / secrets store"],
+    mitigations:[
+      "Mandatory routing of all model traffic via the gateway — enforced at network layer + via SSO-issued virtual keys",
+      "Prompt-injection detection (signature + classifier-based) on inbound",
+      "Output-side guardrails: PII, secrets, profanity, policy-violation, hallucination-risk scoring",
+      "Per-team / per-use-case rate limits and budget ceilings (mitigates LLM10 Unbounded Consumption / Denial-of-Wallet)",
+      "Centralised audit log streamed to SIEM with prompt + response retention rules",
+      "Model fallback + canary (Anthropic primary, Bedrock secondary) for resilience"
+    ],
+    commercials:["Portkey (post-PANW)","Lakera Guard","Prompt Security","Cloudflare AI Gateway","Kong AI Gateway","TrueFoundry","LiteLLM (OSS, self-host)","AWS Bedrock Guardrails"],
+    compliance:["EU AI Act Art 15 (accuracy, robustness, cybersecurity)","ISO 42001 A.6.2.4, A.8","NIST AI RMF Manage 4","OWASP LLM01 / LLM05 / LLM10","ISO 27001 A.8.23 / A.8.24"],
+    notes:"Strategic call: PANW–Portkey integration into Prisma AIRS will fold gateway + runtime AI security under one SKU through 2026–27. If HF is already a PANW shop, that's the lower-friction path; otherwise Lakera + Cloudflare is a credible best-of-breed alternative."
+  },
+  {
+    n:5,
+    title:"Identity, Authorisation & Secrets Management for Agents and MCP (Non-Human Identity)",
+    cat:"Identity · agent IAM",
+    risk:"HIGH", riskLabel:"High", prob:"Likely", impact:"Major",
+    score:"P4 × I4 = 16 · complexity: medium",
+    effort:"L", effortNote:"~10–12 FTE-weeks (NHI platform + scoped tokens + audit)",
+    residual:"Medium",
+    owner:"IAM · SecEng · Platform",
+    summary:"Every agent must have a unique, attestable identity bound to a human owner, scoped permissions on every tool, and a complete audit trail. Static API keys per developer machine are unacceptable. The 'confused deputy' attack on MCP servers is the single most repeatable agent-era exploit.",
+    impactDetail:"An agent acting with an over-broad service token can read across customer / employee tenants, modify records, exfiltrate data, or call destructive APIs (delete S3 bucket, drop DB, send mass email). Attribution is impossible without per-agent identity.",
+    assets:["Cloud infra (IAM)","SaaS estate","Customer + employee data","Production systems"],
+    mitigations:[
+      "Register every AI agent as a non-human identity with a unique principal, owner, and lifecycle",
+      "Issue short-lived, scoped tokens per tool invocation (no static API keys in agents)",
+      "Mediated tool access through the gateway — agent presents identity, gateway maps to scoped credential",
+      "Just-in-time human approval for write/destructive actions (HITL by default, opt-out only with risk acceptance)",
+      "Periodic NHI access reviews tied to existing IAM access-recertification cycle",
+      "Secret rotation + revocation enforced via vault; no secrets in agent prompts or tool descriptions"
+    ],
+    commercials:["Hodor.ai (agent identity, policy, guardrails, audit)","Astrix Security","Aembit","Token Security","Andromeda Security","Britive","Oasis Security","HashiCorp Vault + Boundary"],
+    compliance:["EU AI Act Art 14 (Human oversight) / Art 12 (Logs)","ISO 42001 A.6.2.6, A.8","NIST AI RMF Manage 1.3","OWASP LLM06 / LLM08","ISO 27001 A.5.16 / A.8.5","NIS2 Art 21(2)(i)"],
+    notes:"Hodor.ai's positioning (per its product page: identity, policy, guardrails, real-time audit for AI agents across Stripe / Linear / Postgres / Supabase / Attio) maps almost 1:1 to this control. Astrix and Aembit are the credible enterprise-IAM-incumbents-for-NHI alternatives."
+  },
+  {
+    n:6,
+    title:"MCP Server Hardening, Allow-list & Supply-Chain Vetting",
+    cat:"Supply chain · MCP-specific",
+    risk:"HIGH", riskLabel:"High", prob:"Likely", impact:"Major",
+    score:"P4 × I4 = 16 · complexity: low–medium",
+    effort:"M", effortNote:"~6–8 FTE-weeks (registry, CI/CD vetting, runtime sandbox)",
+    residual:"Medium",
+    owner:"AppSec · Platform · SecEng",
+    summary:"MCP is now the default tool-integration layer for Claude, Cursor, Claude Code, and most agent stacks. The OWASP MCP Top 10 (2025) catalogues the active attack classes: prompt injection in tool outputs, tool poisoning via metadata, rug-pull updates, confused deputy, public servers bound to 0.0.0.0. CVE-2025-6514 against mcp-remote is the canonical wake-up call.",
+    impactDetail:"A poisoned MCP tool description can silently exfiltrate the entire WhatsApp history (Invariant Labs PoC), data-base contents (Supabase / Cursor incident), or local SSH + cloud credentials (CVE-2025-6514). Every unvetted MCP server is a supply-chain backdoor.",
+    assets:["Developer workstations","Source code repositories","Cloud credentials","Customer data via integrated SaaS","Production infrastructure"],
+    mitigations:[
+      "Internal MCP registry: only allow-listed servers can be used in claude.ai, Claude Code, Cursor, etc. (enforced via MDM / SSO config)",
+      "Vetting pipeline: SBOM, license, source review, dependency scan, behavioural test before listing",
+      "Pin server versions; alert and re-approve on any change to tool description metadata (rug-pull defence)",
+      "Run remote MCP servers in sandboxed compute (ephemeral container, no host filesystem, network egress allow-listed)",
+      "Block all MCP servers binding to 0.0.0.0 in HF networks; require auth (OAuth 2.1 per MCP spec 2025-06-18)",
+      "Patch CVE-2025-6514 on every host running mcp-remote; track via VMS"
+    ],
+    commercials:["Hodor.ai (MCP scope control)","Lasso Security (MCP visibility)","Composio (managed MCP)","Smithery (MCP registry)","Snyk (SBOM)","Endor Labs (supply chain)","JFrog Xray"],
+    compliance:["EU AI Act Art 15 (cybersecurity) / Art 26 (deployer obligations)","ISO 42001 A.10 (third-party)","NIST AI RMF Manage 1, 4","OWASP MCP Top 10","OWASP LLM03 (Supply Chain) / LLM06 / LLM08","ISO 27001 A.5.21 / A.8.30"],
+    notes:"Don't deploy any agent that uses public MCP registries without vetting. Anthropic's own guidance is explicit that MCP server trust is the operator's responsibility. Treat MCP servers like npm packages with shell access."
+  },
+  {
+    n:7,
+    title:"RAG & Vector-Database Security: Permission Inheritance, Provenance, Poisoning Defence",
+    cat:"Data architecture · RAG-specific",
+    risk:"HIGH", riskLabel:"High", prob:"Possible", impact:"Major",
+    score:"P3 × I4 = 12 · complexity: medium",
+    effort:"L", effortNote:"~8–10 FTE-weeks per RAG corpus stood up",
+    residual:"Medium",
+    owner:"Data Platform · AppSec · DPO",
+    summary:"OWASP LLM Top 10 promoted Vector & Embedding Weaknesses in 2025 because most enterprises are doing RAG over fine-tuning. The defining bug class is permission failure: a vector store ingesting source documents but losing the access-control labels of those documents — every user can now retrieve anything any document contained.",
+    impactDetail:"Cross-tenant data leakage (Confluence chunk from sensitive HR space surfaced to a CX agent's bot), data poisoning (attacker-controlled wiki page becomes part of the agent's belief system), and evidence-preservation gaps (no provenance trail from response back to source).",
+    assets:["Customer PII","HR / employee data","Internal IP (recipes, supplier T&Cs)","Source-of-truth knowledge bases (Confluence, Notion, Drive)"],
+    mitigations:[
+      "Permission propagation: ACLs from source system flow into vector-DB metadata; retrieval is filtered by user identity at query time",
+      "Source-of-truth governance: only allow-listed corpora can be embedded; out-of-scope sources (e.g. legal hold, redacted HR) blocked at ingest",
+      "Provenance: every response cites source documents; logs link query → retrieved chunks → response",
+      "Poisoning defence: signed-source ingestion only; suspicious anomalous chunks flagged via embedding-space outlier detection",
+      "Retrieval-time DLP: redact PII fields before they hit the prompt, even if indexed",
+      "Periodic full re-index when source ACLs change at scale (HR season, M&A, reorg)"
+    ],
+    commercials:["Pinecone Enterprise (RBAC)","Weaviate (multi-tenancy)","Glean (permission-aware enterprise search)","Microsoft Purview Data Security Posture for AI","Protect AI (model + RAG security)","Granica AI"],
+    compliance:["GDPR Art 5(1)(c), 25, 32","EU AI Act Art 10 (Data governance)","ISO 42001 A.7.2 / A.7.4 / A.7.5","NIST AI RMF Map 4 / Manage 2","OWASP LLM02 / LLM04 (Data Poisoning) / LLM08","ISO 27001 A.8.2 / A.8.3"],
+    notes:"The hidden tax in RAG security is keeping the vector index in sync with permission changes in source systems — design for re-index events from day one. Glean's permission-aware approach is best-in-class but expensive; if HF is already on Microsoft 365, Purview + Copilot's permission inheritance is a credible cheaper baseline."
+  },
+  {
+    n:8,
+    title:"Third-Party AI Vendor & Sub-Processor Assurance",
+    cat:"Vendor risk · contractual + technical",
+    risk:"HIGH", riskLabel:"High", prob:"Likely", impact:"Catastrophic",
+    score:"P4 × I5 = 20 · complexity: low (for attacker — exploits trust, not tech)",
+    effort:"M", effortNote:"~5–7 FTE-weeks for tooling + standard questionnaire updates",
+    residual:"Medium",
+    owner:"VMS · Privacy/DPO · Legal · GRC",
+    summary:"Every SaaS AI vendor is a sub-processor and most are also providers under the EU AI Act. HelloFresh remains accountable for their training-data practices, retention behaviours, security posture, and downstream model providers. Standard SaaS due-diligence does not cover the AI-specific controls that matter.",
+    impactDetail:"Customer PII used to train a vendor's foundation model without contractual carveout; vendor breach exposing prompt logs containing trade secrets; vendor changing model provider mid-contract without notification, breaking compliance posture.",
+    assets:["Customer PII","Employee PII","Recipe / supply-chain IP","Brand value","Regulatory posture"],
+    mitigations:[
+      "AI-specific vendor questionnaire (training-data carveout, retention, deletion, model provider chain, regional data residency, ZDR availability)",
+      "Mandatory DPA addendum covering AI processing; sub-processor disclosure obligation with 30-day notice",
+      "Evidence requirements: SOC 2 Type II + ISO 27001 + (preferably) ISO 42001 attestation, plus model card / system card review",
+      "EU AI Act compliance attestation: vendor's role (provider vs deployer), risk classification of their AI",
+      "Tier-rated review cadence: annual for tier-1, bi-annual for tier-2",
+      "Exit plan: data deletion + key revocation tested; portability of any fine-tuned models documented"
+    ],
+    commercials:["Credo AI","Trustible","OneTrust Vendor Risk + AI Governance","Vanta AI Vendor Risk","Drata AI"],
+    compliance:["EU AI Act Art 25 (responsibilities along value chain)","GDPR Art 28 (processors)","ISO 42001 A.10","NIST AI RMF Govern 6","ISO 27001 A.5.19–A.5.23","NIS2 Art 21(2)(d) supply chain"],
+    notes:"Highest probability attack vector at HelloFresh scale: vendor-introduced sub-processor change. Anthropic, OpenAI, and Google all use chains of compute providers. Bake change notification + regional residency into every contract."
+  },
+  {
+    n:9,
+    title:"AI-Specific Logging, Monitoring & Anomaly Detection (SOC Integration)",
+    cat:"Detect & respond",
+    risk:"MED", riskLabel:"Medium", prob:"Possible", impact:"Moderate",
+    score:"P3 × I3 = 9 · complexity: low",
+    effort:"M", effortNote:"~5–7 FTE-weeks (extending existing SIEM / SOAR)",
+    residual:"Low",
+    owner:"SOC / Detection Engineering · SecEng",
+    summary:"AI traffic is invisible in classic SIEM until you give it shape. Required by EU AI Act Art 12 (automatically generated logs) and ISO 42001 lifecycle controls. Useless to invest in #4 the gateway if its logs never reach the SOC.",
+    impactDetail:"Forensic blind spot during prompt-injection or data-exfil incidents; inability to attribute a data leak to the specific agent / user / prompt that caused it; failure to meet EU AI Act log-retention obligations (typically 6 months minimum for high-risk).",
+    assets:["Forensic / IR capability","Audit + regulatory readiness","Brand value (incident response time)"],
+    mitigations:[
+      "Stream gateway logs (prompts, responses, identity, tool calls, latency, cost) to SIEM",
+      "Detection content for AI-specific TTPs: prompt-injection patterns, jailbreak templates, embedding-space anomalies, agent loops, denial-of-wallet bursts",
+      "Behavioural baselining per agent identity (volume, tool mix, off-hours activity)",
+      "AI-incident playbooks added to SOAR: containment (revoke agent token, block model endpoint), eradication (purge poisoned RAG chunks), recovery (rotate keys)",
+      "Tabletop exercises with AI-specific scenarios (rogue agent, MCP rug-pull, prompt-injection-via-customer-ticket)",
+      "Retention aligned to EU AI Act + GDPR (6 months operational logs minimum for high-risk; longer for prod incidents)"
+    ],
+    commercials:["Datadog LLM Observability","Arize AI","Lakera Guard (telemetry)","Protect AI Layer","Splunk + AI Assistant","Cribl + custom parsers","Palo Alto Cortex XSIAM"],
+    compliance:["EU AI Act Art 12 / Art 19 / Art 26(5)","ISO 42001 A.6.2.5 / A.8.4","NIST AI RMF Measure 2 / Manage 4.3","OWASP LLM01 / LLM07 / LLM10","ISO 27001 A.8.15 / A.8.16","NIS2 Art 21(2)(c) incident handling","GDPR Art 33"],
+    notes:"Add MITRE ATLAS coverage to your detection backlog (the AI-specific equivalent of ATT&CK). Datadog's LLM observability and Arize's AI-specific tracing are the most mature commercial options as of mid-2026."
+  },
+  {
+    n:10,
+    title:"Continuous Red-Teaming, Eval Harness & Human-in-the-Loop Mechanisms",
+    cat:"Validation · prove the controls work",
+    risk:"MED", riskLabel:"Medium", prob:"Possible", impact:"Moderate",
+    score:"P3 × I3 = 9 · complexity: medium",
+    effort:"L", effortNote:"~8–10 FTE-weeks initial + standing programme",
+    residual:"Low",
+    owner:"AppSec / Red Team · Data Science",
+    summary:"Controls #1–#9 must be validated continuously. EU AI Act, ISO 42001 and NIST AI RMF all require ongoing measurement. An eval harness for safety, accuracy, robustness, and prompt-injection resilience runs in CI for every prompt / agent / RAG change. Red-teaming campaigns are run quarterly minimum; HITL is the human-oversight backstop required by Art 14.",
+    impactDetail:"Without continuous evals: silent regressions in safety / accuracy go to prod; new jailbreak techniques (which appear weekly) are not caught; HITL becomes ceremonial; ISO 42001 / EU AI Act audit findings on lack of post-market monitoring.",
+    assets:["AI products in production","Customer trust","Compliance posture"],
+    mitigations:[
+      "Automated evaluation harness in CI: safety, accuracy, robustness, refusal, prompt-injection, PII-leak, bias",
+      "Quarterly red-team campaigns covering OWASP LLM Top 10 + OWASP MCP Top 10 + ATLAS techniques",
+      "Adversarial dataset library maintained internally; updated from public jailbreak repos + own findings",
+      "Human-in-the-loop required by default for any agent action with write / financial / customer-impact effect",
+      "Pre-prod sign-off gate: no AI feature ships without an eval scorecard signed by AppSec + product",
+      "Post-market monitoring per EU AI Act Art 72 — feedback loop from production incidents into eval set"
+    ],
+    commercials:["DeepTeam (Confident AI)","Lakera Red","Protect AI Recon","Robust Intelligence","HiddenLayer","Mindgard","CalypsoAI","Garak (OSS)","PyRIT (OSS, Microsoft)"],
+    compliance:["EU AI Act Art 9 / Art 14 / Art 15 / Art 72","ISO 42001 A.6.2 lifecycle / A.8.5","NIST AI RMF Measure 1–4 / Manage 4","OWASP LLM Top 10 (testing)","ISO 27001 A.8.29 (security testing)"],
+    notes:"Build the eval harness once, reuse it across every brand and use case. DeepTeam (OWASP-aligned), Garak, and PyRIT cover most common attack classes for free; commercial red-teaming PoCs add coverage for novel jailbreaks and multi-modal attacks. Expect AI red-teaming to professionalise into a distinct career track through 2026 — staff for it now."
+  }
+];
+
+/* compliance crosswalk matrix */
+const matrixCols = ['EU AI Act','ISO 42001','ISO 27001','NIST AI RMF','OWASP LLM10','OWASP MCP10','NIS2','GDPR','PCI DSS'];
+const matrixData = [
+  ['Governance & AUP',         'y','y','y','y','p','p','y','y','p'],
+  ['AI Inventory & Discovery', 'y','y','y','y','p','p','y','p','p'],
+  ['Data Classification + DLP','y','y','y','y','y','p','y','y','y'],
+  ['AI Gateway',               'y','y','y','y','y','y','y','p','p'],
+  ['Agent / NHI Identity',     'y','y','y','y','y','y','y','p','p'],
+  ['MCP Hardening',            'y','y','y','y','y','y','p','n','n'],
+  ['RAG / Vector-DB Security', 'y','y','y','y','y','p','p','y','p'],
+  ['Vendor Assurance',         'y','y','y','y','p','p','y','y','y'],
+  ['AI Logging & Detection',   'y','y','y','y','y','p','y','y','p'],
+  ['Red-Teaming + Evals',      'y','y','y','y','y','y','p','p','p']
+];
+
+/* ----- Render compact summary table ----- */
+const compactBody = document.getElementById('compactBody');
+controls.forEach(c => {
+  const tr = document.createElement('tr');
+  const primary = c.compliance[0] || '';
+  tr.innerHTML = `
+    <td class="num">${c.n}</td>
+    <td><b>${c.title}</b></td>
+    <td><span class="risk-pill r-${c.risk}">${c.riskLabel}</span></td>
+    <td><span class="effort eff-${c.effort}">${c.effort}</span></td>
+    <td>${c.residual}</td>
+    <td>${c.owner}</td>
+    <td>${primary}</td>
+  `;
+  compactBody.appendChild(tr);
+});
+
+/* ----- Render detailed control cards ----- */
+const list = document.getElementById('controlsList');
+controls.forEach(c => {
+  const det = document.createElement('details');
+  det.className = 'control';
+  if (c.n === 1) det.open = true;
+  det.innerHTML = `
+    <summary>
+      <span class="ctrl-rank">${String(c.n).padStart(2,'0')}</span>
+      <div class="ctrl-title-block">
+        <div class="ctrl-title">${c.title}</div>
+        <div class="ctrl-cat">${c.cat}</div>
+      </div>
+      <span class="risk-pill r-${c.risk}">${c.riskLabel} · ${c.score}</span>
+      <span class="chev">+</span>
+    </summary>
+    <div class="ctrl-body">
+      <div class="ctrl-section">
+        <h5>Why this matters</h5>
+        <p>${c.summary}</p>
+        <h5>Adverse business impact if exploited</h5>
+        <p>${c.impactDetail}</p>
+        <h5>Asset categories at risk</h5>
+        <div class="assets">${c.assets.map(a=>`<span class="tag">${a}</span>`).join('')}</div>
+        <h5>Mitigation controls</h5>
+        <ul>${c.mitigations.map(m=>`<li>${m}</li>`).join('')}</ul>
+        ${c.notes ? `<h5>Strategic note · emerging trend</h5><p>${c.notes}</p>` : ''}
+      </div>
+      <div class="ctrl-section">
+        <h5>Risk metrics</h5>
+        <div class="metrics">
+          <div class="metric"><div class="mlabel">Probability</div><div class="mval">${c.prob}</div></div>
+          <div class="metric"><div class="mlabel">Impact</div><div class="mval">${c.impact}</div></div>
+          <div class="metric"><div class="mlabel">Effort</div><div class="mval">${c.effort} · ${c.effortNote}</div></div>
+          <div class="metric"><div class="mlabel">Residual risk</div><div class="mval">${c.residual}</div></div>
+        </div>
+        <h5>HelloFresh implementation owner</h5>
+        <p><strong>${c.owner}</strong></p>
+        <h5>Commercial alternatives (PoC, do not assume parity)</h5>
+        <div class="commercials">${c.commercials.map(v=>`<span class="vendor">${v}</span>`).join('')}</div>
+        <h5>Compliance &amp; framework mapping</h5>
+        <div class="compliance">${c.compliance.map(m=>`<span class="map">${m}</span>`).join('')}</div>
+      </div>
+    </div>
+  `;
+  list.appendChild(det);
+});
+
+/* ----- Render compliance crosswalk ----- */
+const matrixBody = document.getElementById('matrixBody');
+matrixData.forEach(row => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${row[0]}</td>` + row.slice(1).map(v => {
+    if (v === 'y') return `<td class="y">●</td>`;
+    if (v === 'p') return `<td class="p">◐</td>`;
+    return `<td class="n">○</td>`;
+  }).join('');
+  matrixBody.appendChild(tr);
+});
+</script>
+</body>
+</html>
