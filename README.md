@@ -14,4 +14,5 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Claude Cowork Risks](./llm-data-risks/anthropic-spyware.html) — Is Claude Cowork a Spyware?
 - [LLM Fundamentals](https://llm-explorer-psi.vercel.app/) — Learning LLM fundamentals
 - [Nuqta](./nuqta/index.html) — Roman Urdu Transliterator (works offline)
-- [Claude Security](./claude-security/index.html) — Claude Security 
+- [Claude Security](./claude-security/index.html) — Claude Security
+- [Securing AI for enterprises](./securing-ai/index.html) — Top 10 risks & controls
