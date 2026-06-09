@@ -16,3 +16,4 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Nuqta](./nuqta/index.html) — Roman Urdu Transliterator (works offline)
 - [Claude Security](./claude-security/index.html) — Claude Security
 - [Securing AI for enterprises](./securing-ai/index.html) — Top 10 risks & controls
+- [Breach Anatomy: CloudFlare Clickfix Attack](./cf-clickfix/index.html) — Detection, ThreatIntel, Response, IOCs, Threat Hunting
