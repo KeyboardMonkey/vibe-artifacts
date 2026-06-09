@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<html lang="en" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloudflare ClickFix macOS Infostealer (AMOS / Odyssey cluster)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f1ece1; --bg-panel:#faf6ec; --bg-sunk:#e7e0d0;
+    --ink:#1c1813; --ink-soft:#5a5142; --ink-faint:#8c8170;
+    --rule:#d6cdb8; --rule-strong:#b8ac90;
+    --accent:#bc2f1c; --accent-deep:#8f2114;
+    --c-user:#1f6f7a; --c-user-bg:rgba(31,111,122,.10);
+    --c-auto:#b5781a; --c-auto-bg:rgba(181,120,26,.12);
+    --mono-bg:#2a251d; --mono-ink:#ece3d0; --mono-key:#e0a13c; --mono-str:#9fc08a;
+    --shadow:0 1px 0 rgba(0,0,0,.04), 0 18px 38px -22px rgba(40,30,15,.45);
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  }
+  html[data-theme="night"]{
+    --bg:#15120d; --bg-panel:#1d1913; --bg-sunk:#0f0c08;
+    --ink:#ece3d2; --ink-soft:#b3a890; --ink-faint:#7c715c;
+    --rule:#322b21; --rule-strong:#473d2e;
+    --accent:#ff5238; --accent-deep:#ff7a64;
+    --c-user:#4fc4d2; --c-user-bg:rgba(79,196,210,.12);
+    --c-auto:#f0a93a; --c-auto-bg:rgba(240,169,58,.14);
+    --mono-bg:#0c0a07; --mono-ink:#e9dfca; --mono-key:#ffbd5c; --mono-str:#a9d18e;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 24px 50px -26px rgba(0,0,0,.8);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Spectral",Georgia,serif;font-size:17px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;transition:background .35s ease,color .35s ease;}
+  body::before{content:"";position:fixed;inset:0;background-image:var(--grain);pointer-events:none;z-index:0;mix-blend-mode:multiply;}
+  html[data-theme="night"] body::before{mix-blend-mode:screen;opacity:.5;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px;position:relative;z-index:1;}
+  h1,h2,h3,h4,.lbl,.eyebrow,.chip,.tab,.btn,.navlink,.phase-name,.tactic-h{font-family:"Archivo",system-ui,sans-serif;}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(9px);border-bottom:1px solid var(--rule);}
+  .topbar-in{max-width:1080px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:18px;}
+  .brandmark{font-family:"Archivo";font-weight:900;letter-spacing:-.02em;font-size:15px;white-space:nowrap;}
+  .brandmark .dot{color:var(--accent);}
+  .nav{display:flex;gap:4px;flex:1;flex-wrap:wrap;}
+  .navlink{font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);
+    text-decoration:none;padding:6px 9px;border-radius:5px;transition:.18s;}
+  .navlink:hover{color:var(--ink);background:var(--bg-sunk);}
+  .toggle{position:relative;display:inline-flex;align-items:center;cursor:pointer;
+    width:118px;height:34px;border-radius:999px;border:1.5px solid var(--rule-strong);
+    background:var(--bg-sunk);flex-shrink:0;user-select:none;overflow:hidden;}
+  .toggle .thumb{position:absolute;top:2px;left:2px;width:56px;height:27px;border-radius:999px;
+    background:var(--accent);z-index:1;transition:transform .32s cubic-bezier(.6,.05,.2,.95);box-shadow:0 2px 8px -2px rgba(0,0,0,.5);}
+  html[data-theme="night"] .toggle .thumb{transform:translateX(56px);}
+  .toggle .tlbl{position:relative;z-index:2;flex:1;text-align:center;font-family:"Archivo";font-weight:800;
+    font-size:11px;letter-spacing:.12em;transition:color .3s;color:var(--ink-soft);}
+  html[data-theme="day"] .toggle .tlbl.day{color:#faf6ec;}
+  html[data-theme="night"] .toggle .tlbl.night{color:#15120d;}
+  header.mast{padding:46px 0 30px;border-bottom:2px solid var(--ink);position:relative;}
+  .eyebrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;font-weight:700;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;}
+  .stamp{border:1.5px solid var(--accent);color:var(--accent);padding:3px 9px;border-radius:3px;
+    transform:rotate(-1.4deg);font-weight:800;letter-spacing:.1em;}
+  header.mast h1{font-size:clamp(30px,5.4vw,54px);line-height:1.02;font-weight:900;letter-spacing:-.025em;margin:0 0 14px;}
+  header.mast h1 em{font-style:normal;color:var(--accent);}
+  .deck{font-size:19px;color:var(--ink-soft);max-width:760px;font-style:italic;}
+  .meta-row{display:flex;gap:26px;flex-wrap:wrap;margin-top:24px;font-family:"Archivo";}
+  .meta-row .m{font-size:12px;}
+  .meta-row .m b{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:3px;}
+  .meta-row .m span{font-weight:700;font-size:14px;}
+  .sev-HIGH{color:var(--accent);}
+  section{padding:44px 0;border-bottom:1px solid var(--rule);}
+  .sec-h{display:flex;align-items:baseline;gap:14px;margin:0 0 6px;}
+  .sec-num{font-family:"JetBrains Mono";font-size:13px;color:var(--accent);font-weight:700;}
+  h2{font-size:clamp(22px,3.2vw,30px);font-weight:800;letter-spacing:-.02em;margin:0;}
+  .sec-sub{color:var(--ink-soft);font-style:italic;margin:0 0 26px;font-size:16px;}
+  .bluf{background:var(--bg-panel);border:1px solid var(--rule);border-left:4px solid var(--accent);
+    border-radius:8px;padding:26px 30px;box-shadow:var(--shadow);}
+  .bluf p{margin:0 0 14px;}.bluf p:last-child{margin:0;}
+  .bluf strong{color:var(--accent);font-weight:600;}
+  .verdict-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--rule);
+    border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:24px;}
+  .vc{background:var(--bg-panel);padding:16px 18px;}
+  .vc b{display:block;font-family:"Archivo";font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px;font-weight:700;}
+  .vc span{font-family:"Archivo";font-weight:800;font-size:15px;}
+  .fp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;}
+  .fp{background:var(--bg-panel);border:1px solid var(--rule);border-radius:7px;padding:13px 15px;position:relative;transition:.18s;}
+  .fp:hover{border-color:var(--rule-strong);box-shadow:var(--shadow);}
+  .fp .k{font-family:"Archivo";font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:5px;}
+  .fp .v{font-family:"JetBrains Mono";font-size:12.5px;word-break:break-all;color:var(--ink);padding-right:30px;line-height:1.45;}
+  .fp .v.danger{color:var(--accent);}
+  .copy{position:absolute;top:11px;right:11px;width:24px;height:24px;border:1px solid var(--rule);background:var(--bg-sunk);
+    border-radius:5px;cursor:pointer;color:var(--ink-soft);display:grid;place-items:center;transition:.15s;font-size:11px;}
+  .copy:hover{color:var(--accent);border-color:var(--accent);}
+  .copy.ok{color:#fff;background:var(--c-user);border-color:var(--c-user);}
+  .auto-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+  .filtbtn{font-family:"Archivo";font-weight:700;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;
+    padding:7px 13px;border-radius:6px;border:1.5px solid var(--rule-strong);background:var(--bg-panel);
+    color:var(--ink-soft);cursor:pointer;transition:.16s;}
+  .filtbtn:hover{color:var(--ink);}
+  .filtbtn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .meter{background:var(--bg-panel);border:1px dashed var(--rule-strong);border-radius:8px;padding:14px 18px;margin:14px 0 26px;
+    display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:"Archivo";}
+  .meter .big{font-size:30px;font-weight:900;line-height:1;}
+  .meter .big.u{color:var(--c-user);}.meter .big.a{color:var(--c-auto);}
+  .meter .mt{font-size:12.5px;color:var(--ink-soft);}.meter .mt b{color:var(--ink);}
+  .meter .div{width:1px;align-self:stretch;background:var(--rule);}
+  .chain{position:relative;margin-left:8px;}
+  .chain::before{content:"";position:absolute;left:21px;top:14px;bottom:14px;width:2px;
+    background:linear-gradient(var(--c-user),var(--c-auto));opacity:.4;}
+  .phase{position:relative;padding:0 0 14px 60px;transition:opacity .3s,filter .3s;}
+  .phase.dim{opacity:.22;filter:grayscale(.7);}
+  .pnode{position:absolute;left:8px;top:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+    font-family:"JetBrains Mono";font-weight:700;font-size:12px;border:2.5px solid var(--bg);z-index:2;color:#fff;}
+  .pnode.user{background:var(--c-user);}.pnode.auto{background:var(--c-auto);}
+  .pnode.both{background:linear-gradient(135deg,var(--c-user) 50%,var(--c-auto) 50%);}
+  .pcard{background:var(--bg-panel);border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);}
+  .phead{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;flex-wrap:wrap;}
+  .phead:hover{background:var(--bg-sunk);}
+  .phase-name{font-weight:800;font-size:16px;letter-spacing:-.01em;flex:1;}
+  .badge{font-family:"Archivo";font-weight:800;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;white-space:nowrap;}
+  .badge.user{background:var(--c-user-bg);color:var(--c-user);}
+  .badge.auto{background:var(--c-auto-bg);color:var(--c-auto);}
+  .badge.both{background:linear-gradient(90deg,var(--c-user-bg),var(--c-auto-bg));color:var(--ink);}
+  .time{font-family:"JetBrains Mono";font-size:11.5px;color:var(--ink-faint);white-space:nowrap;}
+  .pchev{font-family:"Archivo";color:var(--ink-faint);font-size:13px;transition:transform .25s;}
+  .phase.open .pchev{transform:rotate(90deg);}
+  .pbody{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .phase.open .pbody{max-height:460px;}
+  .pbody-in{padding:2px 16px 16px;border-top:1px solid var(--rule);}
+  .pbody-in p{margin:12px 0;font-size:15px;}
+  .ttags{display:flex;gap:6px;flex-wrap:wrap;}
+  .ttag{font-family:"JetBrains Mono";font-size:10.5px;background:var(--bg-sunk);border:1px solid var(--rule);
+    color:var(--ink-soft);padding:2px 7px;border-radius:4px;}
+  .attck{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;}
+  .tcol{background:var(--bg-panel);border:1px solid var(--rule);border-radius:7px;padding:11px;}
+  .tactic-h{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:800;
+    margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--rule);}
+  .tchip{position:relative;font-family:"JetBrains Mono";font-size:11px;padding:6px 8px;margin-bottom:5px;border-radius:5px;
+    background:var(--bg-sunk);cursor:help;border:1px solid transparent;transition:.15s;}
+  .tchip:hover{border-color:var(--accent);}
+  .tchip .tid{color:var(--accent);font-weight:700;}
+  .tchip .tnm{display:block;font-family:"Archivo";font-weight:600;font-size:11px;color:var(--ink-soft);margin-top:1px;}
+  .tip{position:absolute;bottom:calc(100% + 7px);left:0;right:0;background:var(--mono-bg);color:var(--mono-ink);
+    font-family:"Spectral";font-style:italic;font-size:12px;line-height:1.4;padding:9px 11px;border-radius:6px;
+    opacity:0;visibility:hidden;transform:translateY(4px);transition:.18s;z-index:9;box-shadow:0 12px 26px -10px rgba(0,0,0,.6);}
+  .tchip:hover .tip{opacity:1;visibility:visible;transform:translateY(0);}
+  .tabbar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--rule);}
+  .tab{font-family:"Archivo";font-weight:700;font-size:12px;letter-spacing:.03em;padding:9px 14px;cursor:pointer;color:var(--ink-soft);
+    border:none;background:none;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:.16s;display:flex;align-items:center;gap:7px;}
+  .tab:hover{color:var(--ink);}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab .pip{width:7px;height:7px;border-radius:50%;}
+  .pip.primary{background:var(--accent);}.pip.indirect{background:var(--c-auto);}.pip.delivery{background:var(--c-user);}.pip.config{background:var(--ink-faint);}
+  .panel{display:none;}.panel.active{display:block;animation:fade .3s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{font-family:"Archivo";text-align:left;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:700;padding:8px 12px;border-bottom:1.5px solid var(--rule-strong);}
+  td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;}
+  td.ind{font-family:"JetBrains Mono";font-size:12px;word-break:break-all;}
+  td.ind.danger{color:var(--accent);}
+  tr:hover td{background:var(--bg-panel);}
+  .applic{display:flex;gap:10px;align-items:flex-start;background:var(--bg-panel);border:1px solid var(--rule);
+    border-radius:7px;padding:12px 15px;margin-bottom:16px;font-size:14px;}
+  .applic .tag{font-family:"Archivo";font-weight:800;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+  .tag.primary{background:rgba(188,47,28,.12);color:var(--accent);}
+  .tag.indirect{background:var(--c-auto-bg);color:var(--c-auto);}
+  .tag.delivery{background:var(--c-user-bg);color:var(--c-user);}
+  .tag.config{background:var(--bg-sunk);color:var(--ink-soft);}
+  .applic .at{color:var(--ink-soft);font-style:italic;}
+  .qlabel{font-family:"Archivo";font-weight:700;font-size:12px;color:var(--ink-soft);margin:16px 0 7px;}
+  .code{position:relative;background:var(--mono-bg);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+  .code pre{margin:0;padding:15px 46px 15px 16px;overflow-x:auto;font-family:"JetBrains Mono";font-size:12.5px;
+    line-height:1.6;color:var(--mono-ink);white-space:pre;}
+  .code .cc{color:#7d8b6d;font-style:italic;}
+  .code .ck{color:var(--mono-key);}
+  .code .cs{color:var(--mono-str);}
+  .ccopy{position:absolute;top:10px;right:10px;width:28px;height:28px;border:1px solid #4a4233;background:transparent;
+    border-radius:6px;cursor:pointer;color:#b8ac90;display:grid;place-items:center;font-size:12px;transition:.15s;}
+  .ccopy:hover{color:var(--mono-key);border-color:var(--mono-key);}
+  .ccopy.ok{color:#9fc08a;border-color:#9fc08a;}
+  .camp{display:block;text-decoration:none;color:inherit;background:var(--bg-panel);border:1px solid var(--rule);
+    border-left:3px solid var(--c-auto);border-radius:7px;padding:14px 17px;margin-bottom:10px;transition:.18s;}
+  .camp:hover{border-left-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow);}
+  .camp .ct{font-family:"Archivo";font-weight:700;font-size:15px;margin-bottom:4px;}
+  .camp .ct .arr{color:var(--accent);}
+  .camp .cm{font-family:"JetBrains Mono";font-size:11px;color:var(--ink-faint);margin-bottom:6px;}
+  .camp .cd{font-size:14px;color:var(--ink-soft);}
+  .obj{background:var(--mono-bg);color:var(--mono-ink);border-radius:10px;padding:28px 32px;}
+  .obj h3{color:var(--mono-key);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 14px;font-weight:800;}
+  .obj .goal{font-family:"Spectral";font-size:21px;line-height:1.45;font-style:italic;margin:0 0 20px;}
+  .obj ul{margin:0;padding-left:20px;}.obj li{margin:7px 0;font-size:15px;}
+  .obj li b{color:var(--mono-key);font-weight:600;}
+  ol.play{list-style:none;counter-reset:p;padding:0;margin:0;}
+  ol.play li{counter-increment:p;position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--rule);font-size:15px;}
+  ol.play li::before{content:counter(p);position:absolute;left:0;top:12px;width:34px;height:34px;border-radius:8px;
+    background:var(--accent);color:#fff;font-family:"Archivo";font-weight:800;display:grid;place-items:center;font-size:15px;}
+  ol.play li b{font-family:"Archivo";font-weight:700;}
+  .foot{padding:40px 0 70px;}
+  .foot h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:0 0 12px;}
+  .assume{background:var(--bg-panel);border:1px solid var(--rule);border-radius:8px;padding:20px 24px;margin-bottom:24px;}
+  .assume li{margin:8px 0;font-size:14px;color:var(--ink-soft);}
+  .followups{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:30px;}
+  .fu{background:var(--bg-panel);border:1px solid var(--rule);border-top:3px solid var(--c-user);border-radius:7px;padding:16px 18px;}
+  .fu b{font-family:"Archivo";display:block;margin-bottom:6px;font-size:14px;}
+  .fu p{margin:0;font-size:14px;color:var(--ink-soft);}
+  .sig{text-align:center;font-family:"JetBrains Mono";font-size:11px;color:var(--ink-faint);padding-top:24px;border-top:1px solid var(--rule);}
+  .sig a{color:var(--accent);text-decoration:none;}
+  .disc{font-size:12px;color:var(--ink-faint);font-style:italic;text-align:center;margin-top:10px;max-width:680px;margin-left:auto;margin-right:auto;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brandmark">CLICKFIX<span class="dot">/</span>macOS Infostealer</div>
+    <nav class="nav">
+      <a class="navlink" href="#bluf">Summary</a>
+      <a class="navlink" href="#fingerprint">IOCs</a>
+      <a class="navlink" href="#chain">Kill Chain</a>
+      <a class="navlink" href="#attck">ATT&amp;CK</a>
+      <a class="navlink" href="#hunt">Hunting</a>
+      <a class="navlink" href="#campaigns">Campaigns</a>
+      <a class="navlink" href="#response">Response</a>
+    </nav>
+    <div class="toggle" id="toggle" role="switch" aria-label="Toggle day or night theme" tabindex="0">
+      <div class="thumb"></div>
+      <span class="tlbl day">DAY</span>
+      <span class="tlbl night">NIGHT</span>
+    </div>
+  </div>
+</div>
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow">
+      <span class="stamp">TLP:AMBER</span>
+      <span>Threat Intelligence Dossier</span><span>&middot;</span>
+      <span>2026-06-04</span><span>&middot;</span><span>Security</span>
+    </div>
+    <h1>The "Cloudflare ClickFix" <em>macOS infostealer</em></h1>
+    <p class="deck">A pasted Terminal command that quietly empties a Mac: Keychain, browser sessions, and crypto wallets, then stays resident. Reverse-engineered, attributed, and turned into detections.</p>
+    <div class="meta-row">
+      <div class="m"><b>Severity</b><span class="sev-HIGH">HIGH</span></div>
+      <div class="m"><b>Class</b><span>eCrime / Infostealer MaaS</span></div>
+      <div class="m"><b>Family</b><span>AMOS / Odyssey cluster</span></div>
+      <div class="m"><b>Platform</b><span>macOS (Intel + Apple Silicon)</span></div>
+      <div class="m"><b>Technique</b><span>ClickFix (T1204.004)</span></div>
+    </div>
+  </header>
+
+  <section id="bluf">
+    <div class="sec-h"><span class="sec-num">01</span><h2>Bottom line up front</h2></div>
+    <p class="sec-sub">What it is, who runs it, and why it matters.</p>
+    <div class="bluf">
+      <p>The captured command is the <strong>first stage</strong> of a macOS information stealer delivered through the <strong>ClickFix</strong> social-engineering technique: a fake Cloudflare "Verify you are human" page that tricks the victim into pasting a command into Terminal.</p>
+      <p>It is <strong>not nation-state APT activity</strong>. It is financially-motivated eCrime: an affiliate of a macOS infostealer <strong>Malware-as-a-Service</strong> operation in the <strong>Atomic macOS Stealer (AMOS) / Odyssey</strong> lineage.</p>
+      <p>The objective is theft of <strong>credentials, browser sessions, Keychain secrets, and cryptocurrency wallets</strong>, then <strong>system-level persistence</strong> for resale and long-term access. The whole chain after the paste is autonomous: the victim only pastes the command and types a password into a fake prompt.</p>
+      <p>For a developer-heavy org with cloud and crypto exposure, treat any confirmed execution as a <strong>credential-compromise incident</strong>: rotate everything reachable from that host, including AWS keys and SSO sessions.</p>
+    </div>
+    <div class="verdict-grid">
+      <div class="vc"><b>Activity class</b><span>eCrime, not APT</span></div>
+      <div class="vc"><b>Delivery</b><span>ClickFix paste</span></div>
+      <div class="vc"><b>Gate</b><span>HMAC-signed fetch</span></div>
+      <div class="vc"><b>Stage 2</b><span>Mach-O stealer</span></div>
+      <div class="vc"><b>Paste to exfil</b><span>under 1 to 2 min</span></div>
+    </div>
+  </section>
+
+  <section id="fingerprint">
+    <div class="sec-h"><span class="sec-num">02</span><h2>Sample fingerprint</h2></div>
+    <p class="sec-sub">Indicators confirmed for <b>this</b> sample. Block and hunt these now. Click an icon to copy.</p>
+    <div class="fp-grid" id="fpGrid"></div>
+    <p style="font-size:13.5px;color:var(--ink-soft);margin-top:18px;font-style:italic;">
+      VirusTotal note: the report you linked is the URL analysis for <span class="mono" style="font-size:12px;">api.ketoriloxisd[.]com/GpZcowV4DCvwthe1</span>. Confirmed: the SHA-256 of that URL equals the VT identifier <span class="mono" style="font-size:12px;">9ecdf6a4...a5ea2e73</span>. Live vendor verdicts could not be read from this environment (the VT page is JavaScript-rendered); check the live page before quoting a detection count.</p>
+  </section>
+
+  <section id="chain">
+    <div class="sec-h"><span class="sec-num">03</span><h2>Kill chain: phases, autonomy &amp; timeline</h2></div>
+    <p class="sec-sub">How it unfolds. Teal = a human must act. Amber = the malware acts alone. Click any phase to expand.</p>
+    <div class="meter">
+      <div><div class="big u">2</div></div>
+      <div class="mt"><b>human actions required</b><br>paste the command, type the password</div>
+      <div class="div"></div>
+      <div><div class="big a">10</div></div>
+      <div class="mt"><b>fully autonomous phases</b><br>discovery, theft, exfiltration, persistence, cleanup</div>
+    </div>
+    <div class="auto-controls">
+      <span style="font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);">Filter:</span>
+      <button class="filtbtn active" data-f="all">All phases</button>
+      <button class="filtbtn" data-f="user">Human-driven</button>
+      <button class="filtbtn" data-f="auto">Autonomous</button>
+    </div>
+    <div class="chain" id="chain"></div>
+  </section>
+  <section id="attck">
+    <div class="sec-h"><span class="sec-num">04</span><h2>MITRE ATT&amp;CK (macOS)</h2></div>
+    <p class="sec-sub">Tactics and techniques observed across the chain. Hover any technique for detail.</p>
+    <div class="attck" id="attckGrid"></div>
+  </section>
+
+  <section id="iocs">
+    <div class="sec-h"><span class="sec-num">05</span><h2>Indicators &amp; behaviors</h2></div>
+    <p class="sec-sub">Confirmed indicators, related-cluster indicators (broad hunting only), and behavioral IOAs.</p>
+    <div class="tabbar" id="iocTabs">
+      <button class="tab active" data-p="ioc-this">This sample</button>
+      <button class="tab" data-p="ioc-rel">Related cluster</button>
+      <button class="tab" data-p="ioc-ioa">Behavioral IOAs</button>
+    </div>
+    <div class="panel active" id="ioc-this"></div>
+    <div class="panel" id="ioc-rel"></div>
+    <div class="panel" id="ioc-ioa"></div>
+  </section>
+
+  <section id="hunt">
+    <div class="sec-h"><span class="sec-num">06</span><h2>Detection &amp; threat hunting</h2></div>
+    <p class="sec-sub">Mapped with the applicable security tooling. <span style="color:var(--accent);font-weight:600;">&#9679; primary</span> &nbsp; <span style="color:var(--c-auto);font-weight:600;">&#9679; indirect</span> &nbsp; <span style="color:var(--c-user);font-weight:600;">&#9679; delivery vector</span> &nbsp; <span style="color:var(--ink-faint);font-weight:600;">&#9679; config only</span></p>
+    <div class="tabbar" id="huntTabs"></div>
+    <div id="huntPanels"></div>
+    <p style="font-size:12.5px;color:var(--ink-faint);font-style:italic;margin-top:16px;">Queries contain live indicator strings so they actually match. Adjust field names to your schema.</p>
+  </section>
+
+  <section id="campaigns">
+    <div class="sec-h"><span class="sec-num">07</span><h2>Related campaigns &amp; family evolution</h2></div>
+    <p class="sec-sub">The AMOS / Odyssey cluster and the 2026 shift to signature-gated loaders. Each card links to source.</p>
+    <div id="campList"></div>
+  </section>
+
+  <!-- sig:U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+
+  <section id="impact">
+    <div class="sec-h"><span class="sec-num">08</span><h2>Impact &amp; end objective</h2></div>
+    <p class="sec-sub">What the operator was trying to achieve.</p>
+    <div class="obj">
+      <h3>&#9650; End objective</h3>
+      <p class="goal">Monetize the victim. Drain crypto wallets directly, resell credentials and live browser sessions on stealer markets, and keep a persistent foothold for re-infection or follow-on intrusion into corporate cloud and SaaS.</p>
+      <ul>
+        <li><b>Credential theft:</b> browser logins and autofill, Keychain items, login.keychain-db, crypto wallet credentials.</li>
+        <li><b>Session hijack:</b> stolen cookies bypass MFA on already-authenticated accounts (email, code hosts, cloud consoles, SaaS).</li>
+        <li><b>Direct financial theft:</b> desktop and extension wallet data, plus trojanizing Ledger Live to capture future wallet activity.</li>
+        <li><b>Data exfiltration:</b> Apple Notes, screenshots, and up to ~10 MB of Desktop and Documents files (keys, kdbx, pdf, docx).</li>
+        <li><b>Persistence and reinfection:</b> a system LaunchDaemon survives reboot and can re-pull payloads or hand access to other actors.</li>
+        <li><b>Lateral / cloud pivot:</b> harvested AWS keys, SSO tokens, and GitHub credentials enable movement off the endpoint into your estate.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="response">
+    <div class="sec-h"><span class="sec-num">09</span><h2>If execution is confirmed on a Mac</h2></div>
+    <p class="sec-sub">Containment and recovery, in order. Preserve evidence before you wipe.</p>
+    <ol class="play">
+      <li><b>Isolate the host</b> via Jamf Protect or SentinelOne network quarantine. Do not reimage yet: preserve <span class="mono" style="font-size:12px;">/tmp/lema-noka*</span>, <span class="mono" style="font-size:12px;">/tmp/out.zip</span>, the LaunchDaemon plist, and unified logs first.</li>
+      <li><b>Treat as credential compromise.</b> From a clean device, rotate macOS login and Keychain, all browser-saved passwords, SSO sessions, AWS keys and tokens, VPN, GitHub tokens, and any crypto wallet seeds.</li>
+      <li><b>Pull the binary</b> (<span class="mono" style="font-size:12px;">/tmp/lema-noka/lema-noka</span>) for static triage. Do not execute. Hash it, extract strings, confirm the embedded <span class="mono" style="font-size:12px;">api.ketoriloxisd[.]com</span> C2 and any further infrastructure.</li>
+      <li><b>Block</b> <span class="mono" style="font-size:12px;">ketoriloxisd[.]com</span> and all subdomains at DNS, proxy, firewall, and Route 53 DNS Firewall.</li>
+      <li><b>Remediate persistence:</b> remove the <span class="mono" style="font-size:12px;">com.&lt;digits&gt;.plist</span> LaunchDaemon, verify or replace <span class="mono" style="font-size:12px;">/Applications/Ledger Live.app</span>, then rebuild the host if integrity cannot be assured.</li>
+      <li><b>Hunt fleet-wide</b> with the queries in section 06 before closing the incident, and check GuardDuty / Wiz for cloud-side abuse of any credentials that lived on the host.</li>
+    </ol>
+  </section>
+
+  <div class="foot">
+    <h4>Assumptions</h4>
+    <div class="assume"><ul>
+      <li>The Homebrew path and Mach-O binary confirm a macOS target. The binary <span class="mono" style="font-size:11.5px;">lema-noka</span> is the second stage and was not in the pasted command, so its exact capabilities are inferred from the AMOS / Odyssey family, not directly observed.</li>
+      <li>This is analysis on your side, not a confirmed live compromise of an endpoint, unless you indicate otherwise.</li>
+      <li>Second-stage behavior is mapped from the closest documented family samples; this specific build may differ in detail.</li>
+      <li>Hunting queries assume macOS telemetry reaches SentinelOne and/or Jamf Protect, and that DNS / proxy and EDR events are forwarded to Sumo Logic.</li>
+      <li>Related-cluster IOCs are for broad hunting and are explicitly not confirmed indicators of this specific intrusion.</li>
+    </ul></div>
+    <h4>Non-obvious follow-up angles</h4>
+    <div class="followups">
+      <div class="fu"><b>The Claude Code docs clone</b><p>One sibling family (MioLab) was distributed via a cloned Claude Code documentation site. Your org runs Claude Enterprise and Bedrock, and your engineers are exactly the developer audience these lures target. Worth a focused watch on typosquats of your AI and dev tooling.</p></div>
+      <div class="fu"><b>HMAC secret as a pivot</b><p>You hold the access key and download secret. In a sanctioned, legal-cleared exercise these could fingerprint the operator delivery infra, but doing so actively touches attacker servers and must route through IR and legal first.</p></div>
+      <div class="fu"><b>Automate the hunt</b><p>Wrap section 06 into an n8n flow: schedule the S1 and Sumo queries, auto-block new <span class="mono" style="font-size:11px;">ketoriloxisd</span>-style domains via DNS Firewall, and open a ticket on any hit.</p></div>
+    </div>
+    <div class="sig">
+      <p class="disc">For internal defensive use. Analysis of attacker-delivered code for detection engineering and incident response. No malware was executed in producing this brief.</p>
+    </div>
+  </div>
+</div>
+<script>
+/* theme toggle, localStorage with graceful fallback */
+(function(){
+  var root=document.documentElement, tg=document.getElementById('toggle');
+  try{var s=localStorage.getItem('cf_dossier_theme'); if(s)root.setAttribute('data-theme',s);}catch(e){}
+  function flip(){
+    var n=root.getAttribute('data-theme')==='day'?'night':'day';
+    root.setAttribute('data-theme',n);
+    try{localStorage.setItem('cf_dossier_theme',n);}catch(e){}
+  }
+  tg.addEventListener('click',flip);
+  tg.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}});
+})();
+
+/* copy helper */
+function copyText(txt,btn){
+  function ok(){var o=btn.innerHTML;btn.innerHTML='\u2713';btn.classList.add('ok');setTimeout(function(){btn.innerHTML=o;btn.classList.remove('ok');},1100);}
+  function fb(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(t);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,fb);}else fb();
+}
+
+/* fingerprint IOCs */
+var FP=[
+  {k:"Payload delivery domain",v:"tetrix.ketoriloxisd[.]com",d:1},
+  {k:"C2 / exfil domain",v:"api.ketoriloxisd[.]com",d:1},
+  {k:"Root domain (block all subdomains)",v:"ketoriloxisd[.]com",d:1},
+  {k:"Embedded C2 URL",v:"hxxps://api.ketoriloxisd[.]com/GpZcowV4DCvwthe1",d:1},
+  {k:"Payload URL path",v:"/?action=download&file=lema-noka.zip",d:0},
+  {k:"Access key (X-Access-Key)",v:"dk_c5dc318146d00d4a852c1495",d:0},
+  {k:"HMAC download secret",v:"1fd401a36e71f069e10991c606a750dbbc4be96e146b94f5",d:0},
+  {k:"Dropped archive",v:"lema-noka.zip",d:0},
+  {k:"Second-stage binary (Mach-O)",v:"/tmp/lema-noka/lema-noka",d:0},
+  {k:"Request signature headers",v:"X-Access-Key / X-Timestamp / X-Nonce / X-Signature",d:0},
+  {k:"VirusTotal URL ID (SHA-256 of C2 URL)",v:"9ecdf6a4f04b842c11baae68dd90c30a302f5065fa0449e475b54795a5ea2e73",d:0}
+];
+(function(){
+  var g=document.getElementById('fpGrid');
+  FP.forEach(function(x){
+    var raw=x.v.replace(/\[\.\]/g,'.').replace(/^hxxps/,'https');
+    var el=document.createElement('div');el.className='fp';
+    el.innerHTML='<div class="k">'+x.k+'</div><div class="v'+(x.d?' danger':'')+'">'+x.v+'</div><button class="copy" title="Copy">\u2398</button>';
+    el.querySelector('.copy').addEventListener('click',function(){copyText(raw,this);});
+    g.appendChild(el);
+  });
+})();
+
+/* kill chain */
+var PHASES=[
+ {n:0,name:"Lure",drive:"user",time:"T+0",tt:["T1566","T1189"],detail:"Victim lands on a fake Cloudflare 'Verify you are human' page (malvertising, compromised site, SEO poisoning, or a phishing link). JavaScript fingerprints the operating system and serves the macOS-specific paste instructions."},
+ {n:1,name:"Copy &amp; paste",drive:"user",time:"T+0 to 30s",tt:["T1204.004"],detail:"The victim copies a base64-masked one-liner and pastes it into Terminal. This is the only point a human is strictly required to start the chain. The masking hides the real command from casual inspection."},
+ {n:2,name:"Stage-1 loader",drive:"auto",time:"T+1 to 5s",tt:["T1059.004","T1140","T1132"],detail:"The pasted command pins PATH to Homebrew, generates a nonce and timestamp, and computes an HMAC-SHA256 signature keyed with the embedded download secret. It then issues a gated curl GET to tetrix.ketoriloxisd[.]com with the four X- signature headers."},
+ {n:3,name:"Gated delivery",drive:"auto",time:"T+1 to 5s",tt:["T1105"],detail:"The C2 validates the request signature and only then serves lema-noka.zip. Requests without a valid signature (sandboxes, crawlers, researchers hitting the URL directly) are refused. This is the key anti-analysis gate that defeats automated detonation."},
+ {n:4,name:"Unpack &amp; execute",drive:"auto",time:"T+1 to 3s",tt:["T1059.004","T1222","T1553.001"],detail:"unzip extracts the archive, chmod +x marks the Mach-O executable, and the binary in /tmp runs. Files fetched with curl carry no com.apple.quarantine attribute, so Gatekeeper never prompts."},
+ {n:5,name:"Discovery",drive:"auto",time:"T+1 to 5s",tt:["T1082","T1217"],detail:"system_profiler SPSoftwareDataType SPHardwareDataType SPDisplaysDataType collects host inventory into a /tmp working dir. Some builds gate on the hardware and memory profile to detect VMs and analysis sandboxes."},
+ {n:6,name:"Credential capture",drive:"both",time:"T+seconds",tt:["T1056.002","T1110"],detail:"A fake dialog ('Required Application Helper, enter device password to continue') loops until a valid password is entered, validated with dscl . authonly. The password is stashed (for example ~/.pwd). This is the second and final human touch point, and it unlocks Keychain and sudo for later phases."},
+ {n:7,name:"Collection",drive:"auto",time:"T+seconds",tt:["T1555.001","T1555.003","T1539","T1005"],detail:"Harvests the login Keychain (security find-generic-password, login.keychain-db), browser cookies, logins and autofill across Chromium and Gecko families, Apple Notes, dozens of desktop and extension crypto wallets (MetaMask, Electrum, Exodus, Ledger Live, Trezor, and more), and up to ~10 MB of documents."},
+ {n:8,name:"Staging &amp; archive",drive:"auto",time:"T+seconds",tt:["T1074","T1560"],detail:"Mirrors the collected directory trees, skipping noisy caches (GPUCache, Crashpad, Cache), then archives everything to /tmp/out.zip using ditto -c -k."},
+ {n:9,name:"Exfiltration",drive:"auto",time:"T+seconds",tt:["T1041","T1071.001"],detail:"curl POSTs the archive to api.ketoriloxisd[.]com/GpZcowV4DCvwthe1. Family samples use --data-binary @/tmp/out.zip or -F file=@/tmp/out.zip with identifying headers, and retry on failure."},
+ {n:10,name:"Persistence &amp; tamper",drive:"auto",time:"concurrent",tt:["T1543.004","T1036"],detail:"Installs a LaunchDaemon at /Library/LaunchDaemons/com.&lt;random&gt;.plist via launchctl bootstrap system (using the captured password for sudo). May kill and replace /Applications/Ledger Live.app with a trojanized copy to capture wallet activity going forward."},
+ {n:11,name:"Cleanup",drive:"auto",time:"end",tt:["T1070.004"],detail:"Deletes /tmp/out.zip and the working directory to slow forensic recovery, leaving the LaunchDaemon in place for re-execution."}
+];
+(function(){
+  var c=document.getElementById('chain');
+  PHASES.forEach(function(p){
+    var badge=p.drive==='user'?'<span class="badge user">Human-driven</span>':p.drive==='auto'?'<span class="badge auto">Autonomous</span>':'<span class="badge both">Human + auto</span>';
+    var tags=p.tt.map(function(t){return '<span class="ttag">'+t+'</span>';}).join('');
+    var d=document.createElement('div');
+    d.className='phase';d.setAttribute('data-drive',p.drive);
+    d.innerHTML='<div class="pnode '+p.drive+'">'+p.n+'</div><div class="pcard"><div class="phead">'+
+      '<span class="phase-name">'+p.name+'</span>'+badge+'<span class="time">'+p.time+'</span><span class="pchev">\u25B6</span></div>'+
+      '<div class="pbody"><div class="pbody-in"><p>'+p.detail+'</p><div class="ttags">'+tags+'</div></div></div></div>';
+    d.querySelector('.phead').addEventListener('click',function(){d.classList.toggle('open');});
+    c.appendChild(d);
+  });
+  document.querySelectorAll('.filtbtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filtbtn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');var f=b.getAttribute('data-f');
+      document.querySelectorAll('.phase').forEach(function(ph){
+        var dv=ph.getAttribute('data-drive');
+        var show=f==='all'||dv===f||(dv==='both'&&(f==='user'||f==='auto'));
+        ph.classList.toggle('dim',!show);
+      });
+    });
+  });
+})();
+</script>
+<script>
+/* ATT&CK matrix */
+var ATTCK=[
+ {tactic:"Initial Access",t:[["T1566","Phishing","Lure delivered via malvertising, compromised sites, or links."],["T1189","Drive-by Compromise","Visiting a malicious or hijacked page triggers the lure."],["T1566.002","Spearphishing Link","Link to the fake verification page sent by email."]]},
+ {tactic:"Execution",t:[["T1204.004","Malicious Copy and Paste","The ClickFix core: victim pastes and runs a command themselves."],["T1059.002","AppleScript","osascript used to drive prompts and shell calls."],["T1059.004","Unix Shell","sh / zsh loader and the curl fetch."]]},
+ {tactic:"Persistence",t:[["T1543.004","Launch Daemon","com.&lt;random&gt;.plist in LaunchDaemons survives reboot."]]},
+ {tactic:"Defense Evasion",t:[["T1140","Deobfuscate / Decode","base64-masked command and payload strings."],["T1222","File Permissions Mod","chmod +x on the dropped binary."],["T1553.001","Gatekeeper Bypass","curl-fetched files carry no quarantine xattr."],["T1036","Masquerading","fake Cloudflare and helper dialogs, trojanized Ledger Live."],["T1070.004","File Deletion","removes /tmp/out.zip and working dir."]]},
+ {tactic:"Credential Access",t:[["T1056.002","GUI Input Capture","fake password dialog harvests the login password."],["T1110","Brute Force","prompt loops until a valid password is given."],["T1555.001","Keychain","login.keychain-db and security find-generic-password."],["T1555.003","Browser Credentials","saved logins and autofill from Chromium / Gecko."],["T1539","Steal Session Cookie","cookies enable MFA-bypassing session hijack."]]},
+ {tactic:"Discovery",t:[["T1082","System Information","system_profiler hardware and software inventory."],["T1217","Browser Information","enumerates browser profiles and extensions."]]},
+ {tactic:"Collection",t:[["T1005","Data from Local System","documents, wallets, Notes copied locally."],["T1119","Automated Collection","scripted sweep of known sensitive paths."],["T1074","Data Staged","loot mirrored into a /tmp working dir."],["T1560","Archive Collected Data","ditto -c -k packs everything to a zip."]]},
+ {tactic:"Command and Control",t:[["T1071.001","Web Protocols","HTTPS to the C2 for delivery and exfil."],["T1105","Ingress Tool Transfer","second stage and follow-on payloads pulled in."],["T1132","Data Encoding","base64 used across stages."]]},
+ {tactic:"Exfiltration",t:[["T1041","Exfil over C2","archive POSTed to the C2 endpoint."]]},
+ {tactic:"Impact",t:[["T1657","Financial Theft","crypto wallet drain and credential resale."]]}
+];
+(function(){
+  var g=document.getElementById('attckGrid');
+  ATTCK.forEach(function(col){
+    var d=document.createElement('div');d.className='tcol';
+    var chips=col.t.map(function(x){
+      return '<div class="tchip"><span class="tid">'+x[0]+'</span><span class="tnm">'+x[1]+'</span><span class="tip">'+x[2]+'</span></div>';
+    }).join('');
+    d.innerHTML='<div class="tactic-h">'+col.tactic+'</div>'+chips;
+    g.appendChild(d);
+  });
+})();
+
+/* IOC tables */
+function tbl(cols,rows){
+  var h='<table><thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr>';
+    r.forEach(function(cell){
+      if(cell&&cell.ind){h+='<td class="ind'+(cell.d?' danger':'')+'">'+cell.t+'</td>';}
+      else{h+='<td>'+cell+'</td>';}
+    });
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+document.getElementById('ioc-this').innerHTML=tbl(["Indicator","Type","Context"],[
+  [{ind:1,d:1,t:"tetrix.ketoriloxisd[.]com"},"Domain","Payload delivery (stage-1 download)"],
+  [{ind:1,d:1,t:"api.ketoriloxisd[.]com"},"Domain","C2 / exfiltration endpoint"],
+  [{ind:1,d:1,t:"ketoriloxisd[.]com"},"Domain","Root, block all subdomains"],
+  [{ind:1,d:1,t:"hxxps://api.ketoriloxisd[.]com/GpZcowV4DCvwthe1"},"URL","Embedded C2 (VT-analyzed)"],
+  [{ind:1,t:"dk_c5dc318146d00d4a852c1495"},"Access key","X-Access-Key header value"],
+  [{ind:1,t:"1fd401a36e71f069e10991c606a750dbbc4be96e146b94f5"},"HMAC secret","Keys the request signature"],
+  [{ind:1,t:"lema-noka.zip"},"Filename","Dropped archive"],
+  [{ind:1,t:"/tmp/lema-noka/lema-noka"},"Path","Second-stage Mach-O"],
+  [{ind:1,t:"X-Access-Key, X-Timestamp, X-Nonce, X-Signature"},"HTTP headers","Request-signature scheme"]
+]);
+document.getElementById('ioc-rel').innerHTML=
+  '<p style="font-size:13px;color:var(--ink-soft);font-style:italic;margin:0 0 14px;">Odyssey / AMOS family indicators from public reporting. Use for broad hunting only. Do <b>not</b> attribute these to this specific intrusion.</p>'+
+  tbl(["Indicator","Type","Source campaign"],[
+  [{ind:1,t:"teamsonsoft[.]com"},"Domain","Odyssey via fake MS Teams (CloudSEK)"],
+  [{ind:1,t:"tradingviewen[.]com"},"Domain","Odyssey via fake TradingView (Forcepoint)"],
+  [{ind:1,t:"barbermoo[.]xyz"},"Domain","Matryoshka ClickFix (Intego)"],
+  [{ind:1,t:"185.93.89[.]162"},"IP / C2","Odyssey, HTTP /log, /otherassets/ledger.zip (CloudSEK)"],
+  [{ind:1,t:"38[.]244[.]158[.]56/contact"},"IP / C2","AMOS ClickFix incident (Sophos)"],
+  [{ind:1,t:"~/.pwd, ~/.username, ~/.chost, ~/.botid"},"File artifacts","Odyssey (CloudSEK)"],
+  [{ind:1,t:"/Library/LaunchDaemons/com.&lt;digits&gt;.plist"},"Persistence","Odyssey / AMOS"],
+  [{ind:1,t:"/Applications/Ledger Live.app (trojanized)"},"App tamper","Odyssey / AMOS"]
+]);
+document.getElementById('ioc-ioa').innerHTML=
+  '<p style="font-size:13px;color:var(--ink-soft);font-style:italic;margin:0 0 14px;">Highest-value, family-agnostic behaviors. These survive infrastructure rotation.</p>'+
+  tbl(["Behavior","Why it matters"],[
+  [{ind:1,t:"osascript -e 'run script ...' spawning curl / sh / zsh"},"AppleScript launching network or shell activity"],
+  [{ind:1,t:"curl with X-Signature / X-Access-Key headers, or fetching a binary into /tmp"},"Signature-gated loader fetch"],
+  [{ind:1,t:"chmod +x on a /tmp file, then immediate execution of it"},"Dropper run pattern"],
+  [{ind:1,t:"dscl . authonly"},"Local password validation behind the fake prompt"],
+  [{ind:1,t:'security ... find-generic-password -ga "Chrome"; Keychain DB copies'},"Keychain credential theft"],
+  [{ind:1,t:"system_profiler SPSoftwareDataType SPHardwareDataType SPDisplaysDataType"},"Host fingerprint / sandbox gate"],
+  [{ind:1,t:"ditto -c -k from /tmp/&lt;random&gt;/ to /tmp/out.zip"},"Loot archiving"],
+  [{ind:1,t:"curl -X POST --data-binary @/tmp/out.zip (or -F file=@) to external host"},"Exfiltration"],
+  [{ind:1,t:"file create /Library/LaunchDaemons/com.&lt;digits&gt;.plist + launchctl bootstrap"},"Persistence install"],
+  [{ind:1,t:"xattr -c / xattr -d com.apple.quarantine on a fresh executable"},"Gatekeeper bypass"]
+]);
+
+/* tab switching (shared) */
+function wireTabs(barId){
+  var bar=document.getElementById(barId);
+  bar.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      bar.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      var pid=t.getAttribute('data-p');
+      var sec=bar.closest('section');
+      sec.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('active',p.id===pid);});
+    });
+  });
+}
+wireTabs('iocTabs');
+</script>
+<script>
+/* hunting console: backtick literals are safe (heredoc delimiter is quoted) */
+var HUNT=[
+{name:"SentinelOne EDR",cls:"primary",badge:"Primary",note:"Primary endpoint detection for this threat. PowerQuery / Deep Visibility.",q:[
+{l:"1. Interpreter spawning curl (ClickFix loader)",c:`event.type = "Process Creation" and endpoint.os = "osx"
+and src.process.name in ("osascript","bash","zsh","sh","Terminal")
+and tgt.process.name = "curl"
+and (tgt.process.cmdline contains "X-Signature"
+     or tgt.process.cmdline contains "ketoriloxisd")`},
+{l:"2. chmod +x in /tmp then run (dropper)",c:`event.type = "Process Creation" and endpoint.os = "osx"
+and tgt.process.name = "chmod"
+and tgt.process.cmdline contains "+x"
+and tgt.process.cmdline contains "/tmp/"`},
+{l:"3. Stealer behavior chain",c:`event.type = "Process Creation" and endpoint.os = "osx"
+and (
+  (tgt.process.name = "dscl" and tgt.process.cmdline contains "authonly")
+  or (tgt.process.name = "security" and tgt.process.cmdline contains "find-generic-password")
+  or (tgt.process.name = "ditto" and tgt.process.cmdline contains "-c -k" and tgt.process.cmdline contains "/tmp/")
+)`},
+{l:"4. Exfil + C2 domain",c:`(event.type = "DNS Resolved" and event.dns.request contains "ketoriloxisd")
+or (event.type in ("IP Connect","HTTP") and url.address contains "ketoriloxisd.com")
+or (event.type = "Process Creation" and tgt.process.name = "curl"
+    and tgt.process.cmdline contains "--data-binary" and tgt.process.cmdline contains "/tmp/")`},
+{l:"5. LaunchDaemon persistence",c:`event.type = "File Creation" and endpoint.os = "osx"
+and tgt.file.path contains "/Library/LaunchDaemons/com."
+and tgt.file.path contains ".plist"`}
+]},
+{name:"Jamf Protect + Pro",cls:"primary",badge:"Primary",note:"Primary macOS layer. Protect Custom Analytics on Endpoint Security events; Pro Extension Attribute drives a Smart Group for hunt and remediation.",q:[
+{l:"Jamf Protect: Custom Analytics criteria",c:`# Alert (high severity) on any of:
+#  - process osascript with child curl
+#  - process dscl with arg "authonly"
+#  - process security with arg "find-generic-password"
+#  - file write to /Library/LaunchDaemons matching com.<digits>.plist
+#  - process ditto with "-c -k" writing to /tmp
+# Stream all five to Sumo Logic.`},
+{l:"Jamf Pro: Extension Attribute (Smart Group: Result > 0)",c:`#!/bin/bash
+hits=0
+[ -f "$HOME/.pwd" ] && hits=$((hits+1))
+[ -f "$HOME/.botid" ] && hits=$((hits+1))
+ls /Library/LaunchDaemons/com.[0-9]*.plist >/dev/null 2>&1 && hits=$((hits+1))
+[ -d "/Applications/Ledger Live.app" ] && \
+  ! codesign -dv "/Applications/Ledger Live.app" 2>&1 | grep -q "Ledger" && hits=$((hits+1))
+echo "<result>$hits</result>"`}
+]},
+{name:"Intune MDM",cls:"config",badge:"Config only",note:"Intune is configuration and compliance, not macOS threat detection. Real detection lives in Microsoft Defender for Endpoint (MDE) for Mac if licensed.",q:[
+{l:"Intune: operationalize",c:`# 1. Deploy a custom attribute (shell script) mirroring the
+#    Jamf EA, to surface infected hosts in device inventory.
+# 2. Compliance policy: mark device non-compliant on hits,
+#    then Conditional Access blocks corporate cloud/app access.
+# 3. For actual detection, use MDE for Mac (KQL below).`},
+{l:"MDE for Mac: Advanced Hunting (KQL)",c:`DeviceProcessEvents
+| where DeviceType == "Mac"
+| where FileName == "curl"
+| where InitiatingProcessFileName in~ ("osascript","bash","zsh","sh")
+| where ProcessCommandLine has_any ("X-Signature","ketoriloxisd","--data-binary")
+| project Timestamp, DeviceName, AccountName, InitiatingProcessFileName, ProcessCommandLine`}
+]},
+{name:"Sumo Logic SIEM",cls:"primary",badge:"Primary",note:"Central correlation across forwarded DNS / proxy logs and EDR telemetry.",q:[
+{l:"Network: C2 domain resolution / connection",c:`(_sourceCategory=*dns* OR _sourceCategory=*proxy* OR _sourceCategory=*firewall*)
+| where (%"query" matches "*ketoriloxisd*")
+     or (%"url" matches "*ketoriloxisd.com*")
+     or (%"domain" matches "*ketoriloxisd*")
+| count by src_ip, %"query", %"url"
+| sort by _count`},
+{l:"EDR-forwarded process telemetry (SentinelOne to Sumo)",c:`_sourceCategory=*sentinelone*
+| json field=_raw "tgt.process.name" as proc, "tgt.process.cmdline" as cmd nodrop
+| where (proc="curl" and (cmd matches "*X-Signature*" or cmd matches "*--data-binary*/tmp/*"))
+     or (proc="dscl" and cmd matches "*authonly*")
+     or (proc="ditto" and cmd matches "*-c -k*/tmp/*")
+| count by proc, cmd`}
+]},
+{name:"AWS GuardDuty",cls:"indirect",badge:"Indirect",note:"GuardDuty cannot see the endpoint. Its value is catching abuse of AWS credentials / SSO tokens stolen from an infected Mac (very relevant for developer endpoints).",q:[
+{l:"Alert on stolen-credential finding types (EventBridge to SecOps)",c:`UnauthorizedAccess:IAMUser/MaliciousIPCaller
+UnauthorizedAccess:IAMUser/AnomalousBehavior
+UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS
+Stealth:IAMUser/CloudTrailLoggingDisabled
+Recon:IAMUser/*   Discovery:S3/*   CredentialAccess:*   Impact:*`},
+{l:"Block + post-infection action",c:`# Add ketoriloxisd[.]com to Route 53 Resolver DNS Firewall block list.
+# GuardDuty surfaces in-VPC DNS hits if any server/VPN-routed host resolves it.
+# On any confirmed Mac infection: rotate ALL AWS long-lived keys,
+# refresh tokens, and SSO sessions that could have lived on that host,
+# then review CloudTrail for their use.`}
+]},
+{name:"Wiz.io",cls:"indirect",badge:"Indirect",note:"Endpoint-agnostic. Use it to shrink and detect the cloud blast radius of stolen credentials.",q:[
+{l:"Use-cases (Security Graph)",c:`# Secrets / exposure: find long-lived keys and secrets that, if pulled
+#   from a developer Mac, grant cloud access; prioritize rotation.
+# Identity: surface externally-usable, over-privileged human identities
+#   (likely victims) and cut standing privilege.
+# Wiz Defend (CloudTrail threat detection): alert on AWS API calls from
+#   new geolocations/ASNs by identities that could be on endpoints;
+#   correlate with the GuardDuty findings above.`}
+]},
+{name:"Abnormal Security",cls:"delivery",badge:"Delivery vector",note:"Inbound-email behavioral AI, not a web or endpoint control. Helps only when the lure arrives by email.",q:[
+{l:"Use-cases",c:`# Search inbound mail for links/text referencing ketoriloxisd[.]com,
+#   "verify you are human", fake Cloudflare/Microsoft/dev-tool pages.
+# Tune detection for credential-phishing and suspicious-link messages
+#   impersonating Cloudflare, MS Teams, TradingView, or dev tooling.
+# Route user-reported lures through abuse-mailbox auto-triage.
+# Be explicit: the web/malvertising/SEO path will NOT touch Abnormal,
+#   that vector is covered by SentinelOne, Jamf Protect, and DNS/proxy.`}
+]}
+];
+(function(){
+  var tabs=document.getElementById('huntTabs'), panels=document.getElementById('huntPanels');
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hi(s){return esc(s).split('\n').map(function(l){return /^\s*(\/\/|#)/.test(l)?'<span class="cc">'+l+'</span>':l;}).join('\n');}
+  HUNT.forEach(function(tool,i){
+    var tb=document.createElement('button');tb.className='tab'+(i===0?' active':'');tb.setAttribute('data-p','hunt-'+i);
+    tb.innerHTML='<span class="pip '+tool.cls+'"></span>'+tool.name;tabs.appendChild(tb);
+    var pan=document.createElement('div');pan.className='panel'+(i===0?' active':'');pan.id='hunt-'+i;
+    var html='<div class="applic"><span class="tag '+tool.cls+'">'+tool.badge+'</span><span class="at">'+tool.note+'</span></div>';
+    tool.q.forEach(function(q){html+='<div class="qlabel">'+q.l+'</div><div class="code"><button class="ccopy" title="Copy">\u2398</button><pre>'+hi(q.c)+'</pre></div>';});
+    pan.innerHTML=html;
+    pan.querySelectorAll('.code').forEach(function(block,idx){block.querySelector('.ccopy').addEventListener('click',function(){copyText(tool.q[idx].c,this);});});
+    panels.appendChild(pan);
+  });
+  tabs.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');var pid=t.getAttribute('data-p');
+      panels.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('active',p.id===pid);});
+    });
+  });
+})();
+</script>
+<script>
+/* related campaigns / family evolution */
+var CAMP=[
+ {d:"Jun 2025",t:"Poseidon Stealer rebranded as Odyssey; AMOS run by 'ping3r'",src:"SC Media",u:"https://www.scworld.com/news/macos-malware-poseidon-stealer-rebranded-as-odyssey-stealer",sum:"Establishes the lineage: Odyssey is the Poseidon rebrand (actor 'Rodrigo'); AMOS is a separate MaaS by 'ping3r'. Both use ClickFix."},
+ {d:"2024",t:"From Amos to Poseidon: a SOC team's guide to macOS Atomic Stealers",src:"SentinelOne",u:"https://www.sentinelone.com/blog/from-amos-to-poseidon-a-soc-teams-guide-to-detecting-macos-atomic-stealers-2024/",sum:"Maps the AMOS / Banshee / Cthulu / Poseidon family tree and detection surface."},
+ {d:"Sep 2025",t:"Odyssey via fake Microsoft Teams ClickFix (full TTP + IOC writeup)",src:"CloudSEK",u:"https://www.cloudsek.com/blog/threat-actors-impersonate-microsoft-teams-to-deliver-odyssey-macos-stealer-via-clickfix",sum:"The closest behavioral match: osascript chain, Keychain/wallet theft, ditto to /tmp/out.zip, LaunchDaemon, Ledger Live tamper, full ATT&CK mapping."},
+ {d:"Oct 2025",t:"Odyssey via fake TradingView Cloudflare CAPTCHA",src:"Forcepoint X-Labs",u:"https://www.forcepoint.com/blog/x-labs/odyssey-stealer-attacks-macos-users",sum:"Fake Cloudflare CAPTCHA, OS-aware lure, base64 AppleScript. The 'Cloudflare ClickFix' pattern itself."},
+ {d:"Homebrew lures",t:"Odyssey and AMOS via fake Homebrew sites targeting developers",src:"hunt.io",u:"https://hunt.io/blog/macos-odyssey-amos-malware-campaign",sum:"Fake Homebrew / TradingView / LogMeIn sites push base64 Terminal commands. Matches the Homebrew path in this sample."},
+ {d:"Mar 2026",t:"'Matryoshka' ClickFix variant: API-gated loader, in-memory wrapper",src:"Intego",u:"https://www.intego.com/mac-security-blog/matryoshka-clickfix-macos-stealer/",sum:"Documents the API-key-gated delivery (custom header required, api_key in loader). Direct precursor to this sample's HMAC-signed fetch."},
+ {d:"Mar 2026",t:"MioLab stealer, ClickFix, distributed via a cloned Claude Code docs site",src:"CyberSecurityNews",u:"https://cybersecuritynews.com/macos-stealer-miolab/",sum:"Base64-masked URL, curl loader, ~100 KB compiled C Mach-O dropped to /tmp, xattr -c. Closest delivery analogue, and notable: it cloned an Anthropic dev-tool site."},
+ {d:"Mar 2026",t:"Infiniti Stealer: ClickFix + Nuitka-compiled Mach-O",src:"Malwarebytes",u:"https://www.malwarebytes.com/blog/threat-intel/2026/03/infiniti-stealer-a-new-macos-infostealer-using-clickfix-and-python-nuitka",sum:"Another compiled-binary second stage via ClickFix, shared builder lineage with MacSync / SHub."},
+ {d:"May/Jun 2026",t:"Why AMOS matters; AMOS delivered via a ClickFix incident",src:"Sophos",u:"https://www.sophos.com/en-us/blog/why-amos-matters-the-macos-malware-stealing-data-at-scale",sum:"AMOS = ~40% of macOS protection updates in 2025. Confirms current ClickFix + AMOS pairing, LaunchDaemon persistence, ditto exfil."},
+ {d:"May 2026",t:"ClickFix fake macOS utilities deliver AMOS / Macsync / Shub",src:"Microsoft",u:"https://www.microsoft.com/en-us/security/blog/2026/05/06/clickfix-campaign-uses-fake-macos-utilities-lures-deliver-infostealers/",sum:"Loader-shell-over-curl model, Mach-O second stage to /tmp, anti-analysis gate on system_profiler."},
+ {d:"May/Jun 2026",t:"MacSync ClickFix campaign hitting US SLTT, API-key-gated LaaS",src:"CIS",u:"https://www.cisecurity.org/insights/blog/macsync-stealer-campaign-impacting-us-sltt-macos-users",sum:"Documents the deliberate shift to API-key-gated C2 and Loader-as-a-Service in Feb 2026, the architecture this sample uses."},
+ {d:"May 2026",t:"700+ sites hijacked via Ghost CMS CVE-2026-26980, fake Cloudflare ClickFix",src:"Malwarebytes",u:"https://www.malwarebytes.com/blog/bugs/2026/05/700-education-and-tech-websites-hijacked-in-huge-clickfix-malware-campaign",sum:"Scale of the fake-Cloudflare ClickFix delivery ecosystem (Windows-side here, same lure template)."},
+ {d:"Context",t:"ClickFix overview: Apple's Mar 2026 macOS mitigation; Apr 2026 applescript:// bypass",src:"Wikipedia",u:"https://en.wikipedia.org/wiki/ClickFix",sum:"Apple added a ClickFix mitigation in March 2026; a variant using the applescript:// URI scheme to dodge Terminal appeared in April 2026."}
+];
+(function(){
+  var L=document.getElementById('campList');
+  CAMP.forEach(function(c){
+    var a=document.createElement('a');a.className='camp';a.href=c.u;a.target='_blank';a.rel='noopener';
+    a.innerHTML='<div class="ct">'+c.t+' <span class="arr">&#8599;</span></div>'+
+      '<div class="cm">'+c.d+'  &middot;  '+c.src+'</div><div class="cd">'+c.sum+'</div>';
+    L.appendChild(a);
+  });
+})();
+</script>
+</body>
+</html>
