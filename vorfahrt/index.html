@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>German Driving Priority Rules - Exam Reference</title>
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5f5f0;
+    --bg-card: #ffffff;
+    --bg-card-alt: #fafaf7;
+    --text: #1a1a1a;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --border: #e0ddd5;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --yellow: #ca8a04;
+    --yellow-light: #fef9c3;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --road: #666;
+    --road-light: #999;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+
+  [data-theme="night"] {
+    --bg: #111113;
+    --bg-card: #1c1c20;
+    --bg-card-alt: #222228;
+    --text: #e8e8e8;
+    --text-secondary: #aaa;
+    --text-muted: #777;
+    --border: #333;
+    --accent: #60a5fa;
+    --accent-light: #1e3a5f;
+    --green: #4ade80;
+    --green-light: #14332a;
+    --red: #f87171;
+    --red-light: #3f1a1a;
+    --yellow: #facc15;
+    --yellow-light: #332d0a;
+    --orange: #fb923c;
+    --orange-light: #331f0a;
+    --road: #555;
+    --road-light: #444;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* Theme Toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    user-select: none;
+  }
+  .theme-toggle .label {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 16px;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 0.5px;
+  }
+  .theme-toggle .thumb {
+    position: absolute;
+    width: 50%;
+    height: calc(100% - 6px);
+    background: var(--accent);
+    border-radius: 16px;
+    transition: transform 0.3s;
+    top: 3px;
+    left: 3px;
+    z-index: 1;
+  }
+  [data-theme="night"] .theme-toggle .thumb { transform: translateX(calc(100% - 2px)); }
+  .theme-toggle .day { color: #fff; }
+  [data-theme="night"] .theme-toggle .day { color: var(--text-secondary); }
+  .theme-toggle .night { color: var(--text-secondary); }
+  [data-theme="night"] .theme-toggle .night { color: #fff; }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 0 32px;
+  }
+  header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  header .subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+  header .exam-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Hierarchy Section */
+  .hierarchy {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+  }
+  .hierarchy h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .hierarchy-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .hierarchy-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+  .hierarchy-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 36px;
+    bottom: -8px;
+    width: 2px;
+    height: 16px;
+    background: var(--border);
+  }
+  .hierarchy-item .rank {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .hierarchy-item:nth-child(1) .rank { background: var(--red-light); color: var(--red); }
+  .hierarchy-item:nth-child(2) .rank { background: var(--orange-light); color: var(--orange); }
+  .hierarchy-item:nth-child(3) .rank { background: var(--yellow-light); color: var(--yellow); }
+  .hierarchy-item:nth-child(4) .rank { background: var(--green-light); color: var(--green); }
+  .rank-1 { background: var(--red-light) !important; color: var(--red) !important; }
+  .rank-2 { background: var(--orange-light) !important; color: var(--orange) !important; }
+  .rank-3 { background: var(--yellow-light) !important; color: var(--yellow) !important; }
+  .rank-4 { background: var(--green-light) !important; color: var(--green) !important; }
+  .hierarchy-item .h-title { font-weight: 600; font-size: 14px; }
+  .hierarchy-item .h-de { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); }
+  .hierarchy-item .h-note { font-size: 13px; color: var(--text-secondary); }
+  .override-arrow {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 2px 0;
+    font-weight: 500;
+  }
+
+  /* Scenario Cards */
+  .scenario {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .scenario-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .scenario-header:hover { background: var(--bg-card-alt); }
+  .scenario-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .scenario-title {
+    font-weight: 700;
+    font-size: 16px;
+    flex: 1;
+  }
+  .scenario-de {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .scenario-toggle {
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .scenario.open .scenario-toggle { transform: rotate(180deg); }
+  .scenario-body {
+    display: none;
+    padding: 0 20px 20px;
+  }
+  .scenario.open .scenario-body { display: block; }
+
+  .diagram-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .diagram-svg {
+    flex: 0 0 340px;
+    max-width: 100%;
+  }
+  .diagram-svg svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+  }
+  .diagram-explanation {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .rule-box {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .rule-box strong { color: var(--accent); }
+  .rule-box.correct {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+  .rule-box.correct strong { color: var(--green); }
+  .rule-box.wrong {
+    border-color: var(--red);
+    background: var(--red-light);
+  }
+  .rule-box.wrong strong { color: var(--red); }
+  .rule-box.warning {
+    border-color: var(--yellow);
+    background: var(--yellow-light);
+  }
+  .rule-box.warning strong { color: var(--yellow); }
+
+  .order-list {
+    list-style: none;
+    counter-reset: order;
+    margin: 8px 0;
+    padding: 0;
+  }
+  .order-list li {
+    counter-increment: order;
+    padding: 6px 0 6px 28px;
+    position: relative;
+    font-size: 14px;
+  }
+  .order-list li::before {
+    content: counter(order) ".";
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .exam-tip {
+    background: var(--yellow-light);
+    border: 1px solid var(--yellow);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .exam-tip::before {
+    content: "EXAM TIP ";
+    font-weight: 700;
+    color: var(--yellow);
+  }
+
+  .german-term {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* Nav */
+  .nav-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .nav-btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Quick Reference Footer */
+  .quick-ref {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-top: 32px;
+    box-shadow: var(--shadow);
+  }
+  .quick-ref h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+  .quick-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .qr-item {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .qr-item .sign { font-size: 32px; margin-bottom: 6px; }
+  .qr-item .qr-label { font-size: 13px; font-weight: 600; }
+  .qr-item .qr-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  @media (max-width: 600px) {
+    .container { padding: 16px 12px 60px; }
+    header h1 { font-size: 22px; }
+    .diagram-container { flex-direction: column; }
+    .diagram-svg { flex: 0 0 auto; width: 100%; }
+    .quick-ref-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body data-theme="day">
+
+<div class="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Toggle theme">
+  <span class="label day">DAY</span>
+  <span class="label night">NIGHT</span>
+  <div class="thumb"></div>
+</div>
+
+<div class="container">
+  <header>
+    <h1>Vorfahrt - Priority Rules</h1>
+    <p class="subtitle">German driving theory exam reference - all right-of-way scenarios</p>
+    <span class="exam-badge">EXAM PREP</span>
+  </header>
+
+  <!-- HIERARCHY -->
+  <div class="hierarchy">
+    <h2>The Override Hierarchy (memorize this first)</h2>
+    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">Higher rank always overrides everything below it. If a police officer is directing traffic, ignore lights and signs.</p>
+    <div class="hierarchy-stack">
+      <div class="hierarchy-item">
+        <div class="rank rank-1">1</div>
+        <div>
+          <div class="h-title">Police Officer</div>
+          <div class="h-de">Polizist / Verkehrsregelung</div>
+          <div class="h-note">Hand signals override everything, including red lights</div>
+        </div>
+      </div>
+      <div class="override-arrow">overrides ↓</div>
+      <div class="hierarchy-item">
+        <div class="rank rank-2">2</div>
+        <div>
+          <div class="h-title">Traffic Lights</div>
+          <div class="h-de">Ampel / Lichtzeichen</div>
+          <div class="h-note">When working, override all signs. Green arrow filter = may turn if clear.</div>
+        </div>
+      </div>
+      <div class="override-arrow">overrides ↓</div>
+      <div class="hierarchy-item">
+        <div class="rank rank-3">3</div>
+        <div>
+          <div class="h-title">Traffic Signs</div>
+          <div class="h-de">Verkehrszeichen</div>
+          <div class="h-note">Priority road, yield, stop signs. Only apply when no lights or officer present.</div>
+        </div>
+      </div>
+      <div class="override-arrow">overrides ↓</div>
+      <div class="hierarchy-item">
+        <div class="rank rank-4">4</div>
+        <div>
+          <div class="h-title">Right Before Left (default)</div>
+          <div class="h-de">Rechts vor Links</div>
+          <div class="h-note">The fallback rule when none of the above apply.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-section" id="nav">
+    <button class="nav-btn active" onclick="toggleAll(true)">Open All</button>
+    <button class="nav-btn" onclick="toggleAll(false)">Close All</button>
+  </div>
+
+  <!-- SCENARIO 1: RECHTS VOR LINKS -->
+  <div class="scenario open" id="s1">
+    <div class="scenario-header" onclick="toggle('s1')">
+      <span class="scenario-num">01</span>
+      <span class="scenario-title">Right Before Left</span>
+      <span class="scenario-de">Rechts vor Links</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          
+              <g transform="translate(230,320) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s1a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <line x1="230" y1="300" x2="230" y2="268" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s1a1)" opacity="0.9"/>
+          
+              <g transform="translate(320,170) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s1a2" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#dc2626"/>
+              </marker></defs>
+              <line x1="300" y1="170" x2="268" y2="170" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s1a2)" opacity="0.9"/>
+          
+              <g transform="translate(80,230) rotate(90)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#9ca3af"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s1a3" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#9ca3af"/>
+              </marker></defs>
+              <line x1="100" y1="230" x2="132" y2="230" stroke="#9ca3af" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s1a3)" opacity="0.9"/>
+          
+              <circle cx="330" cy="315" r="13" fill="#2563eb"/>
+              <circle cx="330" cy="315" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="330" y="315" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          
+              <circle cx="355" cy="130" r="13" fill="#dc2626"/>
+              <circle cx="355" cy="130" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="355" y="130" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="45" cy="280" r="13" fill="#9ca3af"/>
+              <circle cx="45" cy="280" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="45" y="280" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">3</text>
+          <text x="230" y="355" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700" font-family="Inter, sans-serif">YOU</text>
+          <text x="320" y="120" text-anchor="middle" fill="#dc2626" font-size="12" font-weight="700" font-family="Inter, sans-serif">RIGHT</text>
+          <text x="80" y="275" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="700" font-family="Inter, sans-serif">LEFT</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule:</strong> At an uncontrolled intersection (no signs, no lights), the vehicle coming from your RIGHT always has priority.
+          </div>
+          <div class="rule-box">
+            <strong>Order in this diagram:</strong>
+            <ol class="order-list">
+              <li>Red vehicle (to YOUR right) goes first</li>
+              <li>You go second (you are to the right of the grey car)</li>
+              <li>Grey vehicle goes last</li>
+            </ol>
+          </div>
+          <div class="rule-box warning">
+            <strong>When does Rechts vor Links apply?</strong> At intersections with NO traffic signs, NO traffic lights, and NO police officer. Also in residential zones (Spielstrasse), Tempo-30 zones, and at equivalent-rank roads. Does NOT apply on parking lots (see Scenario 11).
+          </div>
+          <div class="rule-box warning">
+            <strong>Parking lots:</strong> The BGH ruled (Nov 2022, Az. VI ZR 344/21) that Rechts vor Links does NOT generally apply on parking lots. Only &sect; 1 StVO (mutual consideration) applies. Exception: parking lot lanes with clear "Strassencharakter" (street character, e.g. curbed lanes with markings resembling real roads). In practice, assume it does not apply and drive with extra caution.
+          </div>
+          <div class="exam-tip">
+            If all four cars arrive at once, they must communicate (eye contact, hand signals) to resolve the deadlock. In the exam, this edge case is rare - usually one direction is clear.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 2: PRIORITY ROAD -->
+  <div class="scenario open" id="s2">
+    <div class="scenario-header" onclick="toggle('s2')">
+      <span class="scenario-num">02</span>
+      <span class="scenario-title">Priority Road (straight)</span>
+      <span class="scenario-de">Vorfahrtstraße</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          <g transform="translate(120,300)"><rect x="-13" y="-13" width="26" height="26" rx="3" fill="#facc15" stroke="#1a1a1a" stroke-width="2" transform="rotate(45)"/></g>
+          
+              <g transform="translate(230,320) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s2a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <line x1="230" y1="300" x2="230" y2="150" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s2a1)" opacity="0.9"/>
+          
+              <g transform="translate(330,170) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <g transform="translate(70,230) rotate(90)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          <polygon points="285,155 275,172 295,172" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+          <polygon points="115,245 105,228 125,228" fill="none" stroke="#dc2626" stroke-width="2.5" transform="rotate(180 115 236)"/>
+          
+              <circle cx="200" cy="120" r="13" fill="#2563eb"/>
+              <circle cx="200" cy="120" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="200" y="120" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="365" cy="130" r="13" fill="#dc2626"/>
+              <circle cx="365" cy="130" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="365" y="130" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          
+              <circle cx="35" cy="280" r="13" fill="#dc2626"/>
+              <circle cx="35" cy="280" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="35" y="280" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          <text x="230" y="355" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700" font-family="Inter, sans-serif">YOU</text>
+          <text x="330" y="125" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700" font-family="Inter, sans-serif">YIELDS</text>
+          <text x="70" y="285" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700" font-family="Inter, sans-serif">YIELDS</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule:</strong> The yellow diamond <span class="german-term">Vorfahrtstraße</span> (Zeichen 306) means you are on the priority road. All traffic from side roads must yield to you.
+          </div>
+          <div class="rule-box">
+            <strong>Key points:</strong>
+            <ol class="order-list">
+              <li>You go first when going straight on the priority road</li>
+              <li>Side road traffic sees a yield (inverted triangle) or stop sign</li>
+              <li>This sign stays in effect until cancelled by the end-of-priority sign (same diamond with black stripes)</li>
+            </ol>
+          </div>
+          <div class="exam-tip">
+            Even on a priority road, you must still yield to oncoming traffic when turning left. The priority sign only protects you from side-road traffic, not from oncoming vehicles on the same road.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 3: LEFT TURN ON PRIORITY ROAD -->
+  <div class="scenario open" id="s3">
+    <div class="scenario-header" onclick="toggle('s3')">
+      <span class="scenario-num">03</span>
+      <span class="scenario-title">Left Turn vs. Oncoming Traffic</span>
+      <span class="scenario-de">Linksabbieger / Gegenverkehr</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          <g transform="translate(120,300)"><rect x="-13" y="-13" width="26" height="26" rx="3" fill="#facc15" stroke="#1a1a1a" stroke-width="2" transform="rotate(45)"/></g>
+          
+              <g transform="translate(230,330) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s3a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <path d="M230,308 L230,210 L120,210" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#s3a1)" opacity="0.9"/>
+          
+              <g transform="translate(170,70) rotate(180)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#16a34a"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s3a2" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#16a34a"/>
+              </marker></defs>
+              <line x1="170" y1="92" x2="170" y2="130" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s3a2)" opacity="0.9"/>
+          
+              <g transform="translate(340,170) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#9ca3af"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <circle cx="120" cy="130" r="13" fill="#16a34a"/>
+              <circle cx="120" cy="130" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="120" y="130" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="300" cy="300" r="13" fill="#2563eb"/>
+              <circle cx="300" cy="300" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="300" y="300" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          
+              <circle cx="375" cy="135" r="13" fill="#9ca3af"/>
+              <circle cx="375" cy="135" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="375" y="135" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">3</text>
+          <text x="230" y="365" text-anchor="middle" fill="#2563eb" font-size="11" font-weight="700" font-family="Inter, sans-serif">YOU (turning left)</text>
+          <text x="170" y="40" text-anchor="middle" fill="#16a34a" font-size="12" font-weight="700" font-family="Inter, sans-serif">ONCOMING</text>
+          <text x="340" y="125" text-anchor="middle" fill="#6b7280" font-size="10" font-weight="700" font-family="Inter, sans-serif">SIDE ROAD</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule (StVO 9 Abs. 3):</strong> When turning left, you MUST yield to oncoming traffic going straight or turning right, even if you are on the priority road. This is a universal rule.
+          </div>
+          <div class="rule-box">
+            <strong>Order in this diagram:</strong>
+            <ol class="order-list">
+              <li>Green oncoming vehicle goes first (going straight)</li>
+              <li>You complete your left turn second</li>
+              <li>Side road vehicle goes last (must yield to priority road)</li>
+            </ol>
+          </div>
+          <div class="exam-tip">
+            Common exam trap: people think "I'm on the priority road, I go first" but forget that left-turn yield to oncoming is ALWAYS in effect, regardless of priority status. Note: this rule applies when the priority road goes straight. If the priority road bends (Scenario 04), the analysis changes because the "oncoming" vehicle may actually be on a subordinate road.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 4: BENDING PRIORITY ROAD -->
+  <div class="scenario open" id="s4">
+    <div class="scenario-header" onclick="toggle('s4')">
+      <span class="scenario-num">04</span>
+      <span class="scenario-title">Bending Priority Road</span>
+      <span class="scenario-de">Abknickende Vorfahrt</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          <path d="M200,400 L200,200 L0,200" fill="none" stroke="#facc15" stroke-width="7" stroke-linecap="round" opacity="0.55"/>
+          <g transform="translate(115,300)"><rect x="-13" y="-13" width="26" height="26" rx="3" fill="#facc15" stroke="#1a1a1a" stroke-width="2" transform="rotate(45)"/></g>
+          <g transform="translate(100,330)">
+                <rect x="-16" y="-12" width="32" height="24" rx="2" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
+                <path d="M6,8 L6,-2 L-8,-2" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+                <polygon points="-8,-2 -3,-5 -3,1" fill="#1a1a1a"/>
+              </g>
+          
+              <g transform="translate(230,330) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s4a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <path d="M230,308 L230,225 L120,225" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#s4a1)" opacity="0.9"/>
+          
+              <g transform="translate(170,70) rotate(180)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s4a2" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#dc2626"/>
+              </marker></defs>
+              <line x1="170" y1="92" x2="170" y2="175" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s4a2)" opacity="0.9"/>
+          
+              <g transform="translate(340,175) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          <text x="230" y="365" text-anchor="middle" fill="#2563eb" font-size="11" font-weight="700" font-family="Inter, sans-serif">YOU (follow bend)</text>
+          <text x="170" y="40" text-anchor="middle" fill="#dc2626" font-size="12" font-weight="700" font-family="Inter, sans-serif">YIELDS</text>
+          <text x="340" y="130" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700" font-family="Inter, sans-serif">YIELDS</text>
+          <text x="60" y="190" text-anchor="middle" fill="#a16207" font-size="10" font-weight="600" font-family="Inter, sans-serif">priority path</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule:</strong> When the priority road bends (shown by a supplementary sign, <span class="german-term">Zusatzzeichen</span>), you follow the thick line. The thick line IS the priority road. Vehicles NOT on the thick line must yield.
+          </div>
+          <div class="rule-box" style="font-size:13px;">
+            <strong>Reading the diagram:</strong> the yellow path is the priority road (south to west). YOU follow the bend and have priority. Both the green car (from the top) and the red car (from the right) are on subordinate arms, so both yield to you.
+          </div>
+          <div class="rule-box">
+            <strong>Critical details:</strong>
+            <ol class="order-list">
+              <li>The thick line on the supplementary sign = priority road path</li>
+              <li>All vehicles ON the priority road have equal rank</li>
+              <li>Among equal-rank vehicles on the bending priority road, Rechts-vor-Links applies between them</li>
+              <li>Vehicles NOT on the priority road must yield to ALL priority road traffic</li>
+            </ol>
+          </div>
+          <div class="rule-box warning">
+            <strong>Indicator / Blinker rule:</strong> Even if the priority road bends left, you must signal when LEAVING the priority road (going straight where the road bends). You also signal when following the bend if your direction changes. Think of it as: always signal what your steering wheel does.
+          </div>
+          <div class="exam-tip">
+            Very common exam topic. Two vehicles both on the bending priority road coming from opposite sides? They use Rechts-vor-Links between themselves. The side-road traffic always waits for ALL priority-road vehicles first.
+          </div>
+          <div class="rule-box correct" style="margin-top:12px; border-width:2px;">
+            <strong>EXAM Q 1.3.01-120-M (5 pts, rated "Schwer"):</strong> The diagram above shows a left-bend example; this exam question has the priority road bending RIGHT. Same principle, mirror image. You want to turn left (leaving the priority road). The blue vehicle is on the priority road (to the right). The green vehicle is on the subordinate road.<br><br>
+            <strong>Correct answers:</strong><br>
+            ✅ "I have to allow the blue vehicle to pass" -- blue is on the priority road, you must yield.<br>
+            ✅ "I may make the turn before the green vehicle" -- green is on the subordinate road and is wartepflichtig (must wait).<br>
+            ✗ "I have to allow the green vehicle to pass through" -- WRONG, green must yield to you.<br><br>
+            <em>Source: <a href="https://www.fuehrerscheintest-online.de/fuehrerscheintest-fragen/frage-1.3.01-120-M/antwort" target="_blank" style="color:inherit">fuehrerscheintest-online.de</a></em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 5: YIELD SIGN -->
+  <div class="scenario open" id="s5">
+    <div class="scenario-header" onclick="toggle('s5')">
+      <span class="scenario-num">05</span>
+      <span class="scenario-title">Yield Sign</span>
+      <span class="scenario-de">Vorfahrt gewaehren (Zeichen 205)</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          <polygon points="120,285 106,309 134,309" fill="white" stroke="#dc2626" stroke-width="3"/>
+          
+              <g transform="translate(230,330) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s5a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <line x1="230" y1="308" x2="230" y2="272" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s5a1)" opacity="0.9"/>
+          
+              <g transform="translate(330,170) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#16a34a"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s5a2" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#16a34a"/>
+              </marker></defs>
+              <line x1="310" y1="170" x2="185" y2="170" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s5a2)" opacity="0.9"/>
+          
+              <g transform="translate(70,230) rotate(90)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#16a34a"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s5a3" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#16a34a"/>
+              </marker></defs>
+              <line x1="90" y1="230" x2="215" y2="230" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s5a3)" opacity="0.9"/>
+          
+              <circle cx="365" cy="130" r="13" fill="#16a34a"/>
+              <circle cx="365" cy="130" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="365" y="130" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="35" cy="280" r="13" fill="#16a34a"/>
+              <circle cx="35" cy="280" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="35" y="280" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="300" cy="320" r="13" fill="#2563eb"/>
+              <circle cx="300" cy="320" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="300" y="320" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          <text x="230" y="365" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700" font-family="Inter, sans-serif">YOU (yield)</text>
+          <text x="330" y="125" text-anchor="middle" fill="#16a34a" font-size="11" font-weight="700" font-family="Inter, sans-serif">PRIORITY</text>
+          <text x="70" y="285" text-anchor="middle" fill="#16a34a" font-size="11" font-weight="700" font-family="Inter, sans-serif">PRIORITY</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule:</strong> The inverted white triangle with red border (<span class="german-term">Zeichen 205</span>) means: yield to all cross traffic. You may proceed without stopping IF the way is clear.
+          </div>
+          <div class="rule-box">
+            <strong>Yield vs Stop:</strong>
+            <ol class="order-list">
+              <li>Yield: slow down, check, proceed if clear. No mandatory stop.</li>
+              <li>Stop: you MUST come to a complete standstill at the stop line, even if the road is completely empty</li>
+            </ol>
+          </div>
+          <div class="exam-tip">
+            The difference between yield and stop is a favorite exam question. At a stop sign, if there is no stop line, you stop at the sight line (where you can see traffic). At yield, you only stop if traffic is present.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 6: STOP SIGN -->
+  <div class="scenario open" id="s6">
+    <div class="scenario-header" onclick="toggle('s6')">
+      <span class="scenario-num">06</span>
+      <span class="scenario-title">Stop Sign</span>
+      <span class="scenario-de">Halt! Vorfahrt gewaehren (Zeichen 206)</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="rule-box correct">
+        <strong>Rule:</strong> You MUST stop completely at the stop line (or sight line if no line is marked). Then yield to all cross traffic before proceeding.
+      </div>
+      <div class="rule-box warning">
+        <strong>Two stop signs facing each other?</strong> If two vehicles both have stop signs, they use <span class="german-term">Rechts vor Links</span> between themselves after both have stopped. The stop sign only determines who yields to the priority road; among stop-sign holders, the default right-before-left rule resolves who goes first.
+      </div>
+      <div class="exam-tip">
+        "Must I stop even if no one is coming?" YES. Always. The stop is mandatory regardless of traffic. Rolling through = fail.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 7: ROUNDABOUT -->
+  <div class="scenario open" id="s7">
+    <div class="scenario-header" onclick="toggle('s7')">
+      <span class="scenario-num">07</span>
+      <span class="scenario-title">Roundabout</span>
+      <span class="scenario-de">Kreisverkehr</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+          <rect x="165" y="0" width="70" height="400" fill="var(--road)"/>
+          <rect x="0" y="165" width="400" height="70" fill="var(--road)"/>
+          <circle cx="200" cy="200" r="95" fill="none" stroke="var(--road)" stroke-width="52"/>
+          <circle cx="200" cy="200" r="62" fill="var(--bg-card-alt)"/>
+          <circle cx="200" cy="200" r="62" fill="none" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="6,6" opacity="0.5"/>
+          <defs><marker id="s7ar" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="var(--road-light)"/></marker></defs>
+          <path d="M255,145 A78,78 0 0,1 278,215" fill="none" stroke="var(--road-light)" stroke-width="3" opacity="0.8" marker-end="url(#s7ar)"/>
+          <path d="M145,255 A78,78 0 0,1 122,185" fill="none" stroke="var(--road-light)" stroke-width="3" opacity="0.8"/>
+          <polygon points="185,300 173,320 197,320" fill="white" stroke="#dc2626" stroke-width="2.5"/>
+          
+              <g transform="translate(215,345) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s7a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <line x1="215" y1="323" x2="215" y2="300" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s7a1)" opacity="0.9"/>
+          
+              <g transform="translate(268,132) rotate(305)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#16a34a"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          <text x="215" y="378" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700" font-family="Inter, sans-serif">YOU (yield)</text>
+          <text x="300" y="112" text-anchor="middle" fill="#16a34a" font-size="11" font-weight="700" font-family="Inter, sans-serif">IN CIRCLE</text>
+          <text x="200" y="205" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-weight="600" font-family="Inter, sans-serif">no blink</text>
+          <text x="200" y="218" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-weight="600" font-family="Inter, sans-serif">entering</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box correct">
+            <strong>Rule:</strong> Traffic inside the roundabout ALWAYS has priority. Entering traffic must yield (yield signs at every entry point).
+          </div>
+          <div class="rule-box">
+            <strong>Roundabout rules:</strong>
+            <ol class="order-list">
+              <li>Do NOT signal when entering (no right blinker)</li>
+              <li>DO signal right when exiting</li>
+              <li>Drive counterclockwise (right-hand traffic)</li>
+              <li>No lane changes inside the roundabout</li>
+              <li>No stopping inside the roundabout</li>
+            </ol>
+          </div>
+          <div class="exam-tip">
+            The blinker rule is a trap: NO blinker entering, RIGHT blinker exiting. Many exam questions test this specifically. An "unechter Kreisverkehr" (circular junction with NO Zeichen 215 and NO Zeichen 205 at all) uses Rechts-vor-Links, and you must blink BOTH entering AND exiting. Standard roundabouts always have both Zeichen 215 + 205 together, so traffic inside has priority and you only blink when exiting.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 8: TRAFFIC LIGHTS -->
+  <div class="scenario open" id="s8">
+    <div class="scenario-header" onclick="toggle('s8')">
+      <span class="scenario-num">08</span>
+      <span class="scenario-title">Traffic Lights</span>
+      <span class="scenario-de">Ampel / Lichtzeichenanlage</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="rule-box correct">
+        <strong>Rule:</strong> Working traffic lights override all signs underneath them. Follow the light color only.
+      </div>
+      <div class="rule-box">
+        <strong>Light sequence and meaning:</strong>
+        <ol class="order-list">
+          <li><strong style="color:var(--red)">Red</strong> = stop before the stop line. No exceptions.</li>
+          <li><strong style="color:var(--yellow)">Red + Yellow</strong> = prepare to go (Germany-specific! Means "green is next"). Start your engine, release handbrake, but do NOT drive yet.</li>
+          <li><strong style="color:var(--green)">Green</strong> = go, but still yield to pedestrians in the intersection and to vehicles still clearing the intersection.</li>
+          <li><strong style="color:var(--yellow)">Yellow alone</strong> = stop if safe. If stopping would be dangerous (too close, too fast), proceed through.</li>
+        </ol>
+      </div>
+      <div class="rule-box warning">
+        <strong>Green arrow filter (Gruenpfeil):</strong> A green arrow sign (metal plate, not a light) on the right side of a red light means you MAY turn right on red, BUT you must first stop completely, then check for pedestrians and cross traffic. It is NOT a free pass.
+      </div>
+      <div class="rule-box warning">
+        <strong>Broken traffic lights / flashing yellow:</strong> If the lights malfunction (flashing yellow or off), fall back to the signs underneath. If no signs, fall back to Rechts vor Links.
+      </div>
+      <div class="exam-tip">
+        "Red + Yellow = prepare, not go" is tested frequently. Also: the Gruenpfeil metal plate requires a FULL STOP first, even if no one is around. Treat it like a stop sign that also lets you turn right.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 9: TRAM / STRASSENBAHN -->
+  <div class="scenario open" id="s9">
+    <div class="scenario-header" onclick="toggle('s9')">
+      <span class="scenario-num">09</span>
+      <span class="scenario-title">Trams</span>
+      <span class="scenario-de">Strassenbahn</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="rule-box correct">
+        <strong>Rule:</strong> Trams get priority in MOST situations because they cannot swerve. At uncontrolled intersections, a tram has priority over all other traffic from any direction.
+      </div>
+      <div class="rule-box">
+        <strong>Key tram rules:</strong>
+        <ol class="order-list">
+          <li>At equal-rank intersections (no signs/lights), tram goes first from ANY direction. Rechts-vor-Links does NOT apply to trams.</li>
+          <li>At signed intersections, trams follow the same signs as cars (yield, stop, priority road).</li>
+          <li>At traffic lights, trams follow the lights (or their own special tram signals).</li>
+          <li>When a tram stops to let passengers on/off, you MUST wait. Pass only at walking speed and only if there is no danger to passengers.</li>
+        </ol>
+      </div>
+      <div class="exam-tip">
+        Tram priority at unsigned intersections is the key exam point. "Does the tram always have priority?" NO, only at equal-rank intersections. If a tram has a yield or stop sign, it must yield like everyone else.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 10: EMERGENCY VEHICLES -->
+  <div class="scenario open" id="s10">
+    <div class="scenario-header" onclick="toggle('s10')">
+      <span class="scenario-num">10</span>
+      <span class="scenario-title">Emergency Vehicles</span>
+      <span class="scenario-de">Einsatzfahrzeuge / Rettungsgasse</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="rule-box correct">
+        <strong>Rule:</strong> When blue lights AND siren are active, emergency vehicles override ALL traffic rules. You must make way immediately.
+      </div>
+      <div class="rule-box">
+        <strong>Making way (Rettungsgasse):</strong>
+        <ol class="order-list">
+          <li>On a two-lane road: pull right</li>
+          <li>On a multi-lane road: left lane moves left, all other lanes move right (the rescue lane forms between the leftmost and second-leftmost lanes)</li>
+          <li>You may cross a red light or solid line to make way, but carefully</li>
+          <li>Do NOT follow closely behind an emergency vehicle ("slipstreaming")</li>
+        </ol>
+      </div>
+      <div class="exam-tip">
+        The Rettungsgasse rule for highways: left lane goes LEFT, everything else goes RIGHT. The gap is ALWAYS between lane 1 and lane 2 from the left, regardless of how many lanes there are.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 11: SPECIAL CASES -->
+  <div class="scenario open" id="s11">
+    <div class="scenario-header" onclick="toggle('s11')">
+      <span class="scenario-num">11</span>
+      <span class="scenario-title">Special Cases</span>
+      <span class="scenario-de">Sonderfaelle</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="rule-box warning">
+        <strong>Exiting a property / driveway (Grundstueck):</strong> You have NO priority at all. You must yield to ALL traffic, including pedestrians, cyclists, and vehicles from both directions. Same applies when leaving a Feldweg (field path), parking lot, gas station, or pedestrian zone.
+      </div>
+      <div class="rule-box warning">
+        <strong>Pedestrian crossings (Zebrastreifen):</strong> Pedestrians on or approaching a crosswalk have absolute priority. You may not overtake at a crosswalk. Cyclists must dismount to use pedestrian priority (but many exam questions still test yielding to approaching pedestrians).
+      </div>
+      <div class="rule-box warning">
+        <strong>Buses leaving a stop (Zeichen 224):</strong> When a bus signals to pull out from a stop, you must yield to it. Slow down and let it merge. If necessary, stop.
+      </div>
+      <div class="rule-box warning">
+        <strong>Spielstraße / Verkehrsberuhigter Bereich:</strong> When exiting a traffic-calmed zone, you are treated like exiting a property: yield to everyone. Inside the zone, pedestrians have priority and max speed is walking pace.
+      </div>
+      <div class="rule-box">
+        <strong>Two left-turners meeting oncoming (StVO 9 Abs. 4):</strong> The default in Germany is <span class="german-term">voreinander abbiegen</span>: turn in front of each other (pass right side to right side). Exception: the traffic situation or intersection layout may require turning behind each other (pass left to left). Watch for road markings that override the default.
+      </div>
+      <div class="exam-tip">
+        "Exiting a Grundstueck" questions are frequent. The rule is absolute: ANY road user has priority over you when you exit a property, parking lot, or field path onto a public road.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 12: COMPLEX PRIORITY PUZZLE -->
+  <div class="scenario open" id="s12">
+    <div class="scenario-header" onclick="toggle('s12')">
+      <span class="scenario-num">12</span>
+      <span class="scenario-title">Multi-Vehicle Priority Puzzle</span>
+      <span class="scenario-de">Kreuzung mit mehreren Fahrzeugen</span>
+      <span class="scenario-toggle">▼</span>
+    </div>
+    <div class="scenario-body">
+      <div class="diagram-container">
+        <div class="diagram-svg">
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          
+              <rect width="400" height="400" fill="var(--bg-card-alt)" rx="10"/>
+              <!-- vertical road -->
+              <rect x="140" y="0" width="120" height="400" fill="var(--road)"/>
+              <!-- horizontal road -->
+              <rect x="0" y="140" width="400" height="120" fill="var(--road)"/>
+              <!-- center dashes vertical -->
+              <line x1="200" y1="0" x2="200" y2="140" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="200" y1="260" x2="200" y2="400" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <!-- center dashes horizontal -->
+              <line x1="0" y1="200" x2="140" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="var(--road-light)" stroke-width="2" stroke-dasharray="10,8" opacity="0.5"/>
+          
+              <g transform="translate(230,320) rotate(0)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#2563eb"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s12a1" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#2563eb"/>
+              </marker></defs>
+              <line x1="230" y1="300" x2="230" y2="268" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s12a1)" opacity="0.9"/>
+          
+              <g transform="translate(320,170) rotate(270)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#dc2626"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s12a2" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#dc2626"/>
+              </marker></defs>
+              <line x1="300" y1="170" x2="268" y2="170" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s12a2)" opacity="0.9"/>
+          
+              <g transform="translate(170,80) rotate(180)">
+                <!-- shadow -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="rgba(0,0,0,0.18)" transform="translate(1.5,2)"/>
+                <!-- body -->
+                <rect x="-11" y="-17" width="22" height="36" rx="6" fill="#16a34a"/>
+                <!-- roof / cabin -->
+                <rect x="-8" y="-9" width="16" height="17" rx="3" fill="rgba(255,255,255,0.30)"/>
+                <!-- windshield (front, near nose) -->
+                <rect x="-8" y="-13.5" width="16" height="5" rx="2" fill="rgba(255,255,255,0.55)"/>
+                <!-- headlights -->
+                <circle cx="-7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="7" cy="-15.5" r="1.6" fill="rgba(255,255,255,0.9)"/>
+                <!-- wheels -->
+                <rect x="-13" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="-11" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="-13" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+                <rect x="10" y="4" width="3" height="8" rx="1.5" fill="rgba(0,0,0,0.45)"/>
+              </g>
+          
+              <defs><marker id="s12a3" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto">
+                <path d="M0,0 L9,4.5 L0,9 L2.5,4.5 Z" fill="#16a34a"/>
+              </marker></defs>
+              <line x1="170" y1="100" x2="170" y2="132" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" marker-end="url(#s12a3)" opacity="0.9"/>
+          <text x="65" y="205" text-anchor="middle" fill="var(--text-muted)" font-size="12" font-weight="600" font-family="Inter, sans-serif">empty</text>
+          <text x="200" y="300" text-anchor="middle" fill="var(--text-muted)" font-size="10" font-weight="700" font-family="Inter, sans-serif">NO SIGNS</text>
+          
+              <circle cx="120" cy="135" r="13" fill="#16a34a"/>
+              <circle cx="120" cy="135" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="120" y="135" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">1</text>
+          
+              <circle cx="355" cy="130" r="13" fill="#dc2626"/>
+              <circle cx="355" cy="130" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="355" y="130" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">2</text>
+          
+              <circle cx="300" cy="315" r="13" fill="#2563eb"/>
+              <circle cx="300" cy="315" r="13" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+              <text x="300" y="315" text-anchor="middle" dominant-baseline="central" fill="white" font-size="15" font-weight="800" font-family="Inter, sans-serif">3</text>
+          <text x="230" y="355" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700" font-family="Inter, sans-serif">YOU</text>
+          <text x="320" y="125" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="700" font-family="Inter, sans-serif">GOES STRAIGHT</text>
+          <text x="170" y="45" text-anchor="middle" fill="#16a34a" font-size="10" font-weight="700" font-family="Inter, sans-serif">GOES STRAIGHT</text>
+          </svg>
+        </div>
+        <div class="diagram-explanation">
+          <div class="rule-box">
+            <strong>Solving multi-car puzzles (Rechts vor Links, no signs):</strong>
+            <ol class="order-list">
+              <li>Find who has NO one to their right = they go first</li>
+              <li>After they clear, re-evaluate: who now has no one to their right?</li>
+              <li>Repeat until all vehicles have gone</li>
+              <li>Left-turners always yield to oncoming straight traffic even in Rechts-vor-Links</li>
+            </ol>
+          </div>
+          <div class="rule-box correct">
+            <strong>In this example (3 cars):</strong> Green (top, going south) has no one to its right (west side is empty). So Green goes first. After Green clears, Red's right (north) is now empty, so Red goes second. After Red clears, your right (east) is empty, so you go last. Order: ① Green ② Red ③ You.
+          </div>
+          <div class="rule-box warning">
+            <strong>4 cars from all directions?</strong> That creates a circular deadlock (everyone has someone to their right). The vehicles must communicate via eye contact or hand signals. One driver volunteers to go, then the chain resolves normally. In the exam, 4-way deadlocks are rare; the question usually leaves one direction empty.
+          </div>
+          <div class="exam-tip">
+            For complex puzzles: draw the arrows on paper. Mark who each car must yield to. The car with zero yield obligations goes first. Remove it and repeat. This mechanical approach works every time.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK REFERENCE -->
+  <div class="quick-ref">
+    <h2>Sign Quick Reference</h2>
+    <div class="quick-ref-grid">
+      <div class="qr-item">
+        <div class="sign">◆</div>
+        <div class="qr-label">Vorfahrtstraße</div>
+        <div class="qr-desc">You have priority (Zeichen 306)</div>
+      </div>
+      <div class="qr-item">
+        <div class="sign">◇</div>
+        <div class="qr-label">Ende Vorfahrt</div>
+        <div class="qr-desc">Priority road ends (Zeichen 307)</div>
+      </div>
+      <div class="qr-item">
+        <div class="sign">▽</div>
+        <div class="qr-label">Vorfahrt gewaehren</div>
+        <div class="qr-desc">Yield to cross traffic (Zeichen 205)</div>
+      </div>
+      <div class="qr-item">
+        <div class="sign" style="color:var(--red);">⬡</div>
+        <div class="qr-label">Stoppschild</div>
+        <div class="qr-desc">Stop completely, then yield (Zeichen 206)</div>
+      </div>
+      <div class="qr-item">
+        <div class="sign">⬥</div>
+        <div class="qr-label">Vorfahrt (once)</div>
+        <div class="qr-desc">Priority at next intersection only (Zeichen 301)</div>
+      </div>
+      <div class="qr-item">
+        <div class="sign" style="color:var(--accent);">⟳</div>
+        <div class="qr-label">Kreisverkehr</div>
+        <div class="qr-desc">Roundabout (Zeichen 215)</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:32px; color:var(--text-muted); font-size:12px;">
+    Viel Erfolg bei der Pruefung!
+  </div>
+</div>
+
+<!-- sig:U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+
+<script>
+  // Theme toggle
+  const THEME_KEY = 'de-priority-guide-theme';
+  function setTheme(t) {
+    document.body.setAttribute('data-theme', t);
+    localStorage.setItem(THEME_KEY, t);
+  }
+  function toggleTheme() {
+    const current = document.body.getAttribute('data-theme');
+    setTheme(current === 'night' ? 'day' : 'night');
+  }
+  // Init theme
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) setTheme(saved);
+
+  // Accordion
+  function toggle(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+  function toggleAll(open) {
+    document.querySelectorAll('.scenario').forEach(s => {
+      if (open) s.classList.add('open');
+      else s.classList.remove('open');
+    });
+  }
+</script>
+</body>
+</html>
