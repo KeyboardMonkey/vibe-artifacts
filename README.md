@@ -17,3 +17,4 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Claude Security](./claude-security/index.html) — Claude Security
 - [Securing AI for enterprises](./securing-ai/index.html) — Top 10 risks & controls
 - [Breach Anatomy: CloudFlare Clickfix Attack](./cloudflare-clickfix/index.html) — Detection, ThreatIntel, Response, IOCs, Threat Hunting
+- [Vorfahrt - Right of way](./vorfahrt/index.html) - Understanding driving priority in Germany
