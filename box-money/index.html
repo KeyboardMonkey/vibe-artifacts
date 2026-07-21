@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Short Euro Box Spread Calculator</title>
+<style>
+  :root[data-theme="dark"] {
+    --bg: #0d1117;
+    --bg-panel: #161b22;
+    --bg-input: #0d1117;
+    --bg-card: #1c2128;
+    --bg-card-accent: #1a2332;
+    --border: #30363d;
+    --border-strong: #3d444d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --text-faint: #6e7681;
+    --accent: #3fb950;
+    --accent-soft: rgba(63, 185, 80, 0.12);
+    --amber: #d29922;
+    --amber-soft: rgba(210, 153, 34, 0.12);
+    --blue: #58a6ff;
+    --blue-soft: rgba(88, 166, 255, 0.12);
+    --red: #f85149;
+    --shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f8fa;
+    --bg-panel: #ffffff;
+    --bg-input: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-accent: #f0f6ff;
+    --border: #d0d7de;
+    --border-strong: #afb8c1;
+    --text: #1f2328;
+    --text-dim: #57606a;
+    --text-faint: #8c959f;
+    --accent: #1a7f37;
+    --accent-soft: rgba(26, 127, 55, 0.08);
+    --amber: #9a6700;
+    --amber-soft: rgba(154, 103, 0, 0.08);
+    --blue: #0969da;
+    --blue-soft: rgba(9, 105, 218, 0.07);
+    --red: #cf222e;
+    --shadow: 0 2px 8px rgba(31, 35, 40, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  .container { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-size: 1.35rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  h1 .sub {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  #themeToggle {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: border-color 0.15s;
+  }
+  #themeToggle:hover { border-color: var(--border-strong); }
+
+  /* ---------- Panels ---------- */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .panel-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  /* ---------- Form ---------- */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .field input[type="text"],
+  .field input[type="number"] {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.15s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .input-row { display: flex; gap: 6px; }
+  .input-row input { flex: 1; min-width: 0; }
+  .stepper {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .stepper:hover { border-color: var(--border-strong); background: var(--bg-card-accent); }
+  .stepper:active { transform: translateY(1px); }
+  .date-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .date-btn:hover { border-color: var(--border-strong); }
+  .date-btn input[type="date"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .field .hint {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+  input.invalid { border-color: var(--red) !important; }
+
+  /* ---------- Scenario cards ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--card-accent, var(--border));
+  }
+  .card.current  { --card-accent: var(--blue); }
+  .card.t15      { --card-accent: var(--accent); }
+  .card.t25      { --card-accent: var(--amber); }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+  .card-head h2 { font-size: 0.95rem; font-weight: 650; }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .card.current .badge { color: var(--blue);   background: var(--blue-soft); }
+  .card.t15     .badge { color: var(--accent); background: var(--accent-soft); }
+  .card.t25     .badge { color: var(--amber);  background: var(--amber-soft); }
+  .card .mm-rate {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+    min-height: 1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .limit-price {
+    font-size: 1.45rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+  .limit-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+  .rate-rows { border-top: 1px solid var(--border); }
+  .rate-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  .rate-row:last-child { border-bottom: none; }
+  .rate-row .k { font-size: 0.8rem; color: var(--text-dim); }
+  .rate-row .v {
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .rate-row .v.na { font-size: 0.78rem; font-weight: 500; color: var(--text-faint); }
+  .rate-row.post .v:not(.na) { color: var(--accent); }
+
+  /* ---------- Cashflow table ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 9px 4px; }
+  td.k { color: var(--text-dim); }
+  td.v {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  tr.highlight td.v { color: var(--accent); }
+  tr.cost td.v { color: var(--red); }
+
+  footer {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Short Euro Box Spread Calculator
+      <span class="sub">Synthetic loan &middot; German 26.375% capital-gains tax shield</span>
+    </h1>
+    <button id="themeToggle" type="button" aria-label="Toggle day/night theme">
+      <span id="themeIcon">☀️</span><span id="themeLabel">Day</span>
+    </button>
+  </header>
+
+  <!-- ============ Inputs ============ -->
+  <section class="panel">
+    <div class="panel-title">Inputs</div>
+    <div class="form-grid">
+
+      <div class="field">
+        <label for="contracts">Contract Size</label>
+        <input type="number" id="contracts" value="1" min="1" step="1" inputmode="numeric">
+      </div>
+
+      <div class="field">
+        <label for="netCredit">Net Credit Fill Price (€)</label>
+        <div class="input-row">
+          <button type="button" class="stepper" id="creditMinus">−0.10</button>
+          <input type="text" id="netCredit" value="100,00" inputmode="decimal" autocomplete="off">
+          <button type="button" class="stepper" id="creditPlus">+0.10</button>
+        </div>
+        <div class="hint">Comma or dot decimals accepted</div>
+      </div>
+
+      <div class="field">
+        <label for="strikeWidth">Strike Width (€)</label>
+        <input type="text" id="strikeWidth" value="1000,00" inputmode="decimal" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="multiplier">Option Multiplier</label>
+        <input type="text" id="multiplier" value="10" inputmode="decimal" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="commission">Commission per Option (€)</label>
+        <input type="text" id="commission" value="1,26" inputmode="decimal" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="startDate">Start Date</label>
+        <div class="input-row">
+          <input type="text" id="startDate" placeholder="DD-MM-YYYY" inputmode="numeric" autocomplete="off">
+          <span class="date-btn" title="Open calendar">📅<input type="date" id="startDatePicker" tabindex="-1"></span>
+        </div>
+        <div class="hint">DD-MM-YYYY</div>
+      </div>
+
+      <div class="field">
+        <label for="expiryDate">Expiry Date</label>
+        <div class="input-row">
+          <input type="text" id="expiryDate" placeholder="DD-MM-YYYY" inputmode="numeric" autocomplete="off">
+          <span class="date-btn" title="Open calendar">📅<input type="date" id="expiryDatePicker" tabindex="-1"></span>
+        </div>
+        <div class="hint">DD-MM-YYYY</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ Scenario cards ============ -->
+  <div class="cards">
+
+    <div class="card current">
+      <div class="card-head"><h2>Current Fill</h2><span class="badge">C</span></div>
+      <div class="mm-rate" id="cur-mm-note">&nbsp;</div>
+      <div class="limit-price" id="cur-price">€0.00</div>
+      <div class="limit-label">Limit Price</div>
+      <div class="rate-rows">
+        <div class="rate-row"><span class="k">Pre-Commission Rate (R<sub>MM</sub>)</span><span class="v" id="cur-rmm">—</span></div>
+        <div class="rate-row"><span class="k">Pre-Tax Rate</span><span class="v" id="cur-pretax">—</span></div>
+        <div class="rate-row post"><span class="k">Post-Tax Rate</span><span class="v" id="cur-posttax">—</span></div>
+      </div>
+    </div>
+
+    <div class="card t15">
+      <div class="card-head"><h2>Target +15 bps</h2><span class="badge">C₊₁₅</span></div>
+      <div class="mm-rate" id="t15-mm-note">&nbsp;</div>
+      <div class="limit-price" id="t15-price">€0.00</div>
+      <div class="limit-label">Target Limit Price</div>
+      <div class="rate-rows">
+        <div class="rate-row"><span class="k">Pre-Commission Rate</span><span class="v" id="t15-rmm">—</span></div>
+        <div class="rate-row"><span class="k">Pre-Tax Rate</span><span class="v" id="t15-pretax">—</span></div>
+        <div class="rate-row post"><span class="k">Post-Tax Rate</span><span class="v" id="t15-posttax">—</span></div>
+      </div>
+    </div>
+
+    <div class="card t25">
+      <div class="card-head"><h2>Target +25 bps</h2><span class="badge">C₊₂₅</span></div>
+      <div class="mm-rate" id="t25-mm-note">&nbsp;</div>
+      <div class="limit-price" id="t25-price">€0.00</div>
+      <div class="limit-label">Target Limit Price</div>
+      <div class="rate-rows">
+        <div class="rate-row"><span class="k">Pre-Commission Rate</span><span class="v" id="t25-rmm">—</span></div>
+        <div class="rate-row"><span class="k">Pre-Tax Rate</span><span class="v" id="t25-pretax">—</span></div>
+        <div class="rate-row post"><span class="k">Post-Tax Rate</span><span class="v" id="t25-posttax">—</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ Cashflow table ============ -->
+  <section class="panel">
+    <div class="panel-title">Cashflow Breakdown</div>
+    <table>
+      <tbody>
+        <tr><td class="k">Days to Expiry (DTE)</td><td class="v" id="cf-dte">0</td></tr>
+        <tr><td class="k">Gross Proceeds (€)</td><td class="v" id="cf-gross">€0.00</td></tr>
+        <tr class="cost"><td class="k">Total Commissions (€)</td><td class="v" id="cf-comm">€0.00</td></tr>
+        <tr><td class="k">Net Proceeds (€)</td><td class="v" id="cf-net">€0.00</td></tr>
+        <tr><td class="k">Total Repayment at Expiry (€)</td><td class="v" id="cf-repay">€0.00</td></tr>
+        <tr class="cost"><td class="k">Total Interest Cost (€)</td><td class="v" id="cf-interest">€0.00</td></tr>
+        <tr class="highlight"><td class="k">Tax Benefit (€)</td><td class="v" id="cf-tax">€0.00</td></tr>
+        <tr class="highlight"><td class="k">Post-Tax Interest Cost (€)</td><td class="v" id="cf-ptic">€0.00</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>All rates annualized on an ACT/365 basis. Tax shield: 26.375% (Abgeltungsteuer + Soli).</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var TAX_RATE = 0.26375;
+  var MS_PER_DAY = 86400000;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------------- Theme toggle ---------------- */
+  var root = document.documentElement;
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    var dark = theme === "dark";
+    $("themeIcon").textContent = dark ? "☀️" : "🌙";
+    $("themeLabel").textContent = dark ? "Day" : "Night";
+    try { localStorage.setItem("boxmoney-theme", theme); } catch (e) {}
+  }
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("boxmoney-theme"); } catch (e) {}
+  applyTheme(savedTheme === "light" ? "light" : "dark");
+  $("themeToggle").addEventListener("click", function () {
+    applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  });
+
+  /* ---------------- Parsing helpers ---------------- */
+  // Flexible decimal: accept both "," and "." as decimal separator.
+  function parseNum(raw) {
+    if (raw == null) return NaN;
+    var s = String(raw).trim().replace(/\s/g, "").replace(",", ".");
+    if (s === "" || s === "-" || s === ".") return NaN;
+    return parseFloat(s);
+  }
+
+  // DD-MM-YYYY (also tolerates . or / separators) -> Date at local midnight, or null.
+  function parseDMY(raw) {
+    var m = String(raw).trim().match(/^(\d{1,2})[-./](\d{1,2})[-./](\d{4})$/);
+    if (!m) return null;
+    var d = +m[1], mo = +m[2], y = +m[3];
+    var date = new Date(y, mo - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== mo - 1 || date.getDate() !== d) return null;
+    return date;
+  }
+
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function formatDMY(date) {
+    return pad2(date.getDate()) + "-" + pad2(date.getMonth() + 1) + "-" + date.getFullYear();
+  }
+  function toISO(date) {
+    return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+  }
+
+  /* ---------------- Formatting helpers ---------------- */
+  var moneyFmt = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function fmtMoney(v) {
+    if (!isFinite(v)) return "€0,00";
+    return "€" + moneyFmt.format(v);
+  }
+  var rateFmt = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  function fmtRate(v) {
+    if (!isFinite(v)) return "—";
+    return rateFmt.format(v) + " %";
+  }
+
+  var NA_TEXT = "N/A (Select Expiry)";
+
+  /* ---------------- Core math ---------------- */
+  // Cashflows for a given net credit C.
+  function cashflows(C, sw, mult, contracts, commPerOpt) {
+    var gross = C * mult * contracts;
+    var comm = commPerOpt * 4 * contracts;
+    var net = gross - comm;
+    var repay = sw * mult * contracts;
+    var interest = repay - net;
+    var taxBenefit = interest * TAX_RATE;
+    var postTaxInterest = interest - taxBenefit;
+    return { gross: gross, comm: comm, net: net, repay: repay,
+             interest: interest, taxBenefit: taxBenefit, postTaxInterest: postTaxInterest };
+  }
+
+  // Annualized rates in % for a given C and its cashflows. Requires dte > 0, C > 0.
+  function rates(C, sw, cf, dte) {
+    var ann = 365 / dte;
+    return {
+      rmm: ((sw - C) / C) * ann * 100,
+      pretax: (cf.interest / cf.net) * ann * 100,
+      posttax: (cf.postTaxInterest / cf.net) * ann * 100
+    };
+  }
+
+  /* ---------------- Recalculate & render ---------------- */
+  function recalc() {
+    var contracts = Math.max(1, Math.floor(parseNum($("contracts").value) || 1));
+    var C        = parseNum($("netCredit").value);
+    var sw       = parseNum($("strikeWidth").value);
+    var mult     = parseNum($("multiplier").value);
+    var comm     = parseNum($("commission").value);
+
+    if (!isFinite(C)) C = 0;
+    if (!isFinite(sw)) sw = 0;
+    if (!isFinite(mult)) mult = 0;
+    if (!isFinite(comm)) comm = 0;
+
+    var start  = parseDMY($("startDate").value);
+    var expiry = parseDMY($("expiryDate").value);
+    $("startDate").classList.toggle("invalid", $("startDate").value !== "" && !start);
+    $("expiryDate").classList.toggle("invalid", $("expiryDate").value !== "" && !expiry);
+
+    var dte = 0;
+    if (start && expiry) {
+      dte = Math.max(0, Math.floor((expiry.getTime() - start.getTime()) / MS_PER_DAY));
+    }
+
+    // ----- Cashflow breakdown (current fill price) -----
+    var cf = cashflows(C, sw, mult, contracts, comm);
+    $("cf-dte").textContent      = String(dte);
+    $("cf-gross").textContent    = fmtMoney(cf.gross);
+    $("cf-comm").textContent     = fmtMoney(cf.comm);
+    $("cf-net").textContent      = fmtMoney(cf.net);
+    $("cf-repay").textContent    = fmtMoney(cf.repay);
+    $("cf-interest").textContent = fmtMoney(cf.interest);
+    $("cf-tax").textContent      = fmtMoney(cf.taxBenefit);
+    $("cf-ptic").textContent     = fmtMoney(cf.postTaxInterest);
+
+    // ----- Guardrails: DTE <= 0 or Net Credit <= 0 -----
+    var valid = dte > 0 && C > 0;
+
+    function setRates(prefix, r) {
+      var ids = { rmm: prefix + "-rmm", pretax: prefix + "-pretax", posttax: prefix + "-posttax" };
+      for (var key in ids) {
+        var el = $(ids[key]);
+        if (r) {
+          el.textContent = fmtRate(r[key]);
+          el.classList.remove("na");
+        } else {
+          el.textContent = NA_TEXT;
+          el.classList.add("na");
+        }
+      }
+    }
+
+    // Scenario 1: current fill price
+    $("cur-price").textContent = fmtMoney(C);
+    if (valid) {
+      var rCur = rates(C, sw, cf, dte);
+      setRates("cur", rCur);
+      $("cur-mm-note").textContent = "MM base rate: " + fmtRate(rCur.rmm);
+    } else {
+      setRates("cur", null);
+      $("cur-mm-note").innerHTML = "&nbsp;";
+    }
+
+    // Scenarios 2 & 3: target limit prices at R_MM + 15/25 bps
+    [{ prefix: "t15", bps: 0.15 }, { prefix: "t25", bps: 0.25 }].forEach(function (sc) {
+      if (!valid) {
+        $(sc.prefix + "-price").textContent = fmtMoney(0);
+        setRates(sc.prefix, null);
+        $(sc.prefix + "-mm-note").innerHTML = "&nbsp;";
+        return;
+      }
+      var rmmBase = ((sw - C) / C) * (365 / dte) * 100;
+      var rTarget = rmmBase + sc.bps;                       // in %
+      var cTarget = sw / (1 + rTarget * dte / 36500);       // target limit price
+      var cfT = cashflows(cTarget, sw, mult, contracts, comm);
+      var rT = rates(cTarget, sw, cfT, dte);
+      $(sc.prefix + "-price").textContent = fmtMoney(cTarget);
+      setRates(sc.prefix, rT);
+      $(sc.prefix + "-mm-note").textContent = "Target MM rate: " + fmtRate(rTarget);
+    });
+  }
+
+  /* ---------------- Net credit ±0.10 steppers ---------------- */
+  function bumpCredit(delta) {
+    var input = $("netCredit");
+    var usedComma = input.value.indexOf(",") !== -1 || input.value.indexOf(".") === -1;
+    var v = parseNum(input.value);
+    if (!isFinite(v)) v = 0;
+    v = Math.round((v + delta) * 100) / 100;
+    var s = v.toFixed(2);
+    input.value = usedComma ? s.replace(".", ",") : s;
+    recalc();
+  }
+  $("creditMinus").addEventListener("click", function () { bumpCredit(-0.10); });
+  $("creditPlus").addEventListener("click", function () { bumpCredit(+0.10); });
+
+  /* ---------------- Date pickers <-> text sync ---------------- */
+  function wireDate(textId, pickerId) {
+    var text = $(textId), picker = $(pickerId);
+    picker.addEventListener("change", function () {
+      if (!picker.value) return;
+      var parts = picker.value.split("-"); // yyyy-mm-dd
+      text.value = parts[2] + "-" + parts[1] + "-" + parts[0];
+      recalc();
+    });
+    text.addEventListener("input", function () {
+      var d = parseDMY(text.value);
+      if (d) picker.value = toISO(d);
+      recalc();
+    });
+  }
+  wireDate("startDate", "startDatePicker");
+  wireDate("expiryDate", "expiryDatePicker");
+
+  /* ---------------- Reactive inputs ---------------- */
+  ["contracts", "netCredit", "strikeWidth", "multiplier", "commission"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+
+  /* ---------------- Defaults ---------------- */
+  var today = new Date();
+  $("startDate").value = formatDMY(today);
+  $("expiryDate").value = formatDMY(today);
+  $("startDatePicker").value = toISO(today);
+  $("expiryDatePicker").value = toISO(today);
+
+  recalc();
+})();
+</script>
+</body>
+</html>
