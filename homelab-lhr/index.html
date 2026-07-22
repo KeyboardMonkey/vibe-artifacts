@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lahore 3-Story Deployment — Finalized Architecture</title>
+<style>
+:root{
+  --bg:#f7f9fa; --bg2:#eef2f3; --card:#ffffff; --ink:#12181b; --muted:#57646a;
+  --line:#dde4e6; --line2:#c9d3d6;
+  --accent:#0b7c86; --accent-ink:#ffffff;
+  --floor:#1f5da8; --wan:#0e7a4d; --sim:#9a6600; --cam:#8a2f8a; --alert:#b23a2e;
+  --floor-bg:#e6eefa; --wan-bg:#e4f4ec; --sim-bg:#f8efdc; --cam-bg:#f4e8f4; --alert-bg:#fae9e6;
+  --chip:#eef2f3;
+  --mono:ui-monospace,'SF Mono','SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0d1113; --bg2:#161c1f; --card:#141a1d; --ink:#e7edee; --muted:#93a1a5;
+  --line:#283034; --line2:#374247;
+  --accent:#33c8cf; --accent-ink:#062225;
+  --floor:#6ba6e8; --wan:#4fd08c; --sim:#e2a842; --cam:#d488d4; --alert:#f18a7b;
+  --floor-bg:#0f2138; --wan-bg:#0e2a1f; --sim-bg:#2c2410; --cam-bg:#2a1330; --alert-bg:#2e1512;
+  --chip:#1d2528;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;
+  max-width:1000px;margin:0 auto;padding:20px 18px 80px;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important}}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--mono);font-size:25px;font-weight:600;letter-spacing:-.01em;line-height:1.14;margin:6px 0 8px}
+h2{font-family:var(--mono);font-size:16.5px;font-weight:600;margin:0 0 4px}
+h3{font-family:var(--mono);font-size:13px;font-weight:600;margin:0 0 4px}
+p{margin:0 0 10px}
+.lede{color:var(--muted);font-size:15px;max-width:72ch}
+.sec{margin-top:36px;padding-top:22px;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.sec-num{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+strong{font-weight:650}
+code{font-family:var(--mono);font-size:.88em;background:var(--chip);padding:1px 5px;border-radius:4px;white-space:nowrap}
+a{color:var(--accent);text-decoration:none}
+/* toggle */
+.toggle{position:fixed;top:16px;right:16px;z-index:50;width:54px;height:28px;border-radius:999px;border:1px solid var(--line2);background:var(--bg2);cursor:pointer;padding:3px;display:flex;align-items:center;transition:background .25s,border-color .25s}
+.toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;transform:translateX(0);transition:transform .25s,background .25s}
+[data-theme="dark"] .thumb{transform:translateX(26px);background:var(--ink)}
+.thumb svg{width:12px;height:12px;display:block}
+.i-sun{stroke:#fff}.i-moon{display:none;stroke:var(--bg)}
+[data-theme="dark"] .i-sun{display:none}[data-theme="dark"] .i-moon{display:block}
+/* diagram */
+.arch{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:16px 14px;margin:6px 0;overflow-x:auto}
+.arch svg{display:block;min-width:660px;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+/* callout */
+.callout{border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 10px 10px 0;padding:13px 15px;margin:14px 0}
+.callout.warn{border-left-color:var(--alert);background:var(--alert-bg)}
+.callout h3{color:var(--ink)}.callout p:last-child{margin-bottom:0}
+/* tables */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:680px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg2)}
+tbody tr:last-child td{border-bottom:none}
+.model{font-family:var(--mono);font-weight:650;white-space:nowrap}
+.sub{color:var(--muted);font-size:11px}
+/* steps */
+.steps{counter-reset:s;list-style:none;margin:6px 0}
+.steps>li{position:relative;padding:0 0 14px 34px;margin:0}
+.steps>li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.steps>li:not(:last-child)::after{content:"";position:absolute;left:10px;top:24px;bottom:2px;width:1px;background:var(--line2)}
+.steps h3{margin-bottom:3px}
+.steps p{font-size:12.5px;margin-bottom:0;color:var(--muted)}
+.steps code{white-space:normal}
+/* two-col cards */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.pc{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--card)}
+.pc.pros{border-top:2px solid var(--wan)}
+.pc.cons{border-top:2px solid var(--alert)}
+.pc h3{margin-bottom:8px}
+.pc ul{list-style:none;font-size:12.5px}
+.pc li{padding-left:16px;position:relative;margin-bottom:7px;line-height:1.4;color:var(--ink)}
+.pc.pros li::before{content:"+";position:absolute;left:0;color:var(--wan);font-weight:700}
+.pc.cons li::before{content:"\2013";position:absolute;left:0;color:var(--alert);font-weight:700}
+/* risk table rows */
+.risk td:first-child{font-family:var(--mono);font-weight:600;white-space:nowrap;color:var(--sim)}
+/* checklist */
+.check{list-style:none;margin-top:6px}
+.check li{position:relative;padding:10px 12px 10px 38px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card);font-size:12.5px}
+.check li::before{content:"";position:absolute;left:13px;top:12px;width:13px;height:13px;border:2px solid var(--accent);border-radius:4px}
+.check li b{font-family:var(--mono);font-weight:650;font-size:12px}
+.check li.hot::before{border-color:var(--alert);background:var(--alert)}
+footer{margin-top:42px;padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+footer h3{color:var(--ink);margin-bottom:6px}
+footer ol{margin:0 0 12px 18px}footer li{margin-bottom:3px}
+.srcs{font-family:var(--mono);font-size:10px;line-height:1.7;word-break:break-all}
+.stamp{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:14px;letter-spacing:.04em}
+@media (max-width:720px){h1{font-size:21px}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button id="themeToggle" class="toggle" aria-label="Toggle light or dark mode" aria-pressed="false">
+  <span class="thumb">
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>
+  </span>
+</button>
+
+<header>
+  <span class="eyebrow">Lahore house · 3 stories · deploy in 2&ndash;3 weeks</span>
+  <h1>Finalized deployment: gateway, floors, WAN, cameras</h1>
+  <p class="lede">Built on the UDR-5G-Max as gateway. Corrected device names, wired-first coverage, isolated camera path, and the blind spots that decide whether this holds up.</p>
+</header>
+
+<div class="callout warn">
+  <h3>The single decision that makes or breaks this</h3>
+  <p style="font-size:13px;margin-bottom:0">Wireless mesh does not travel well through concrete floors. In a 3-story house, a 5/6 GHz backhaul between floors will be slow and flaky. <strong>Run one Cat6 riser per floor during the 2&ndash;3 week window</strong> and wire every AP. Wired backhaul is the difference between "fast everywhere" and "works near the router." Treat mesh as a fallback for a single blind spot, never as the plan.</p>
+</div>
+
+<!-- ARCHITECTURE DIAGRAM -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Recommended architecture</h2></div>
+  <div class="arch">
+    <svg viewBox="0 0 680 400" fill="none" font-family="ui-monospace,Menlo,monospace">
+      <!-- WAN edge -->
+      <rect x="12" y="18" width="120" height="26" rx="6" fill="var(--wan-bg)" stroke="var(--wan)"/>
+      <text x="72" y="35" text-anchor="middle" font-size="10.5" fill="var(--ink)">PTCL ONT (bridge)</text>
+      <rect x="12" y="52" width="120" height="26" rx="6" fill="var(--wan-bg)" stroke="var(--wan)"/>
+      <text x="72" y="69" text-anchor="middle" font-size="10.5" fill="var(--ink)">StormFiber ONT</text>
+      <rect x="12" y="86" width="120" height="26" rx="6" fill="var(--sim-bg)" stroke="var(--sim)"/>
+      <text x="72" y="103" text-anchor="middle" font-size="10.5" fill="var(--ink)">Local 4G/5G CPE</text>
+      <text x="72" y="126" text-anchor="middle" font-size="8.5" fill="var(--muted)">PTA-approved, Zong/Jazz</text>
+
+      <!-- optional bonder -->
+      <rect x="168" y="40" width="96" height="50" rx="8" fill="var(--card)" stroke="var(--line2)" stroke-dasharray="4 4"/>
+      <text x="216" y="60" text-anchor="middle" font-size="9.5" fill="var(--muted)">optional</text>
+      <text x="216" y="73" text-anchor="middle" font-size="10" fill="var(--ink)" font-weight="700">Bonder</text>
+      <text x="216" y="85" text-anchor="middle" font-size="8.5" fill="var(--muted)">OMR / Peplink</text>
+      <path d="M132 31 H168 V55" stroke="var(--wan)" stroke-width="1.6"/>
+      <path d="M132 65 H168" stroke="var(--wan)" stroke-width="1.6"/>
+      <path d="M132 99 H150 V78 H168" stroke="var(--sim)" stroke-width="1.6"/>
+
+      <!-- Ground floor band -->
+      <rect x="150" y="150" width="516" height="76" rx="10" fill="var(--floor-bg)" stroke="var(--floor)"/>
+      <text x="163" y="168" font-size="10" fill="var(--floor)" font-weight="700">GROUND FLOOR</text>
+      <rect x="300" y="176" width="150" height="40" rx="7" fill="var(--card)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="375" y="192" text-anchor="middle" font-size="10.5" fill="var(--ink)" font-weight="700">UDR-5G-Max</text>
+      <text x="375" y="206" text-anchor="middle" font-size="8.5" fill="var(--muted)">gateway + Wi-Fi + SIM</text>
+      <rect x="470" y="180" width="90" height="32" rx="6" fill="var(--bg2)" stroke="var(--line2)"/>
+      <text x="515" y="200" text-anchor="middle" font-size="9.5" fill="var(--ink)">PoE switch</text>
+      <path d="M264 65 H288 V180 M264 76 H276 V185 H300" stroke="var(--wan)" stroke-width="1.6" fill="none"/>
+      <path d="M450 196 H470" stroke="var(--line2)" stroke-width="1.6"/>
+
+      <!-- riser -->
+      <path d="M515 212 V250" stroke="var(--accent)" stroke-width="2.4"/>
+      <path d="M515 300 V330" stroke="var(--accent)" stroke-width="2.4"/>
+      <text x="524" y="270" font-size="8.5" fill="var(--accent)">Cat6 riser</text>
+      <text x="524" y="318" font-size="8.5" fill="var(--accent)">Cat6 riser</text>
+
+      <!-- First floor band -->
+      <rect x="150" y="250" width="516" height="50" rx="10" fill="var(--floor-bg)" stroke="var(--floor)"/>
+      <text x="163" y="268" font-size="10" fill="var(--floor)" font-weight="700">FIRST FLOOR</text>
+      <rect x="360" y="260" width="150" height="30" rx="7" fill="var(--card)" stroke="var(--floor)"/>
+      <text x="435" y="279" text-anchor="middle" font-size="10" fill="var(--ink)">UX7 or U7 (wired AP)</text>
+
+      <!-- Third floor band -->
+      <rect x="150" y="330" width="516" height="50" rx="10" fill="var(--floor-bg)" stroke="var(--floor)"/>
+      <text x="163" y="348" font-size="10" fill="var(--floor)" font-weight="700">THIRD FLOOR</text>
+      <rect x="360" y="340" width="150" height="30" rx="7" fill="var(--card)" stroke="var(--floor)"/>
+      <text x="435" y="359" text-anchor="middle" font-size="10" fill="var(--ink)">U7 Lite (wired AP)</text>
+
+      <!-- cameras -->
+      <rect x="574" y="258" width="88" height="112" rx="8" fill="var(--cam-bg)" stroke="var(--cam)"/>
+      <text x="618" y="278" text-anchor="middle" font-size="9.5" fill="var(--cam)" font-weight="700">Cameras</text>
+      <text x="618" y="292" text-anchor="middle" font-size="8" fill="var(--muted)">VLAN, isolated</text>
+      <text x="618" y="308" text-anchor="middle" font-size="8" fill="var(--muted)">PoE from switch</text>
+      <text x="618" y="322" text-anchor="middle" font-size="8" fill="var(--muted)">no internet</text>
+      <text x="618" y="344" text-anchor="middle" font-size="8" fill="var(--muted)">+ UNVR for</text>
+      <text x="618" y="356" text-anchor="middle" font-size="8" fill="var(--muted)">retention</text>
+      <path d="M560 196 H574" stroke="var(--cam)" stroke-width="1.4"/>
+    </svg>
+    <div class="legend">
+      <span><i style="background:var(--wan-bg);border:1px solid var(--wan)"></i>Wired WAN / fiber</span>
+      <span><i style="background:var(--sim-bg);border:1px solid var(--sim)"></i>Cellular WAN</span>
+      <span><i style="background:var(--floor-bg);border:1px solid var(--floor)"></i>Floor / AP</span>
+      <span><i style="background:var(--cam-bg);border:1px solid var(--cam)"></i>Cameras VLAN</span>
+      <span><i style="background:var(--card);border:1px dashed var(--line2)"></i>Optional bonder</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEVICE ROLES -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Device roles</h2></div>
+  <div class="tw"><table>
+    <thead><tr><th>Device</th><th>Where</th><th>Role</th><th>Uplink</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><span class="model">UDR-5G-Max</span></td><td>Ground</td><td>Gateway, load-balance 3 WAN, ground-floor Wi-Fi, console</td><td>2 fiber + SIM</td><td>Load balance + failover, not bonding</td></tr>
+      <tr><td><span class="model">PoE switch</span><br><span class="sub">USW-Flex-2.5G-PoE or Lite-8-PoE</span></td><td>Ground</td><td>Port + PoE expansion for APs and cameras</td><td>2.5G to UDR</td><td>UDR has only 1 PoE port, you need this</td></tr>
+      <tr><td><span class="model">UX7 or U7 Pro</span></td><td>First</td><td>Wired AP (preferred) or wireless mesh (fallback)</td><td>Cat6 riser</td><td>UX7 = 1 LAN port only, no PoE</td></tr>
+      <tr><td><span class="model">U7 Lite</span></td><td>Third</td><td>Wired AP, light coverage for the rarely-used floor</td><td>Cat6 riser</td><td>Do not overspend here</td></tr>
+      <tr><td><span class="model">Local 4G/5G CPE</span></td><td>Ground</td><td>Cellular WAN source (PTA-approved)</td><td>Ethernet to a WAN port</td><td>Sidesteps IMEI registration entirely</td></tr>
+      <tr><td><span class="model">UNVR</span> <span class="sub">(later)</span></td><td>Ground</td><td>Camera recording + retention</td><td>2.5G to switch</td><td>64 GB microSD on UDR is too small for CCTV</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted" style="font-size:11.5px;margin-top:6px">Skip the TP-Link repeaters. In a UniFi network they break seamless roaming and central management and add a weak security island. A wired U7 Lite on the third floor solves the same blind spot properly.</p>
+</section>
+
+<!-- STEP BY STEP -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">03</span><h2>ISP handoff, SIM config, and hardening</h2></div>
+  <ol class="steps">
+    <li><h3>Terminate fiber, then bridge</h3><p>Leave both ONTs in place, they convert fiber to Ethernet. In each ONT admin, enable <strong>bridge mode</strong> so the UDR does the routing. PTCL is usually PPPoE (enter the PPPoE username and password from your ISP on the UDR WAN). StormFiber is often DHCP, and may need MAC clone. If an ISP refuses bridge, accept double-NAT: it still load-balances, but you lose inbound ports and clean VPN.</p></li>
+    <li><h3>Assign the WANs</h3><p>In UniFi Network, set PTCL on the SFP+ or a 2.5G port, StormFiber on a second 2.5G port. Set each WAN type (PPPoE or DHCP). Choose <strong>Load Balancing</strong> with a weight, or <strong>Failover</strong> priority if you want one primary. Enable per-WAN health checks so a flapping line is dropped automatically.</p></li>
+    <li><h3>Cellular as third WAN</h3><p>If using the UDR internal SIM: insert the nano-SIM, open the Cellular WAN, set the APN. Zong data: <code>zonginternet</code>. Jazz data: <code>jazzconnect.mobilinkworld.com</code>. Confirm the current APN with the carrier, they change. Prefer <strong>failover</strong> for the SIM to avoid burning data, and set a hard <strong>data cap and alert</strong>. If using a local CPE instead, put it in bridge or drop-in mode and feed a WAN port. Expect <strong>CGNAT</strong>: outbound and failover only, no inbound.</p></li>
+    <li><h3>Segment with VLANs</h3><p>Reuse the Berlin model: MGMT, LAN, IoT, Guest, Cameras, Servers. Default deny between VLANs. Cameras get no internet egress. Guest gets client isolation and internet only. IoT cannot reach LAN or MGMT.</p></li>
+    <li><h3>Wi-Fi and roaming</h3><p>WPA3, strong PSK, one SSID per trust zone, 6 GHz enabled for near-router devices. Set <strong>country = Pakistan</strong> so channels and power are legal. Enable fast roaming so clients hand off cleanly between the wired APs. Disable WPS.</p></li>
+    <li><h3>Harden the console</h3><p>Change all defaults, enable MFA on the Ubiquiti account, use WireGuard or Teleport for remote admin rather than exposing the UI. Turn IDS/IPS on. Disable UPnP. Review and minimise port forwards. Keep firmware auto-update in a low-use window.</p></li>
+  </ol>
+</section>
+
+<!-- FEATURE RISKS -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Feature risks to accept knowingly</h2></div>
+  <div class="tw"><table class="risk">
+    <thead><tr><th>Feature</th><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Load balancing</td><td>Source IP flaps between lines, banking and some streaming sites log you out or block</td><td>Pin those apps to one WAN with a policy route</td></tr>
+      <tr><td>Cellular CGNAT</td><td>No inbound, IP changes on failover break live sessions</td><td>Use cellular as failover only, not for hosting</td></tr>
+      <tr><td>Double-NAT</td><td>Breaks port forwarding, some gaming and P2P, complicates VPN</td><td>Push for ISP bridge mode first, DMZ the UDR as last resort</td></tr>
+      <tr><td>Wireless mesh</td><td>Shared airtime halves throughput, concrete floors kill backhaul</td><td>Wire every AP, mesh only one blind spot</td></tr>
+      <tr><td>TP-Link repeater</td><td>Rogue SSID, no roaming, weak security, unmanaged</td><td>Remove, use a wired UniFi AP</td></tr>
+      <tr><td>UPnP enabled</td><td>Apps auto-open inbound ports without you knowing</td><td>Disable, forward ports manually if truly needed</td></tr>
+      <tr><td>Public service exposure</td><td>Every open port is patch pressure and attack surface</td><td>Keep everything behind VPN, never expose the UI or cameras</td></tr>
+      <tr><td>Camera microSD</td><td>Tiny retention, card wear-out</td><td>Move to a UNVR, size retention to your days of footage</td></tr>
+      <tr><td>Imported modem IMEI</td><td>Cellular blocked after the DIRBS grace period</td><td>Use a local PTA-approved CPE, or register and pay duty</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- BONDING PLACEMENT -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">05</span><h2>If you add a bonder later</h2></div>
+  <p class="muted" style="font-size:12.5px;max-width:74ch">Bonding sits at the very edge, upstream of the gateway. The bonder eats the two fibers plus a cellular source, bonds them at the packet level with WAN Smoothing and FEC (the part that actually masks your packet loss), and hands one clean link to the UDR-5G-Max WAN. Mode: <strong>bonding plus hot failover</strong>. Endpoint: a VPS sized above your combined speed, placed for low ping to Lahore.</p>
+  <div class="callout">
+    <h3>The honest trade-off</h3>
+    <p style="font-size:12.5px;margin-bottom:0">If a bonder is handling cellular, the UDR-5G-Max's own SIM becomes redundant. For a committed bonding build, a plain <strong>UCG-Max plus the bonder plus a local CPE</strong> is more logical and cheaper than paying for the UDR's modem you would not use. Decide bonding vs load balancing before you buy the gateway, it changes which gateway to buy.</p>
+  </div>
+</section>
+
+<!-- CAMERAS -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Camera path (future)</h2></div>
+  <p style="font-size:13px;max-width:74ch">UniFi Protect runs on the UDR-5G-Max, but it manages only a handful of cameras and its 64 GB card is too small for continuous CCTV. Power the cameras from the PoE switch, not the UDR's single PoE port. Put every camera on an isolated <strong>Cameras VLAN with no internet egress</strong>, so a compromised camera cannot phone home. For real retention add a <strong>UNVR</strong> and size storage to your days of footage at your resolution and camera count. Never forward a port to a camera or the NVR, reach them over VPN.</p>
+</section>
+
+<!-- PROS CONS -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Your plan, critiqued</h2></div>
+  <div class="grid2">
+    <div class="pc pros">
+      <h3>What is right</h3>
+      <ul>
+        <li>UDR-5G-Max as a single gateway with two fibers plus a SIM is a clean, low-part-count core</li>
+        <li>Staying in UniFi keeps one management plane and reuses your Berlin skills and VLAN model</li>
+        <li>Per-floor APs is the correct instinct for a multi-story house</li>
+        <li>Right-sizing the rarely-used third floor rather than over-building it</li>
+      </ul>
+    </div>
+    <div class="pc cons">
+      <h3>What needs fixing</h3>
+      <ul>
+        <li>Wireless mesh between concrete floors will disappoint, wire the risers now</li>
+        <li>TP-Link repeaters undo UniFi roaming and management, drop them</li>
+        <li>One desktop gateway is a single point of failure for the whole house</li>
+        <li>Port and PoE budget on the UDR is tight once APs and cameras arrive, add a switch</li>
+        <li>Naming: the box you want is the UDR-5G-Max, there is no Dream Router 7 Max</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU ARE MISSING -->
+<section class="sec">
+  <div class="sec-head"><span class="sec-num">08</span><h2>What you are missing</h2></div>
+  <ul class="check">
+    <li class="hot"><b>Wired risers.</b> The one thing that decides success. Pull Cat6 to each floor during the deployment window, before walls close.</li>
+    <li class="hot"><b>Power and load-shedding.</b> Put the gateway, switch, and any bonder on a pure-sine UPS. Without it, multi-WAN is pointless during an outage.</li>
+    <li><b>Surge and grounding.</b> Lahore power is dirty and storms are real. Surge-protect power and the incoming lines, and ground the rack.</li>
+    <li><b>Heat.</b> Summer temperatures stress fanless gear and the NAS. Give the stack ventilation, not a closed cabinet.</li>
+    <li><b>Neighbour Wi-Fi.</b> Dense 2.4/5 GHz in Lahore. Plan channels, lean on 6 GHz for near-router devices.</li>
+    <li><b>Failover testing.</b> A failover plan is only real once you have pulled each WAN and watched it recover. Test before you rely on it.</li>
+    <li><b>IMEI and CGNAT.</b> Use a local PTA-approved CPE for cellular. Remember that leg is outbound-only.</li>
+    <li><b>Backup config.</b> Export the UniFi config after setup and store it off-box, so a dead gateway is a 20-minute restore.</li>
+  </ul>
+</section>
+
+<footer>
+  <h3>Assumptions</h3>
+  <ol>
+    <li>Gateway is the UDR-5G-Max (WiFi 7 + dual SIM). "Dream Router 7 Max" does not exist.</li>
+    <li>You can run Cat6 between floors during the 2&ndash;3 week window. If not, coverage expectations drop sharply.</li>
+    <li>Fiber plans are sub-gigabit and both ISPs allow, or tolerate, bridge or DHCP handoff.</li>
+    <li>Cellular is failover, and via a local PTA-approved CPE unless you register the UDR modem.</li>
+    <li>Cameras are a later phase, planned for from day one via VLAN and switch headroom.</li>
+  </ol>
+  <h3>Sources</h3>
+  <div class="srcs">
+    techspecs.ui.com UDR-5G-Max &amp; UX7 &middot; dongknows.com UX7 review (mesh vs wired AP behaviour) &middot; interprojekt.pl UX7 deployment modes &middot; broadbandbuyer.com UDR-5G-Max bands &middot; peplink.com SpeedFusion &middot; openmptcprouter.com &middot; pakgamers.com StormFiber/PTCL bridge PPPoE thread &middot; PTA DIRBS (device registration)
+  </div>
+  <p class="stamp">Lahore 3-story deployment architecture &middot; last updated 2026-07-22 &middot; homelab knowledge base</p>
+</footer>
+<!-- sig:U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t -->
+<script>
+(function(){
+  var root=document.documentElement, KEY='lahore-deploy-theme', btn=document.getElementById('themeToggle');
+  var stored=null; try{stored=localStorage.getItem(KEY);}catch(e){}
+  if(stored==='dark'||stored==='light'){root.setAttribute('data-theme',stored);}
+  function set(t){root.setAttribute('data-theme',t);btn.setAttribute('aria-pressed',t==='dark'?'true':'false');try{localStorage.setItem(KEY,t);}catch(e){}}
+  set(root.getAttribute('data-theme')||'light');
+  btn.addEventListener('click',function(){set(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+})();
+</script>
+</body>
+</html>
