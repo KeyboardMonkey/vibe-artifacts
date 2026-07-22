@@ -19,3 +19,4 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Breach Anatomy: CloudFlare Clickfix Attack](./cloudflare-clickfix/index.html) — Detection, ThreatIntel, Response, IOCs, Threat Hunting
 - [Vorfahrt - Right of way](./vorfahrt/index.html) - Understanding driving priority in Germany
 - [Box Money - IBKR](./box-money/index.html) — Free money hack, don't tell anyone!
+- [Homelab — LHR](./homelab-pk/index.html) — High redundancy offshore network.
