@@ -2,7 +2,8 @@
 
 vibe coded infographics, interactive artifacts etc.
 
-https://keyboardmonkey.github.io/vibe-artifacts/ 
+- [https://keyboardmonkey.github.io/vibe-artifacts/](https://keyboardmonkey.github.io/vibe-artifacts/)
+- [https://github.com/KeyboardMonkey/vibe-artifacts/](https://github.com/KeyboardMonkey/vibe-artifacts/tree/main)
 
 ## Projects
 
