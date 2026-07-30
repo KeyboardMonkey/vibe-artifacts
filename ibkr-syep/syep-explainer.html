@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<!-- Syed Ishaq B. | ishaqzafar.com -->
+<html lang="en" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock Yield Enhancement Program: how the money actually moves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7E9E3;
+  --paper-2:#DDE0D9;
+  --ink:#191E24;
+  --ink-soft:#5A6470;
+  --rule:rgba(25,30,36,.16);
+  --rule-hard:rgba(25,30,36,.38);
+  --credit:#1D4E8F;
+  --credit-wash:rgba(29,78,143,.10);
+  --stamp:#8E2B20;
+  --stamp-wash:rgba(142,43,32,.10);
+  --tape:#CFD4CA;
+  --shadow:0 1px 0 rgba(25,30,36,.10);
+}
+[data-theme="night"]{
+  --paper:#14181C;
+  --paper-2:#1B2126;
+  --ink:#E4E7E2;
+  --ink-soft:#96A1AB;
+  --rule:rgba(228,231,226,.16);
+  --rule-hard:rgba(228,231,226,.40);
+  --credit:#7FB2E8;
+  --credit-wash:rgba(127,178,232,.12);
+  --stamp:#E08A7E;
+  --stamp-wash:rgba(224,138,126,.12);
+  --tape:#232B31;
+  --shadow:0 1px 0 rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Sans 3",ui-sans-serif,system-ui,sans-serif;
+  font-size:16.5px;
+  line-height:1.55;
+  transition:background .25s ease,color .25s ease;
+}
+main{max-width:940px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,40px) 80px}
+h1,h2,h3{
+  font-family:"Archivo",ui-sans-serif,system-ui,sans-serif;
+  font-variation-settings:"wdth" 118;
+  font-weight:800;
+  letter-spacing:-.015em;
+  line-height:.96;
+  margin:0;
+  text-transform:uppercase;
+}
+h1{font-size:clamp(38px,8.4vw,74px)}
+h2{font-size:clamp(20px,3.4vw,27px);font-variation-settings:"wdth" 108}
+h3{font-size:15px;font-variation-settings:"wdth" 104;letter-spacing:.01em}
+p{margin:0 0 .9em}
+a{color:var(--credit);text-decoration-thickness:1px;text-underline-offset:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);
+}
+.lede{font-size:clamp(17px,2.3vw,20.5px);line-height:1.42;max-width:60ch}
+.small{font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+
+/* ---- theme toggle ---- */
+.theme{
+  position:fixed;top:16px;right:16px;z-index:60;
+  width:54px;height:29px;border-radius:999px;border:1px solid var(--rule-hard);
+  background:var(--paper-2);cursor:pointer;padding:2px;
+  display:flex;align-items:center;justify-content:flex-start;
+  transition:background .25s ease,border-color .25s ease;
+}
+.theme .thumb{
+  width:23px;height:23px;border-radius:999px;background:var(--credit);
+  display:grid;place-items:center;color:var(--paper);
+  transition:transform .28s cubic-bezier(.5,.05,.2,1),background .25s ease,color .25s ease;
+}
+.theme svg{width:13px;height:13px;display:block}
+[data-theme="night"] .theme{background:#0A0D10;border-color:rgba(228,231,226,.5)}
+[data-theme="night"] .theme .thumb{transform:translateX(25px);background:#E4E7E2;color:#0A0D10}
+.theme:focus-visible{outline:2px solid var(--credit);outline-offset:3px}
+
+/* ---- masthead ---- */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:34px}
+.masthead h1{margin:10px 0 16px}
+.masthead h1 span{display:block}
+.masthead h1 .thin{font-variation-settings:"wdth" 118;font-weight:400}
+.stamp{
+  display:inline-block;border:1.5px solid var(--stamp);color:var(--stamp);
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;padding:3px 8px;border-radius:2px;transform:rotate(-1.2deg);
+}
+.facts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:24px;
+}
+.facts div{background:var(--paper);padding:11px 13px}
+.facts dt{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+.facts dd{margin:3px 0 0;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:500}
+
+section{margin:0 0 54px;scroll-margin-top:20px}
+.shead{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--ink);padding-bottom:8px;margin-bottom:20px;flex-wrap:wrap}
+.shead .eyebrow{margin-left:auto}
+
+/* ---- flow ticket ---- */
+.ticket{border:1px solid var(--rule-hard);background:var(--paper-2);padding:clamp(14px,2.6vw,22px)}
+.parties{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center}
+.party{border:1px solid var(--rule-hard);background:var(--paper);padding:12px 8px}
+.party .who{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 104;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.02em}
+.party .role{font-size:12px;color:var(--ink-soft);margin-top:3px;line-height:1.3}
+.party.you{border-color:var(--credit);box-shadow:inset 0 0 0 2px var(--credit-wash)}
+.legs{margin-top:14px;display:grid;gap:1px;background:var(--rule)}
+.leg{
+  background:var(--paper);display:grid;
+  grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:9px 11px;
+}
+.leg .n{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-soft)}
+.leg .desc{font-size:14.5px;line-height:1.35}
+.leg .desc b{font-weight:600}
+.leg .val{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:500;white-space:nowrap}
+.leg.out .val{color:var(--stamp)}
+.leg.in .val{color:var(--credit)}
+.leg.key{background:var(--credit-wash)}
+
+/* ---- calculator ---- */
+.calc{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:26px;align-items:start}
+.controls{display:grid;gap:15px}
+.field label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+.field label .cur{font-size:13px;letter-spacing:0;color:var(--ink);font-weight:600;text-transform:none}
+input[type="number"],select{
+  width:100%;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-hard);border-radius:0;padding:8px 9px;
+  font-family:"IBM Plex Mono",monospace;font-size:15px;
+}
+input[type="range"]{width:100%;accent-color:var(--credit);margin:2px 0 0}
+input:focus-visible,select:focus-visible{outline:2px solid var(--credit);outline-offset:1px}
+.readout{border:1px solid var(--rule-hard);background:var(--paper-2)}
+.row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:9px 13px;border-bottom:1px solid var(--rule);align-items:baseline}
+.row:last-child{border-bottom:0}
+.row .k{font-size:13.5px;line-height:1.3}
+.row .k em{font-style:normal;color:var(--ink-soft);font-size:12px;display:block}
+.row .v{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:500;white-space:nowrap}
+.row.hero{background:var(--credit-wash);border-bottom:1px solid var(--rule-hard)}
+.row.hero .v{font-size:19px;color:var(--credit);font-weight:600}
+.row.muted .v{color:var(--ink-soft);text-decoration:line-through}
+
+/* ---- accrual tape (signature) ---- */
+.tapewrap{margin-top:22px;border:1px solid var(--rule-hard);background:var(--paper-2);padding:14px}
+.tapehead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.tape{position:relative;height:108px;background:var(--paper);border:1px solid var(--rule);overflow:hidden}
+.tape .stripes{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 17px,var(--tape) 17px 34px);opacity:.7}
+.bars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:1px;padding:0 4px 0}
+.bar{flex:1 1 0;min-width:1px;background:var(--credit);opacity:.9}
+.bar.credited{background:var(--stamp)}
+.thresh{position:absolute;left:0;right:0;border-top:1.5px dashed var(--stamp)}
+.thresh span{position:absolute;right:4px;top:-16px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--stamp);background:var(--paper);padding:0 4px}
+.tapefoot{display:flex;justify-content:space-between;margin-top:7px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft)}
+
+/* ---- tables ---- */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:right;padding:8px 9px;border-bottom:1px solid var(--rule)}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl thead th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid var(--ink);font-weight:500}
+.tbl td:not(:first-child){font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.tbl tfoot td{font-weight:600;border-top:1px solid var(--ink);border-bottom:0}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pos{color:var(--credit)}
+.neg{color:var(--stamp)}
+
+/* ---- lists ---- */
+.giveup{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.giveup article{background:var(--paper);padding:13px 15px;display:grid;grid-template-columns:26px 1fr;gap:12px}
+.giveup .mark{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--stamp);padding-top:3px}
+.giveup h3{margin-bottom:4px}
+.giveup p{margin:0;font-size:14.5px;line-height:1.45}
+.note{border-left:3px solid var(--stamp);background:var(--stamp-wash);padding:12px 15px;font-size:14.5px;line-height:1.5}
+.note strong{font-weight:600}
+.conf{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;padding:1px 5px;border-radius:2px;white-space:nowrap}
+footer{border-top:2px solid var(--ink);padding-top:16px;font-size:13px;color:var(--ink-soft)}
+footer ol{margin:8px 0 0;padding-left:20px}
+footer li{margin-bottom:4px}
+
+@media (max-width:760px){
+  .calc{grid-template-columns:1fr}
+  .parties{grid-template-columns:1fr}
+  .leg{grid-template-columns:20px 1fr;row-gap:2px}
+  .leg .val{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<button class="theme" id="themeBtn" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+  <span class="thumb" id="thumb">
+    <svg id="icoSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.4M12 19.8v2.4M4.2 12H1.8M22.2 12h-2.4M6.5 6.5 4.8 4.8M19.2 19.2l-1.7-1.7M17.5 6.5l1.7-1.7M4.8 19.2l1.7-1.7"/>
+    </svg>
+    <svg id="icoMoon" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+      <path d="M21 13.4A9.2 9.2 0 1 1 10.6 3a7.4 7.4 0 0 0 10.4 10.4Z"/>
+    </svg>
+  </span>
+</button>
+
+<main>
+
+<header class="masthead">
+  <div class="eyebrow">Client Portal / Settings / Stock Yield Enhancement Program</div>
+  <h1><span>Lending</span><span class="thin">your shares</span><span>to IBKR</span></h1>
+  <p class="lede">Tick that box and IBKR borrows your fully paid shares, lends them on to short sellers, and splits the borrow fee with you 50/50. The part nobody explains: your fee is not calculated on what your shares are worth. It is calculated on the <b>cash collateral</b> IBKR posts back into your account, which is deliberately more than market value.</p>
+  <span class="stamp">50 percent to you / 50 percent to IBKR</span>
+  <dl class="facts">
+    <div><dt>Fee split</dt><dd>50% of market rate</dd></div>
+    <div><dt>Day count</dt><dd>actual / 360 (USD, EUR)</dd></div>
+    <div><dt>Accrual</dt><dd>daily, credited monthly</dd></div>
+    <div><dt>Exit</dt><dd>any time, no lock-up</dd></div>
+  </dl>
+</header>
+
+<section id="flow">
+  <div class="shead"><h2>The four legs of one loan</h2><span class="eyebrow">Live: reflects your inputs below</span></div>
+  <div class="ticket">
+    <div class="parties">
+      <div class="party you"><div class="who">You</div><div class="role">Owns the shares. Keeps all price exposure, gain and loss.</div></div>
+      <div class="party"><div class="who">IBKR</div><div class="role">Borrows from you, lends onward, keeps half the fee for running the book.</div></div>
+      <div class="party"><div class="who">Short seller</div><div class="role">Needs the shares to sell short. Pays the full market rate.</div></div>
+    </div>
+    <div class="legs">
+      <div class="leg"><span class="n">01</span><span class="desc">You deliver <b id="f-shares">8,000</b> shares to IBKR. They leave your custody and stop being covered by investor compensation.</span><span class="val" id="f-mv">$0</span></div>
+      <div class="leg in key"><span class="n">02</span><span class="desc">IBKR posts <b>cash collateral</b> into your account at 102% of the prior close, rounded up to the next whole unit, per share.</span><span class="val" id="f-coll">$0</span></div>
+      <div class="leg"><span class="n">03</span><span class="desc">IBKR lends the same shares onward and collects the full market borrow rate.</span><span class="val" id="f-gross">$0/yr</span></div>
+      <div class="leg in"><span class="n">04</span><span class="desc">IBKR pays you half that rate, applied to the collateral balance, accrued every calendar day.</span><span class="val" id="f-yours">$0/yr</span></div>
+    </div>
+    <p class="small" style="margin:12px 0 0">Legs 01 and 02 unwind the moment you sell, or the moment IBKR decides to recall. Nothing here restricts your ability to trade the position.</p>
+  </div>
+</section>
+
+<section id="math">
+  <div class="shead"><h2>Run it on your own numbers</h2><span class="eyebrow">actual / 360 daily accrual</span></div>
+  <div class="calc">
+    <div class="controls">
+      <div class="field">
+        <label for="i-shares">Shares on loan</label>
+        <input type="number" id="i-shares" value="8000" min="1" step="1">
+      </div>
+      <div class="field">
+        <label for="i-price">Prior close, per share</label>
+        <input type="number" id="i-price" value="24.60" min="0.01" step="0.01">
+      </div>
+      <div class="field">
+        <label for="i-rate">Market borrow rate <span class="cur mono" id="o-rate">6.00%</span></label>
+        <input type="range" id="i-rate" value="6" min="0.05" max="60" step="0.05">
+      </div>
+      <div class="field">
+        <label for="i-days">Days on loan <span class="cur mono" id="o-days">30</span></label>
+        <input type="range" id="i-days" value="30" min="1" max="365" step="1">
+      </div>
+      <div class="field">
+        <label for="i-basis">Day count basis</label>
+        <select id="i-basis">
+          <option value="360" selected>360 (USD, EUR, CHF, SEK, DKK, NOK, JPY)</option>
+          <option value="365">365 (GBP, CAD, AUD, HKD, SGD)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="i-basisc">Collateral convention</label>
+        <select id="i-basisc">
+          <option value="1" selected>102% of prior close, rounded up to next 1.00</option>
+          <option value="0">Plain market value (how IBKR markets it)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="readout">
+        <div class="row"><span class="k">Collateral per share<em>What your fee is actually charged on</em></span><span class="v" id="o-cps">$0.00</span></div>
+        <div class="row"><span class="k">Collateral balance<em id="o-uplift">Uplift over market value: 0.0%</em></span><span class="v" id="o-coll">$0</span></div>
+        <div class="row"><span class="k">Gross fee the borrower pays<em>Annualised, at today's rate</em></span><span class="v neg" id="o-gross">$0</span></div>
+        <div class="row hero"><span class="k">Your daily accrual<em id="o-vis">Appears on the daily statement</em></span><span class="v" id="o-daily">$0.00</span></div>
+        <div class="row"><span class="k">Your total over the period<em id="o-periodlbl">30 days on loan</em></span><span class="v pos" id="o-period">$0</span></div>
+        <div class="row"><span class="k">Effective yield on the position<em>Annualised, against market value</em></span><span class="v" id="o-eff">0.00%</span></div>
+      </div>
+
+      <div class="tapewrap">
+        <div class="tapehead">
+          <div><h3>Accrual tape</h3><div class="small" id="tape-sub">One bar per day. Accruals build daily and settle to cash after month end.</div></div>
+        </div>
+        <div class="tape" id="tape">
+          <div class="stripes"></div>
+          <div class="bars" id="bars"></div>
+          <div class="thresh" id="thresh" style="bottom:0"><span id="thresh-lbl">1.00 statement floor</span></div>
+        </div>
+        <div class="tapefoot"><span>Day 1</span><span id="tape-end">Day 30</span></div>
+        <p class="small" style="margin:9px 0 0">The dashed line is IBKR's reporting floor. Accruals below 1.00 in the account currency are tracked internally but never printed on the daily statement, which is why small positions look like they earn nothing. The alternating colour marks each 30 day block, at the end of which the accrual is reversed and credited to cash.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="published">
+  <div class="shead"><h2>IBKR's own worked example, and the bit it leaves out</h2></div>
+  <p>This is the three stock example straight off the IBKR pricing page. It is accurate but simplified: it applies the market rate to plain market value and ignores the 102% collateral uplift, so it understates your fee slightly. The last two columns add the correction.</p>
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th>Stock</th><th>Price</th><th>Shares</th><th>Market value</th><th>Rate</th><th>Gross fee</th><th>Your 50%</th><th>Collateral</th><th>Corrected</th></tr></thead>
+    <tbody>
+      <tr><td>Stock 1</td><td>80.00</td><td>500</td><td>40,000</td><td>5.00%</td><td>2,000</td><td class="pos">1,000</td><td>41,000</td><td class="pos">1,025</td></tr>
+      <tr><td>Stock 2</td><td>25.00</td><td>2,000</td><td>50,000</td><td>0.50%</td><td>250</td><td class="pos">125</td><td>52,000</td><td class="pos">130</td></tr>
+      <tr><td>Stock 3</td><td>100.00</td><td>1,000</td><td>100,000</td><td>9.00%</td><td>9,000</td><td class="pos">4,500</td><td>102,000</td><td class="pos">4,590</td></tr>
+    </tbody>
+    <tfoot><tr><td>Total</td><td></td><td></td><td>190,000</td><td></td><td>11,250</td><td class="pos">5,625</td><td>195,000</td><td class="pos">5,745</td></tr></tfoot>
+  </table>
+  </div>
+  <p class="small" style="margin-top:12px">Read the middle column, not the total. Stock 3 alone is 80% of the payout. Stock 2, at half a percent, contributes 130 a year on a 50,000 position, which is 0.26%. That is the shape of almost every real portfolio: one or two hard to borrow names carry everything, and the broad holdings contribute rounding errors.</p>
+  <p class="small">The rounding also cuts your way on cheap stocks. A share at 1.40 collateralises at 2.00, a 43% uplift on the fee base. A share at 240.00 collateralises at 245.00, an uplift of 2.1%, which is essentially just the 102% margin. Low priced, hard to borrow names are where this program is worth anything at all.</p>
+</section>
+
+<section id="reality">
+  <div class="shead"><h2>What actually gets lent</h2></div>
+  <p>IBKR only borrows what it can place. The market splits roughly into two buckets, and which one your portfolio sits in decides whether this checkbox is worth ticking.</p>
+  <div class="scroll">
+  <table class="tbl">
+    <thead><tr><th>Bucket</th><th>Typical names</th><th>Borrow demand</th><th>What you should expect</th></tr></thead>
+    <tbody>
+      <tr><td>General collateral</td><td style="text-align:left">Broad index ETFs, mega cap blue chips, most core holdings</td><td style="text-align:left">Abundant supply, minimal demand</td><td style="text-align:left">Rarely borrowed at all. When it happens the rate is a fraction of a percent, and your half of that is invisible.</td></tr>
+      <tr><td>Hard to borrow</td><td style="text-align:left">Heavily shorted small and mid caps, recent IPOs, squeeze candidates, thin single country or thematic ETFs</td><td style="text-align:left">Scarce supply, real demand</td><td style="text-align:left">Borrowed often, sometimes at double digit annualised rates. Also the most volatile rates, and the ones IBKR recalls without notice.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small" style="margin-top:12px">You get no control over selection. There is no per position opt in, no minimum rate you can set, no way to exclude a holding while keeping the rest enrolled. It is one account level switch, and IBKR chooses. If you want per name control you need a broker that offers it, or you keep two accounts and only enrol one.</p>
+</section>
+
+<section id="giveup">
+  <div class="shead"><h2>Six things you hand over</h2><span class="eyebrow">Sourced from IBKR's own risk disclosure</span></div>
+  <div class="giveup">
+    <article><span class="mark">01</span><div><h3>Investor compensation cover on the lent shares</h3><p>While on loan the shares are outside the compensation scheme. The cash collateral in your account is the substitute protection, marked daily. Note that scheme caps are low enough to be immaterial on a serious portfolio anyway, so the real protection you rely on is asset segregation, and lending steps outside it.</p></div></article>
+    <article><span class="mark">02</span><div><h3>Your proxy vote</h3><p>Voting rights follow the shares to the borrower for the entire loan. If a vote matters to you, the only remedy is to unenrol or sell, and there is no notification when a loan spans a record date.</p></div></article>
+    <article><span class="mark">03</span><div><h3>Clean dividend treatment</h3><p>If a loan is open across a dividend record date, you receive a payment in lieu rather than the dividend itself. IBKR usually recalls before record dates, but usually is not always. A payment in lieu can break withholding tax reclaim and treaty relief, which on a US dividend at 15% withholding can cost more than a year of lending fees on the same position.</p></div></article>
+    <article><span class="mark">04</span><div><h3>Rate certainty</h3><p>Rates reprice constantly and IBKR's own disclosure warns they may move by 50% or more in either direction. Whatever number you see today is not a run rate you can plan against.</p></div></article>
+    <article><span class="mark">05</span><div><h3>Any guarantee of income</h3><p>Enrolling guarantees nothing. IBKR is not obliged to borrow anything, may borrow a fraction of a position, and may terminate any loan at any time.</p></div></article>
+    <article><span class="mark">06</span><div><h3>Nothing at all on the price exposure</h3><p>Worth stating plainly because it is the one genuine free lunch here: you keep the full economic exposure. Gains, losses, and the right to sell at any moment are untouched. That is why the program is defensible for the right holdings.</p></div></article>
+  </div>
+</section>
+
+<section id="tax">
+  <div class="shead"><h2>If you file in Germany</h2><span class="eyebrow">Verify before relying on it</span></div>
+  <div class="note">
+    <p style="margin:0 0 .7em"><strong>The fee is interest, not a dividend.</strong> Securities lending income is a fee for granting use of capital, which puts it in the interest-like corner of Einkünfte aus Kapitalvermögen under section 20 EStG rather than the dividend corner. Practical consequences: no Teilfreistellung, no foreign withholding to credit, and it lands in your Verlustverrechnungstopf logic as ordinary Kapitalertrag.</p>
+    <p style="margin:0 0 .7em"><strong>Nobody withholds it for you.</strong> Interactive Brokers Ireland is not a German paying agent, so there is no Abgeltungsteuer deducted at source and no Steuerbescheinigung. The income is self declared in Anlage KAP as ausländische Kapitalerträge, and the Sparer-Pauschbetrag does not get applied automatically the way it would at a German broker.</p>
+    <p style="margin:0"><strong>The open question is the payment in lieu.</strong> Whether a substitute dividend on a lent share keeps its character for Teilfreistellung on a fund holding, and whether treaty withholding stays creditable, is not something you should settle from a web page. Take one real year of activity statements to a Steuerberater before you enrol a dividend paying position.</p>
+    <p style="margin:.7em 0 0"><span class="conf" style="color:var(--stamp)">Confidence: Low</span> <span class="small">The section 20 classification is well grounded. The payment in lieu treatment for a private German investor at a foreign broker is not clearly settled in published guidance.</span></p>
+  </div>
+</section>
+
+<footer>
+  <div class="eyebrow">Sources</div>
+  <ol>
+    <li>Interactive Brokers Ireland, Stock Yield Enhancement Program: fee split, cash collateral, eligibility, and the full risk list.</li>
+    <li>IBKR Campus SYEP trading lesson: interest accrues every calendar day on an actual/360 basis.</li>
+    <li>IBKR interest and margin calculations: collateral balance equals prior day close times 102%, rounded up to the next 1.00, times share count.</li>
+    <li>IBKR reporting reference: SYEP income sits in Interest Accrued, shown only above 1.00, credited to cash monthly.</li>
+    <li>IBKR glossary, payment in lieu of dividends: possible while a position is on loan through SYEP.</li>
+  </ol>
+  <p style="margin-top:14px">Not investment, tax, or legal advice. Figures are yours to verify against your own statements.</p>
+</footer>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- theme ---------- */
+  var KEY = "syep-theme";
+  var root = document.documentElement;
+  var btn  = document.getElementById("themeBtn");
+  var sun  = document.getElementById("icoSun");
+  var moon = document.getElementById("icoMoon");
+  var mem  = null;
+
+  function readTheme(){
+    try { return localStorage.getItem(KEY); } catch(e){ return mem; }
+  }
+  function writeTheme(v){
+    try { localStorage.setItem(KEY, v); } catch(e){ mem = v; }
+  }
+  function applyTheme(v){
+    root.setAttribute("data-theme", v);
+    var night = v === "night";
+    btn.setAttribute("aria-checked", night ? "true" : "false");
+    sun.style.display  = night ? "none"  : "block";
+    moon.style.display = night ? "block" : "none";
+  }
+  applyTheme(readTheme() === "night" ? "night" : "day");
+  btn.addEventListener("click", function(){
+    var next = root.getAttribute("data-theme") === "night" ? "day" : "night";
+    applyTheme(next); writeTheme(next);
+  });
+
+  /* ---------- formatting ---------- */
+  var money = function(n, dp){
+    dp = (dp === undefined) ? 0 : dp;
+    return "$" + n.toLocaleString("en-US", {minimumFractionDigits:dp, maximumFractionDigits:dp});
+  };
+  var pct = function(n, dp){ return n.toFixed(dp === undefined ? 2 : dp) + "%"; };
+
+  /* ---------- inputs ---------- */
+  var el = function(id){ return document.getElementById(id); };
+  var inShares = el("i-shares"), inPrice = el("i-price"), inRate = el("i-rate"),
+      inDays = el("i-days"), inBasis = el("i-basis"), inConv = el("i-basisc");
+
+  /* sig: U3llZCBJc2hhcSBCLiB8IGlzaGFxemFmYXIuY29t */
+
+  var TAPE_H = 108;      /* px, must match .tape height */
+  var MAX_BARS = 120;    /* beyond this, bars are aggregated for legibility */
+
+  function compute(){
+    var shares = Math.max(1, Number(inShares.value) || 1);
+    var price  = Math.max(0.01, Number(inPrice.value) || 0.01);
+    var rate   = Number(inRate.value) / 100;
+    var days   = Math.max(1, Number(inDays.value) || 1);
+    var basis  = Number(inBasis.value);
+    var useColl = inConv.value === "1";
+
+    var mv = shares * price;
+    var cps = useColl ? Math.ceil(price * 1.02) : price;
+    var coll = cps * shares;
+    var uplift = (coll / mv - 1) * 100;
+
+    var grossAnnual = coll * rate;
+    var yoursAnnual = grossAnnual * 0.5;
+    var dailyYours  = yoursAnnual / basis;
+    var periodYours = dailyYours * days;
+    var effective   = (yoursAnnual / mv) * 100;
+
+    return {shares:shares, price:price, rate:rate, days:days, mv:mv, cps:cps,
+            coll:coll, uplift:uplift, grossAnnual:grossAnnual, yoursAnnual:yoursAnnual,
+            dailyYours:dailyYours, periodYours:periodYours, effective:effective};
+  }
+
+  function renderTape(d){
+    var bars = el("bars");
+    bars.innerHTML = "";
+    var n = Math.min(d.days, MAX_BARS);
+    var perBar = d.days / n;
+    var daily = d.dailyYours * perBar;
+
+    /* scale so the taller of (bar, floor line) sits at 72% of the box */
+    var ceiling = Math.max(daily, 1.0) / 0.72;
+    var barH = Math.max(2, Math.round((daily / ceiling) * TAPE_H));
+    var threshH = Math.min(TAPE_H - 2, Math.round((1.0 / ceiling) * TAPE_H));
+
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < n; i++){
+      var b = document.createElement("div");
+      b.className = "bar";
+      /* a calendar month is about 30 days; mark bars that fall after a month end */
+      var dayNo = Math.round((i + 1) * perBar);
+      if (Math.floor(dayNo / 30) % 2 === 1) b.className += " credited";
+      b.style.height = barH + "px";
+      frag.appendChild(b);
+    }
+    bars.appendChild(frag);
+
+    el("thresh").style.bottom = threshH + "px";
+    el("thresh-lbl").textContent = "1.00 statement floor";
+    el("tape-end").textContent = "Day " + d.days;
+    el("tape-sub").textContent = (n < d.days)
+      ? ("Each bar is " + perBar.toFixed(1) + " days, aggregated. Accruals build daily and settle to cash after month end.")
+      : "One bar per day. Accruals build daily and settle to cash after month end.";
+  }
+
+  function render(){
+    var d = compute();
+
+    /* flow ticket */
+    el("f-shares").textContent = d.shares.toLocaleString("en-US");
+    el("f-mv").textContent     = money(d.mv);
+    el("f-coll").textContent   = money(d.coll);
+    el("f-gross").textContent  = money(d.grossAnnual) + "/yr";
+    el("f-yours").textContent  = money(d.yoursAnnual) + "/yr";
+
+    /* readout */
+    el("o-rate").textContent = pct(Number(inRate.value));
+    el("o-days").textContent = inDays.value;
+    el("o-cps").textContent  = money(d.cps, 2);
+    el("o-coll").textContent = money(d.coll);
+    el("o-uplift").textContent = (d.uplift > 0.0001)
+      ? ("Uplift over market value: " + pct(d.uplift, 1) + ", worth " + money(d.coll - d.mv) + " of extra fee base")
+      : "No uplift applied: fee base equals market value";
+    el("o-gross").textContent  = money(d.grossAnnual) + " per year";
+    el("o-daily").textContent  = money(d.dailyYours, 2);
+    el("o-vis").textContent    = d.dailyYours >= 1
+      ? "Above the 1.00 floor, so it prints on your daily statement"
+      : "Below the 1.00 floor, so it is tracked but never shown on the daily statement";
+    el("o-period").textContent = money(d.periodYours, 2);
+    el("o-periodlbl").textContent = d.days + " days on loan, credited to cash after each month end";
+    el("o-eff").textContent    = pct(d.effective);
+
+    renderTape(d);
+  }
+
+  [inShares, inPrice, inRate, inDays, inBasis, inConv].forEach(function(node){
+    node.addEventListener("input", render);
+    node.addEventListener("change", render);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
