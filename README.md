@@ -20,4 +20,4 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Vorfahrt - Right of way](./vorfahrt/index.html) - Understanding driving priority in Germany
 - [IBKR - BOX](./box-money/index.html) — Free money hack, don't tell anyone!
 - [Homelab — LHR](./homelab-lhr/index.html) — High redundancy offshore network.
-- [IBKR - SYEP](./ibkr-syep/index.html) — Bonus.
+- [IBKR - SYEP](./ibkr-syep/syep-explainer.html) — Bonus.
