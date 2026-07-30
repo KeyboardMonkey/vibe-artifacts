@@ -18,5 +18,6 @@ https://keyboardmonkey.github.io/vibe-artifacts/
 - [Securing AI for enterprises](./securing-ai/index.html) — Top 10 risks & controls
 - [Breach Anatomy: CloudFlare Clickfix Attack](./cloudflare-clickfix/index.html) — Detection, ThreatIntel, Response, IOCs, Threat Hunting
 - [Vorfahrt - Right of way](./vorfahrt/index.html) - Understanding driving priority in Germany
-- [Box Money - IBKR](./box-money/index.html) — Free money hack, don't tell anyone!
+- [IBKR - BOX](./box-money/index.html) — Free money hack, don't tell anyone!
 - [Homelab — LHR](./homelab-lhr/index.html) — High redundancy offshore network.
+- [IBKR - SYEP](./ibkr-syep/index.html) — Bonus.
