@@ -22,3 +22,4 @@ vibe coded infographics, interactive artifacts etc.
 - [IBKR - BOX](./box-money/index.html) — Free money hack, don't tell anyone!
 - [Homelab — LHR](./homelab-lhr/index.html) — High redundancy offshore network.
 - [IBKR - SYEP](./ibkr-syep/syep-explainer.html) — Bonus.
+- [Slack @ RDC] (./rdc-slack/index.html) — Sec Slack @ RDC
