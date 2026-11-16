@@ -12,7 +12,7 @@ Each folder holds one self-contained HTML page. Open it on the live site or down
 | Artifact | What it is |
 | --- | --- |
 | [Claude APIs](./claude-apis/index.html) | Claude Enterprise API comparison matrix: Analytics API vs Compliance API for security auditing and governance |
-| [Opus vs Sonnet](./opus-or-sonnet/index.html) | Picking the right model for your use case |
+| [Opus vs Sonnet](./opus-or-sonnet/index.html) | Claude plans and models explorer: picking the right model for your use case |
 | [Claude Usage](./claude-usage/claude-limits-infographic.html) | The field manual to usage and length limits |
 | [Claude Security](./claude-security/index.html) | Claude Security: operator's field manual |
 | [LLM Data Risks](./llm-data-risks/ai-privacy-retention-guide.html) | Model training, data retention and other risks with the big three LLMs |
@@ -32,7 +32,7 @@ Each folder holds one self-contained HTML page. Open it on the live site or down
 
 | Artifact | What it is |
 | --- | --- |
-| [KG Guide](./kg-guide/index.html) | Für die Eltern: a guide for kindergarten parents |
+| [KG Guide](./kg-guide/index.html) | Für die Eltern: Kindergeld (child benefit) guide for non-EU parents |
 | [Vorfahrt](./vorfahrt/index.html) | Right of way: understanding driving priority in Germany |
 | [Baby Eyesight Simulator](https://babyvision.bukhari.dev/) | Stages of visual development in babies (own repo: [babyvision](https://github.com/KeyboardMonkey/babyvision)) |
 
