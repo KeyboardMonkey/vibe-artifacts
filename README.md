@@ -11,13 +11,13 @@ Each folder holds one self-contained HTML page. Open it on the live site or down
 
 | Artifact | What it is |
 | --- | --- |
-| [Claude APIs](./claude-apis/index.html) | Claude Enterprise API comparison matrix: Analytics API vs Compliance API for security auditing and governance |
+| [Claude APIs](./claude-apis/index.html) | Claude governance APIs compared: Analytics, Usage and Cost, Claude Code Analytics, Compliance, Admin API and OpenTelemetry for security, audit and FinOps |
 | [Opus vs Sonnet](./opus-or-sonnet/index.html) | Claude plans and models explorer: picking the right model for your use case |
 | [Claude Usage](./claude-usage/claude-limits-infographic.html) | The field manual to usage and length limits |
 | [Claude Security](./claude-security/index.html) | Claude Security: operator's field manual |
 | [LLM Data Risks](./llm-data-risks/ai-privacy-retention-guide.html) | Model training, data retention and other risks with the big three LLMs |
 | [Claude Cowork Risks](./llm-data-risks/anthropic-spyware.html) | Is Claude Cowork spyware? |
-| [LLM Fundamentals](https://llm-explorer-psi.vercel.app/) | Interactive guide to how LLMs work (hosted on Vercel, source in [llm-explorer](./llm-explorer)) |
+| [LLM Fundamentals](https://llm.bukhari.dev/) | Interactive guide to how LLMs work (hosted on Vercel, source in [llm-explorer](./llm-explorer)) |
 | [Second Brain Architecture](./second-brain/second-brain.html) | Tools atlas for building a highly effective second brain for your agentic needs |
 
 ## Security
@@ -48,6 +48,8 @@ Each folder holds one self-contained HTML page. Open it on the live site or down
 | Artifact | What it is |
 | --- | --- |
 | [Waqf Qurbani](https://waqf-qurbani.urdu.cc/) | Fiqh analysis of waqf qurbani, in Urdu (source in [waqf-qurbani](./waqf-qurbani)) |
+| [Waqf Qurbani v3](./waqf-qurbani/waqf-qurbani-fiqh-urdu-v3.html) | Urdu fiqh analysis, version 3 (same content as the live site) |
+| [Waqf Qurbani v2](./waqf-qurbani/waqf-qurbani-fiqh-urdu-v2.html) | Urdu fiqh analysis, earlier draft |
 | [Homelab LHR](./homelab-lhr/index.html) | High-redundancy network architecture for a three-storey house in Lahore |
 | [GitHub Markdown cheat sheet](./gfm/github-markdown-cheatsheet.html) | GitHub-flavoured Markdown on one page (full reference in [gfm](./gfm)) |
 
