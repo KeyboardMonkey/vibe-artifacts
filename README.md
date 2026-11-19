@@ -11,7 +11,7 @@ Each folder holds one self-contained HTML page. Open it on the live site or down
 
 | Artifact | What it is |
 | --- | --- |
-| [Claude APIs](./claude-apis/index.html) | Claude governance APIs compared: Analytics, Usage and Cost, Claude Code Analytics, Compliance, Admin API and OpenTelemetry for security, audit and FinOps |
+| [Claude APIs](./claude-apis/index.html) | Claude Enterprise API comparison matrix: Analytics API vs Compliance API for security auditing and governance ([v2.html](./claude-apis/v2.html)) |
 | [Opus vs Sonnet](./opus-or-sonnet/index.html) | Claude plans and models explorer: picking the right model for your use case |
 | [Claude Usage](./claude-usage/claude-limits-infographic.html) | The field manual to usage and length limits |
 | [Claude Security](./claude-security/index.html) | Claude Security: operator's field manual |
